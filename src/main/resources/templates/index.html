@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head>
+    <title>PR BEL CMS</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:href="@{/css/import/bootstrap.min.css}" rel="stylesheet">
+    <script th:src="@{/script/imports/jquery.min.js}"></script>
+    <script th:src="@{/script/imports/bootstrap.min.js}"></script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@6.5.95/css/materialdesignicons.min.css">
+
+    <style>
+        .card {
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark sticky-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+            <img th:src="@{/img/Logo_White.png}" style="max-width: 150px">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mynavbar">
+            <h1 class="navbar-nav me-auto text-white">
+            </h1>
+            <form th:action="@{/search}" th:method="post" class="d-flex">
+                <input class="form-control me-2" type="text" placeholder="Search" name="uuid">
+                <button class="btn btn-primary" type="submit"><span class="mdi mdi-book-search"></span></button>
+            </form>
+        </div>
+    </div>
+</nav>
+<br>
+
+<div class="container-fluid">
+
+    <div class="row d-flex">
+        <div class="col-sm-2" style="margin-left: 10px">
+
+            <ul class="list-group" style="margin-bottom: 10px">
+                <a href="/ticket/jobs?state=OPEN" class="list-group-item d-flex justify-content-between align-items-center">
+                    <span><span class="mdi mdi-clock-edit"></span> Offene Tickets</span>
+                    <span></span>
+                    <span class="badge bg-secondary rounded-pill" th:text="${open_tickets}"></span>
+                </a>
+                <a href="/ticket/jobs?state=all" class="list-group-item d-flex justify-content-between align-items-center">
+                    <span><span class="mdi mdi-glasses"></span> Lektoriat</span>
+                    <span></span>
+                    <span class="badge bg-secondary rounded-pill" th:text="${open_tickets_corrector}"></span>
+                </a>
+                <a href="/tickets" class="list-group-item d-flex justify-content-between align-items-center">
+                    <span><span class="mdi mdi-book-information-variant"></span> Alle Tickets</span>
+                    <span></span>
+                    <span class="badge bg-secondary rounded-pill" th:text="${allTickets}"></span>
+                </a>
+
+                <a href="/ticket/create" class="list-group-item" th:if="${user.getGroup().toString()} == 'ADMIN'">
+                    <span><span class="mdi mdi-book-plus"></span> Ticket anlegen</span>
+                </a>
+                <a href="#" class="list-group-item" th:unless="${user.getGroup().toString()} == 'ADMIN'">
+                   <br/>
+                </a>
+
+                <a href="#" class="list-group-item">
+                    <span><span class="mdi mdi-account-search"></span> Kontaktverzeichnis</span>
+                </a>
+                <a href="/admin?state=new" class="list-group-item" th:if="${user.getGroup().toString()} == 'ADMIN'">
+                    <span><span class="mdi mdi-security"></span> Adminportal</span>
+                </a>
+                <a href="#" class="list-group-item" th:unless="${user.getGroup().toString()} == 'ADMIN'">
+                    <br/>
+                </a>
+            </ul>
+
+        </div>
+        <div class="col" style="margin-left: 10px; margin-right: 10px; margin-bottom: 10px">
+            <div class="card bg-success text-white">
+                <div class="card-body d-flex justify-content-between">
+                    <div class="p-2">
+                        <h1>Herzlich Wilkommen im CMS <br>der Pfarrei Hl Hildegard von Bingen</h1>
+                    </div>
+                    <span class="p-2"></span>
+                    <div class="p-2">
+                        <img th:src="@{/img/Hildegard.png}" style="max-width: 170px;">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="card" style="margin-left: 10px; margin-right: 10px">
+        <div class="card-body">
+            <h3 th:text="${user.getUsername()} + ' / ' + ${user.getGroup()}"></h3>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

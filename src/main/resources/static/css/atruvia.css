@@ -1,0 +1,206 @@
+.atruvia-dbl {
+    color: #D4F2F5;
+}
+
+.atruvia-bgl {
+    background-color: #D4F2F5;
+}
+
+.atruvia-navbar {
+    background-color: #000064;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    z-index: 2;
+}
+
+.atruvia-footer {
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1030;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.atruvia-navbar h1 {
+    padding-left: 5px;
+    margin-left: 10px;
+}
+
+.atruvia-navbar img {
+    margin-right: 10px;
+}
+
+.atruvia-right form {
+    position: static;
+}
+
+.top-buffer {
+    margin-top: 10px;
+}
+
+.right-buffer {
+    margin-right: 10px;
+}
+
+.left-buffer {
+    margin-left: 10px;
+}
+
+.bottom-buffer {
+    margin-bottom: 10px;
+}
+
+.buffer-all {
+    margin-right: 10px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+}
+
+.bgimg {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    z-index: -1;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    width: 1%;
+    height: 1%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+body {
+
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.bgcolor {
+    /*background-color: #D4F2F5;*/
+
+}
+
+/*DROPPDOWN*/
+/* Remove default bullets */
+ul, #myUL {
+    list-style-type: none;
+}
+
+/* Remove margins and padding from the parent ul */
+#myUL {
+    margin: 0;
+    padding: 0;
+}
+
+/* Style the caret/arrow */
+.caret {
+    cursor: pointer;
+    user-select: none; /* Prevent text selection */
+}
+
+/* Create the caret/arrow with a unicode, and style it */
+.caret::before {
+    content: "\25B6";
+    color: black;
+    display: inline-block;
+    margin-right: 6px;
+}
+
+/* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+.caret-down::before {
+    transform: rotate(90deg);
+}
+
+/* Hide the nested list */
+.nested {
+    display: none;
+}
+
+/* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+.active {
+    display: block;
+}
+
+.responsive {
+    z-index: -1;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+}
+
+.login {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 50%;
+}
+
+img {
+    pointer-events: none;
+    user-select: none;
+}
+
+.loginLOGO {
+    position: absolute;
+    left: 50%;
+    top: 5%;
+    max-width: 25%;
+    transform: translate(-50%, 0);
+}
+
+.cc {
+    background-color: #000064 !important;
+    border-color: #000064 !important;
+}
+
+@media ( min-width : 991px) {
+    main {
+        padding-left: 270px;
+    }
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    padding: 58px 0 0; /* Height of navbar */
+    box-shadow: 0 2px 5px 0 rgb(0, 0, 0), 0 2px 10px 0 rgb(0, 0, 0);
+    width: 270px;
+    z-index: 1;
+    background-color: #0A5AE1 !important;
+}
+
+a:hover, a:visited, a:link, a:active {
+    text-decoration: none;
+}
+
+.centeritems {
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}

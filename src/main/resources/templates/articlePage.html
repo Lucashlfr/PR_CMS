@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head>
+    <title>PR BEL CMS</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:href="@{/css/import/bootstrap.min.css}" rel="stylesheet">
+    <script th:src="@{/script/imports/jquery.min.js}"></script>
+    <script th:src="@{/script/imports/bootstrap.min.js}"></script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@6.5.95/css/materialdesignicons.min.css">
+
+    <style>
+
+        .fill {
+            min-width: 150px;
+        }
+
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark sticky-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+            <img th:src="@{/img/Logo_White.png}" style="max-width: 150px">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mynavbar">
+            <h1 class="navbar-nav me-auto text-white">
+            </h1>
+            <form th:action="@{/search}" th:method="post" class="d-flex">
+                <input class="form-control me-2" type="text" placeholder="Search" name="uuid">
+                <button class="btn btn-primary" type="submit"><span class="mdi mdi-book-search"></span></button>
+            </form>
+        </div>
+    </div>
+</nav>
+<br>
+
+<div class="container-fluid">
+
+    <div class="row">
+
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Allgemeine Informationen</h4>
+                    <div class="input-group fill" style="margin-bottom: 10px">
+                        <span class="input-group-text fill">UUID</span>
+                        <input type="text" class="form-control bg-white" placeholder="Technische ID" readonly
+                               name="uuid" th:value="${ticket.getUUID()}">
+                    </div>
+                    <div class="input-group fill" style="margin-bottom: 10px">
+                        <span class="input-group-text fill">Erstellt am</span>
+                        <input type="date" class="form-control bg-white" placeholder="Erstellungsdatum" readonly
+                               name="creationDate" th:value="${ticket.getDates().getEnglishDate_CREATED()}">
+                    </div>
+                    <div class="input-group fill" style="margin-bottom: 10px">
+                        <span class="input-group-text fill">Deadline</span>
+                        <input type="date" class="form-control bg-white" placeholder="Deadline" readonly name="deadline"
+                               th:value="${ticket.getDates().getEnglishDate_DEADLINE()}">
+                    </div>
+                    <div class="input-group fill" style="margin-bottom: 10px">
+                        <span class="input-group-text fill">Bearbeiter</span>
+                        <input type="text" class="form-control bg-white" placeholder="Bearbeiter" readonly name="user"
+                               th:value="${ticket.getEditor().getUsername()}">
+                    </div>
+                    <div class="input-group fill" style="margin-bottom: 10px">
+                        <span class="input-group-text fill">Status</span>
+                        <input type="text" th:class="'form-control bg-white ' + ${ticket.getTicketState().getIcon()}" placeholder="Status" readonly name="state"
+                               th:value="${ticket.getTicketState().getName()}">
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Informationen</h4>
+                    <div class="input-group fill" style="margin-bottom: 10px">
+                        <span class="input-group-text fill">Name, Vorname</span>
+                        <input type="text" class="form-control bg-white" placeholder="Name, Vorname" readonly
+                               name="name" th:value="${ticket.getTicketPerson().getName()}">
+                    </div>
+                    <div class="input-group fill" style="margin-bottom: 10px">
+                        <span class="input-group-text fill">Gruppe/Verband</span>
+                        <input type="text" class="form-control bg-white" placeholder="Gruppe/verband" readonly
+                               name="association" th:value="${ticket.getTicketPerson().getAssociation()}">
+                    </div>
+                </div>
+            </div>
+            <br/>
+
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Angehängte Dateien</h4>
+                    <div class="list-group list-group-flush">
+                        <a th:each="link:${ticket.getTicketLinks()}" th:href="${link.getLink()}" target="_blank"
+                           class="list-group-item list-group-item-action"><span class="mdi mdi-download" style="margin-right: 5px"></span><span th:text="${link.getName()}"></span> </a>
+                    </div>
+                </div>
+            </div>
+
+            <br/>
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Workflow Dokumentation</h4>
+                    <ul class="list-group">
+                        <li class="list-group-item" th:each="log:${ticket.getTicketLogs()}"
+                            th:text="'[' + ${log.getGermandate()} + '] ' + ${log.getText()}"></li>
+                    </ul>
+                </div>
+            </div>
+            <br/>
+        </div>
+        <div class="col-lg-2">
+            <div class="card">
+                <h4 class="text-center card-header">Aktionen</h4>
+                <div class="card-body d-grid">
+
+                    <a th:href="'/ticket/close?uuid=' + ${ticket.getUUID()}" class="btn btn-primary btn-block text-start" style="margin-bottom: 10px"
+                       th:if="${ticket.isCloseable()}">
+                        <span class="mdi mdi-check-circle-outline" style="margin-right: 5px"></span>
+                        Beenden</a>
+
+                    <button class="btn btn-primary btn-block text-start" style="margin-bottom: 10px"
+                            data-bs-toggle="modal" data-bs-target="#user">
+                        <span class="mdi mdi-account-arrow-right" style="margin-right: 5px"></span>
+                        Bearbeiter zuweisen
+                    </button>
+                    <a th:href="'/ticket/lektoriat?uuid=' + ${ticket.getUUID()}" class="btn btn-primary btn-block text-start" style="margin-bottom: 10px"
+                        th:if="${ticket.userCanLector()}">
+                        <span class="mdi mdi-glasses" style="margin-right: 5px"></span>
+                        Lektoriat</a>
+                    <button class="btn btn-primary btn-block text-start" style="margin-bottom: 10px"
+                            data-bs-toggle="modal" data-bs-target="#contact">
+                        <span class="mdi mdi-contacts" style="margin-right: 5px"></span>
+                        Kontaktdaten</button>
+                    <button class="btn btn-primary btn-block text-start" style="margin-bottom: 10px"
+                            data-bs-toggle="modal" data-bs-target="#links">
+                        <span class="mdi mdi-file" style="margin-right: 5px"></span>
+                        Dateien verwalten
+                    </button>
+                    <a class="btn btn-primary btn-block text-start" style="margin-bottom: 10px" th:if="${user.isAdmin()}" th:href="'/ticket/delete?uuid=' + ${ticket.getUUID()}">
+                        <span class="mdi mdi-delete" style="margin-right: 5px"></span>
+                        Löschen</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+<!-- The LINK Modal -->
+<div class="modal fade" id="links">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Angehängte Dateien bearbeiten</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item" th:each="link:${ticket.getTicketLinks()}">
+                        <a class="btn btn-danger mdi mdi-delete"
+                           th:href="'/ticket/delete/link?uuid=' + ${ticket.getUUID()} + '&link=' + ${link.getLink_UUID()}"></a>
+                        <span style="margin-left: 10px" th:text="${link.getName()}"></span></li>
+
+                    <li class="list-group-item">
+                        <form th:method="post" th:action="@{/ticket/save/link}">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text mdi mdi-web-plus bg-success text-white"></span>
+                                <input type="text" class="form-control" placeholder="Name" name="name">
+                                <input type="text" class="form-control" placeholder="Link" name="link">
+                                <button type="submit" class="btn btn-success mdi mdi-send"></button>
+                                <input type="text" th:value="${ticket.getUUID()}"
+                                       style="max-width: 0; max-height: 0; display: none" name="uuid">
+                            </div>
+                        </form>
+
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- The LINK Modal -->
+<div class="modal fade" id="user">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Bearbeiter zuweisen</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form th:method="post" th:action="@{/ticket/save/user}">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text mdi mdi-account-arrow-right bg-primary text-white"></span>
+                        <select class="form-select" id="sel1" name="useruuid">
+                            <option selected> </option>
+                            <option th:each="user:${users}" th:text="${user.getUsername()}" th:value="${user.getUser_UUID()}"></option>
+                        </select>
+                        <button type="submit" class="btn btn-success mdi mdi-send"></button>
+                        <input type="text" th:value="${ticket.getUUID()}" style="max-width: 0; max-height: 0; display: none" name="uuid">
+                    </div>
+                </form>
+
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- The Contact Modal -->
+<div class="modal fade" id="contact">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Kontaktdaten</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+
+                <table class="table">
+                    <tbody>
+                    <tr>
+                        <td>Name</td>
+                        <td th:text="${ticket.getTicketPerson().getName()}"></td>
+                    </tr>
+                    <tr>
+                        <td>Telefon-Nr.</td>
+                        <td th:text="${ticket.getTicketPerson().getPhone()}"></td>
+                    </tr>
+                    <tr>
+                        <td>E-Mail</td>
+                        <td th:text="${ticket.getTicketPerson().getEmail()}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <a type="button" class="btn btn-primary"
+
+                   href="#"
+
+                >E-Mail schreiben</a>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+</html>

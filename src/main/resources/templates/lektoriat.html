@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head>
+    <title>PR BEL CMS</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:href="@{/css/import/bootstrap.min.css}" rel="stylesheet">
+    <script th:src="@{/script/imports/jquery.min.js}"></script>
+    <script th:src="@{/script/imports/bootstrap.min.js}"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@6.5.95/css/materialdesignicons.min.css">
+
+    <style>
+
+        .fill {
+            min-width: 150px;
+        }
+
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark sticky-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+            <img th:src="@{/img/Logo_White.png}" style="max-width: 150px">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mynavbar">
+            <h1 class="navbar-nav me-auto text-white">
+            </h1>
+            <form th:action="@{/search}" th:method="post" class="d-flex">
+                <input class="form-control me-2" type="text" placeholder="Search" name="uuid">
+                <button class="btn btn-primary" type="submit"><span class="mdi mdi-book-search"></span></button>
+            </form>
+        </div>
+    </div>
+</nav>
+<br>
+
+<div class="container-fluid">
+
+    <div class="row">
+
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Allgemeine Informationen</h4>
+                    <div class="input-group fill" style="margin-bottom: 10px">
+                        <span class="input-group-text fill">UUID</span>
+                        <input type="text" class="form-control bg-white" placeholder="uuid" readonly th:value="${ticket.getUUID()}">
+                    </div>
+                    <div class="input-group fill" style="margin-bottom: 10px">
+                        <span class="input-group-text fill">Status</span>
+                        <input type="text" class="form-control bg-white" placeholder="Status" readonly th:value="${ticket.getTicketState().name()}">
+                    </div>
+                </div>
+            </div>
+            <br>
+
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Angehängte Dateien</h4>
+                    <div class="list-group list-group-flush">
+                        <a th:each="link:${ticket.getTicketLinks()}" th:href="${link.getLink()}" target="_blank"
+                           class="list-group-item list-group-item-action"><span class="mdi mdi-download" style="margin-right: 5px"></span><span th:text="${link.getName()}"></span> </a>
+                    </div>
+                </div>
+            </div>
+
+            <br/>
+        </div>
+        <div class="col-lg-2">
+            <div class="card">
+                <h4 class="text-center card-header">Lektoriat</h4>
+                <div class="card-body d-grid">
+                    <a th:href="'/ticket/lektoriat/accept?uuid=' + ${ticket.getUUID()}" class="btn btn-primary btn-block" style="margin-bottom: 10px">Genehmigen</a>
+                    <button class="btn btn-primary btn-block" style="margin-bottom: 10px" data-bs-toggle="modal" data-bs-target="#changes">Vorschlagen / Ablehnen</button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+<form th:action="@{/ticket/lektoriat/proposeChanges}" th:method="post">
+    <div class="modal fade" id="changes">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Vorschlagen / Ablehnen</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <p th:text="${ticket.getTicketPerson().getGreeting()}"></p>
+                    <textarea class="form-control" rows="8" id="comment" required name="text" placeholder="Vorschläge..."></textarea>
+                    <input type="text" th:value="${ticket.getUUID()}" readonly
+                           style="max-width: 0; max-height: 0; display: none" name="uuid">
+                    <p>Viele Grüße</p>
+
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" id="radio1" name="type" value="purpose" checked>Vorschlag
+                        <label class="form-check-label" for="radio1"></label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" id="radio2" name="type" value="reject">Ablehnen
+                        <label class="form-check-label" for="radio2"></label>
+                    </div>
+
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Senden</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</form>
+
+</html>
