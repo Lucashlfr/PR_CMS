@@ -12,12 +12,10 @@ public class EmailService {
     private static final Logger LOGGER = Logger.getLogger("Manager.TicketService");
     private final DatabaseService databaseService = Cache.getDatabaseService();
 
-    public EmailService(){
-
-    }
-
     public void sendMail(EmailEntity entity){
         EmailUtils.sendEmail(entity);
     }
+
+
 
 }

@@ -1,6 +1,7 @@
 package de.messdiener.cms.cache;
 
 import de.messdiener.cms.app.entities.user.User;
+import de.messdiener.cms.app.services.AdminService;
 import de.messdiener.cms.app.services.UserService;
 import de.messdiener.cms.app.services.TicketService;
 import de.messdiener.cms.app.services.mail.EmailService;
@@ -12,8 +13,8 @@ import java.util.UUID;
 public class Cache {
 
     public static long REFLESH;
-    public static final User SYSTEM_USER = new User(UUID.fromString("9d329917-70db-4742-bd24-d14f9669560e"), "SYSTEM", UUID.randomUUID().toString(), UserGroup.ADMIN, Cache.MAIL);
-    public static final User ALFRED_USER = new User(UUID.fromString("fdc9139c-2c1b-40c2-9656-49d4c0a55a6c"), "alfred.gadinger", UUID.randomUUID().toString(), UserGroup.LEKTOR2, Cache.MAIL);
+    public static final User SYSTEM_USER = new User(UUID.fromString("9d329917-70db-4742-bd24-d14f9669560e"), "SYSTEM","SYSTEM","SYSTEM", UUID.randomUUID().toString(), UserGroup.ADMIN, Cache.MAIL);
+    public static final User ALFRED_USER = new User(UUID.fromString("fdc9139c-2c1b-40c2-9656-49d4c0a55a6c"), "alfred.gadinger","Alfred","Gadinger", UUID.randomUUID().toString(), UserGroup.LEKTOR2, Cache.MAIL);
 
     public static final String MAIL = "info@messdiener-knittelsheim.de";
     public static final String LINK = "http://cms.code.system.etu.messdiener.com:8081/";
@@ -25,6 +26,7 @@ public class Cache {
     public final static UserService USER_SERVICE = new UserService();
     public final static TicketService TICKET_SERVICE = new TicketService();
     public final static EmailService EMAIL_SERVICE = new EmailService();
+    public final static AdminService ADMIN_SERVICE = new AdminService();
 
     public static DatabaseService getDatabaseService() {
 

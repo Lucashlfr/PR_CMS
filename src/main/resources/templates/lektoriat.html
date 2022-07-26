@@ -1,41 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="de">
-<head>
-    <title>PR BEL CMS</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link th:href="@{/css/import/bootstrap.min.css}" rel="stylesheet">
-    <script th:src="@{/script/imports/jquery.min.js}"></script>
-    <script th:src="@{/script/imports/bootstrap.min.js}"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@6.5.95/css/materialdesignicons.min.css">
-
-    <style>
-
-        .fill {
-            min-width: 150px;
-        }
-
-    </style>
-</head>
+<head th:insert="fragments :: html_head"></head>
 <body>
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark sticky-top">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/">
-            <img th:src="@{/img/Logo_White.png}" style="max-width: 150px">
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="mynavbar">
-            <h1 class="navbar-nav me-auto text-white">
-            </h1>
-            <form th:action="@{/search}" th:method="post" class="d-flex">
-                <input class="form-control me-2" type="text" placeholder="Search" name="uuid">
-                <button class="btn btn-primary" type="submit"><span class="mdi mdi-book-search"></span></button>
-            </form>
-        </div>
-    </div>
-</nav>
+<nav th:replace="fragments :: navbar"></nav>
 <br>
 
 <div class="container-fluid">
@@ -66,6 +33,14 @@
                            class="list-group-item list-group-item-action"><span class="mdi mdi-download" style="margin-right: 5px"></span><span th:text="${link.getName()}"></span> </a>
                     </div>
                 </div>
+            </div><br>
+
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Text</h4>
+                    <div id="text" th:text="${ticket.getHTML()}"></div>
+                </div>
+                <button onclick="update()" id="update" class="invisible">edit</button>
             </div>
 
             <br/>
@@ -74,8 +49,12 @@
             <div class="card">
                 <h4 class="text-center card-header">Lektoriat</h4>
                 <div class="card-body d-grid">
-                    <a th:href="'/ticket/lektoriat/accept?uuid=' + ${ticket.getUUID()}" class="btn btn-primary btn-block" style="margin-bottom: 10px">Genehmigen</a>
-                    <button class="btn btn-primary btn-block" style="margin-bottom: 10px" data-bs-toggle="modal" data-bs-target="#changes">Vorschlagen / Ablehnen</button>
+                    <a th:href="'/ticket/lektoriat/accept?uuid=' + ${ticket.getUUID()}" class="btn btn-primary btn-block text-start" style="margin-bottom: 10px">
+                        <span class="mdi mdi-check-circle-outline" style="margin-right: 5px"></span>
+                        Genehmigen</a>
+                    <button class="btn btn-primary btn-block text-start" style="margin-bottom: 10px" data-bs-toggle="modal" data-bs-target="#changes">
+                        <span class="mdi mdi-cancel" style="margin-right: 5px"></span>
+                        Vorschlagen / Ablehnen</button>
                 </div>
             </div>
 
@@ -129,3 +108,18 @@
 </form>
 
 </html>
+
+<script>
+
+
+    function update(){
+        document.getElementById("text").innerHTML = document.getElementById("text").innerText;
+    }
+
+    $(document).ready( function () {
+        setTimeout(function () {
+            document.getElementById("update").click();
+        }, 100);
+    });
+
+</script>

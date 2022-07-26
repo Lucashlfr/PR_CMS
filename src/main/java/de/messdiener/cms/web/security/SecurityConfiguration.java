@@ -38,7 +38,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         UUID uuid = UUID.randomUUID();
 
         try {
-            Cache.USER_SERVICE.saveUser(new de.messdiener.cms.app.entities.user.User("oneUser", "oneUser", UserGroup.ADMIN,Cache.MAIL));
+            Cache.USER_SERVICE.saveUser(new de.messdiener.cms.app.entities.user.User("oneUser", "oneUser", "lastname", "oneUser",
+                    UserGroup.ADMIN,Cache.MAIL));
         } catch (SQLException e) {
             e.printStackTrace();
         }

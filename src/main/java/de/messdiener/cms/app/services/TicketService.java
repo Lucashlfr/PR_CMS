@@ -30,7 +30,7 @@ public class TicketService {
         try {
             databaseService.getConnection().prepareStatement(
                     "CREATE TABLE IF NOT EXISTS module_tickets (ticket_uuid VARCHAR(255), creationDate LONG, lastUpdateDate LONG, deadline LONG, " +
-                            "user_uuid VARCHAR(255), ticketState VARCHAR(255), ticketPerson_uuid VARCHAR(255))"
+                            "user_uuid VARCHAR(255), ticketState VARCHAR(255), ticketPerson_uuid VARCHAR(255), html LONGTEXT)"
             ).executeUpdate();
 
             databaseService.getConnection().prepareStatement(
@@ -59,7 +59,7 @@ public class TicketService {
         delete(ticket);
 
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
-                "INSERT INTO module_tickets (ticket_uuid, creationDate, lastUpdateDate, deadline, user_uuid, ticketState, ticketPerson_uuid) VALUES (?,?,?,?,?,?,?)"
+                "INSERT INTO module_tickets (ticket_uuid, creationDate, lastUpdateDate, deadline, user_uuid, ticketState, ticketPerson_uuid, html) VALUES (?,?,?,?,?,?,?,?)"
         );
 
         preparedStatement.setString(1, ticket.getUUID().toString());
@@ -69,6 +69,7 @@ public class TicketService {
         preparedStatement.setString(5, ticket.getUser_UUID().toString());
         preparedStatement.setString(6, ticket.getTicketState().toString());
         preparedStatement.setString(7, ticket.getTicketPerson().getTicketPerson_UUID().toString());
+        preparedStatement.setString(8, ticket.getHTML());
 
         preparedStatement.executeUpdate();
 
@@ -173,8 +174,9 @@ public class TicketService {
             ArrayList<TicketLog> ticketNotes = getTicketLog(uuid);
             ArrayList<TicketLink> ticketLinks = getTicketLinks(uuid);
             TicketPerson ticketPerson = getTicketPerson(UUID.fromString(resultSet.getString("ticketPerson_uuid"))).orElse(TicketPerson.empty());
+            String html = resultSet.getString("html");
 
-            Ticket ticket = new Ticket(uuid, created, lastUpdate, deadline, user_uuid, ticketState, ticketNotes, ticketLinks, ticketPerson);
+            Ticket ticket = new Ticket(uuid, created, lastUpdate, deadline, user_uuid, ticketState, ticketNotes, ticketLinks, ticketPerson, html);
 
             tickets.add(ticket);
         }
@@ -283,7 +285,10 @@ public class TicketService {
 
     public Set<Ticket> getTicketsByUser(UUID user_uuid) throws SQLException {
 
-        return getTickets().stream().filter(ticket -> ticket.getUser_UUID().equals(user_uuid)).collect(Collectors.toSet());
+        return getTickets().stream().filter(ticket -> ticket.getUser_UUID().equals(user_uuid))
+                .filter(ticket -> (!ticket.getTicketState().equals(TicketState.PUBLISHED)))
+                .filter(ticket -> (!ticket.getTicketState().equals(TicketState.REJECTED)))
+                .collect(Collectors.toSet());
 
     }
 

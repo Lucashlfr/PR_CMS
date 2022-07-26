@@ -1,43 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="de">
-<head>
-    <title>PR BEL CMS</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link th:href="@{/css/import/bootstrap.min.css}" rel="stylesheet">
-    <script th:src="@{/script/imports/jquery.min.js}"></script>
-    <script th:src="@{/script/imports/bootstrap.min.js}"></script>
-
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@6.5.95/css/materialdesignicons.min.css">
-
-    <style>
-
-        .fill {
-            min-width: 150px;
-        }
-
-    </style>
-</head>
+<head th:insert="fragments :: html_head"></head>
 <body>
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark sticky-top">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/">
-            <img th:src="@{/img/Logo_White.png}" style="max-width: 150px">
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="mynavbar">
-            <h1 class="navbar-nav me-auto text-white">
-            </h1>
-            <form th:action="@{/search}" th:method="post" class="d-flex">
-                <input class="form-control me-2" type="text" placeholder="Search" name="uuid">
-                <button class="btn btn-primary" type="submit"><span class="mdi mdi-book-search"></span></button>
-            </form>
-        </div>
-    </div>
-</nav>
+<nav th:replace="fragments :: navbar"></nav>
 <br>
 
 <div class="container-fluid">
@@ -126,10 +91,11 @@
                         Beenden</a>
 
                     <button class="btn btn-primary btn-block text-start" style="margin-bottom: 10px"
-                            data-bs-toggle="modal" data-bs-target="#user">
+                            data-bs-toggle="modal" data-bs-target="#user" th:unless="${ticket.isClosed()}" th:if="${user.isAdmin()}">
                         <span class="mdi mdi-account-arrow-right" style="margin-right: 5px"></span>
                         Bearbeiter zuweisen
                     </button>
+
                     <a th:href="'/ticket/lektoriat?uuid=' + ${ticket.getUUID()}" class="btn btn-primary btn-block text-start" style="margin-bottom: 10px"
                         th:if="${ticket.userCanLector()}">
                         <span class="mdi mdi-glasses" style="margin-right: 5px"></span>
@@ -139,7 +105,7 @@
                         <span class="mdi mdi-contacts" style="margin-right: 5px"></span>
                         Kontaktdaten</button>
                     <button class="btn btn-primary btn-block text-start" style="margin-bottom: 10px"
-                            data-bs-toggle="modal" data-bs-target="#links">
+                            data-bs-toggle="modal" data-bs-target="#links" th:unless="${ticket.isClosed()}">
                         <span class="mdi mdi-file" style="margin-right: 5px"></span>
                         Dateien verwalten
                     </button>
@@ -229,6 +195,8 @@
 
             <!-- Modal footer -->
             <div class="modal-footer">
+                <a type="button" class="btn btn-info mdi mdi-account-arrow-left text-white"
+                   th:href="'/ticket/assignMe?uuid=' + ${ticket.getUUID()}"> Mir zuweisen</a>
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
             </div>
 

@@ -20,8 +20,12 @@ public class AdminController {
     @GetMapping("/admin")
     public String index(Model model, @RequestParam("state")String state) throws SQLException {
 
+        model.addAttribute("random", UUID.randomUUID());
         model.addAttribute("users", Cache.USER_SERVICE.getUsers());
         model.addAttribute("groups", UserGroup.values());
+
+        model.addAttribute("toggles", Cache.ADMIN_SERVICE.getToggles());
+        model.addAttribute("toggle_enable_publicForm", Cache.ADMIN_SERVICE.get("enable_publicForm"));
 
         if(state.equals("ok")){
             addAlertToModel(model, "alert-success", "Nutzer erfolgreich gespeichert");
@@ -34,7 +38,8 @@ public class AdminController {
     @PostMapping("/admin/saveUser")
     public RedirectView save(@RequestParam("t_uuid") String uuid, @RequestParam("t_username")String username,
                              @RequestParam("t_password")String password, @RequestParam("t_email")String email,
-                             @RequestParam("t_group")String group) throws SQLException {
+                             @RequestParam("t_group")String group, @RequestParam("t_firstname")String firstname,
+                             @RequestParam("t_lastname")String lastname) throws SQLException {
 
 
 
@@ -43,6 +48,8 @@ public class AdminController {
         user.setPassword(password);
         user.setEmail(email);
         user.setGroup(UserGroup.valueOf(group));
+        user.setFirstname(firstname);
+        user.setLastname(lastname);
 
         if(uuid.equals("new UUID")){
 

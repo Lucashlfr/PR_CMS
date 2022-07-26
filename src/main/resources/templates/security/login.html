@@ -40,16 +40,16 @@
         </div>
         <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
             <h1>Login CMS der Pfarrei Bellheim</h1>
-            <form th:action="@{/login}" th:method="post">
+            <form th:action="@{/login}" th:method="post" class="was-validated">
                 <!-- Email input -->
                 <div class="form-floating mb-4 mt-4">
-                    <input type="text" class="form-control" id="username" placeholder="Nutzername eingeben" name="username">
+                    <input type="text" class="form-control" id="username" placeholder="Nutzername eingeben" name="username" required>
                     <label for="username">Benutzername</label>
                 </div>
 
                 <!-- Password input -->
                 <div class="form-floating mb-3 mt-3">
-                    <input type="password" class="form-control" id="password" placeholder="Passwort eingeben" name="password">
+                    <input type="password" class="form-control" id="password" placeholder="Passwort eingeben" name="password" required>
                     <label for="password">Passwort</label>
                 </div>
 

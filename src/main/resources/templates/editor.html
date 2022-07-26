@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head th:insert="fragments :: html_head"></head>
+<script src="https://cdn.tiny.cloud/1/44niyaud64mk77to8lx6omg5qw6wbnhn8kjue3tb4brqdps4/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<body>
+<nav th:replace="fragments :: navbar"></nav>
+<br>
+
+<div class="container-fluid">
+
+
+</div>
+
+</body>
+
+<textarea name="test" id="myTextarea">
+     Welcome to TinyMCE!
+  </textarea>
+<button onclick="save()">Save</button>
+<button onclick="update()" id="update">edit</button>
+
+<br>
+
+<div th:text="${test}" id="test"></div>
+
+</html>
+<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+<script>
+    tinymce.init({
+        selector: 'textarea',
+        plugins: 'a11ychecker advcode casechange export formatpainter image editimage linkchecker autolink lists checklist media mediaembed pageembed permanentpen powerpaste table advtable tableofcontents tinycomments tinymcespellchecker',
+        toolbar: 'a11ycheck addcomment showcomments casechange checklist code export formatpainter image editimage pageembed permanentpen table tableofcontents',
+        toolbar_mode: 'floating',
+        tinycomments_mode: 'embedded',
+        tinycomments_author: 'Author name',
+    });
+    tinymce.triggerSave();
+
+    @RequestParam("text")String text
+    function save(){
+        const myContent = tinymce.get("myTextarea").getContent();
+        console.log(myContent);
+        $.post("/editor/save", {"html": myContent});
+    }
+
+    function update(){
+        document.getElementById("test").innerHTML = document.getElementById("test").innerText;
+    }
+
+    $(document).ready( function () {
+        setTimeout(function () {
+            document.getElementById("update").click();
+        }, 200);
+        });
+
+
+</script>

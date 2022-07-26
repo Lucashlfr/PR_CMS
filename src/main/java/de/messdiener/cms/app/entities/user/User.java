@@ -6,32 +6,40 @@ import java.util.UUID;
 
 public class User {
 
-
-
     private UUID user_uuid;
     private String username;
+    private String firstname;
+    private String lastname;
     private String password;
     private UserGroup group;
     private String email;
 
-    public User(String username, String password, UserGroup group, String email) {
-        this.user_uuid = UUID.randomUUID();
+    public User(UUID user_uuid, String username, String firstname, String lastname, String password, UserGroup group, String email) {
+        this.user_uuid = user_uuid;
         this.username = username;
+        this.firstname = firstname;
+        this.lastname = lastname;
         this.password = password;
         this.group = group;
         this.email = email;
     }
 
-    public User(UUID userid, String username, String password, UserGroup group, String email) {
-        this.user_uuid = userid;
+    public User(String username, String firstname, String lastname, String password, UserGroup group, String email) {
+        this.user_uuid = UUID.randomUUID();
         this.username = username;
+        this.firstname = firstname;
+        this.lastname = lastname;
         this.password = password;
         this.group = group;
         this.email = email;
+    }
+
+    public static User of(UUID user_uuid, String username, String firstname, String lastname, String password, UserGroup group, String email) {
+        return new User(user_uuid, username, firstname, lastname, password, group, email);
     }
 
     public static User empty(){
-        return new User(UUID.randomUUID(), "", "", UserGroup.USER, "info@messdiener-knittelsheim.de");
+        return of(UUID.randomUUID(), "", "", "", "", UserGroup.USER, "");
     }
 
     public String getUsername() {
@@ -85,10 +93,26 @@ public class User {
     }
 
     public String getAdminString(){
-        return user_uuid + "/" + username + "/" + password + "/" + email + "/" + group.toString();
+        return user_uuid + "/" + username + "/" + password + "/" + email + "/" + group.toString() + "/" + firstname + "/" + lastname;
     }
 
     public boolean isAdmin(){
         return group == UserGroup.ADMIN;
+    }
+
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
     }
 }

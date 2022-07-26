@@ -1,55 +1,23 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="de">
-<head>
-    <title>PR BEL CMS</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link th:href="@{/css/import/bootstrap.min.css}" rel="stylesheet">
-    <script th:src="@{/script/imports/jquery.min.js}"></script>
-    <script th:src="@{/script/imports/bootstrap.min.js}"></script>
-
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@6.5.95/css/materialdesignicons.min.css">
-
-    <style>
-        .card {
-            height: 100%;
-        }
-    </style>
-</head>
+<head th:insert="fragments :: html_head_index"></head>
 <body>
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark sticky-top">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/">
-            <img th:src="@{/img/Logo_White.png}" style="max-width: 150px">
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="mynavbar">
-            <h1 class="navbar-nav me-auto text-white">
-            </h1>
-            <form th:action="@{/search}" th:method="post" class="d-flex">
-                <input class="form-control me-2" type="text" placeholder="Search" name="uuid">
-                <button class="btn btn-primary" type="submit"><span class="mdi mdi-book-search"></span></button>
-            </form>
-        </div>
-    </div>
-</nav>
+<nav th:replace="fragments :: navbar"></nav>
 <br>
 
-<div class="container-fluid">
-
-    <div class="row d-flex">
-        <div class="col-sm-2" style="margin-left: 10px">
-
-            <ul class="list-group" style="margin-bottom: 10px">
-                <a href="/ticket/jobs?state=OPEN" class="list-group-item d-flex justify-content-between align-items-center">
+<header>
+    <!-- Sidebar -->
+    <nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse bg-white">
+        <div class="position-sticky">
+            <div class="list-group list-group-flush mx-3 mt-4">
+                <a href="/ticket/jobs?state=OPEN"
+                   class="list-group-item d-flex justify-content-between align-items-center">
                     <span><span class="mdi mdi-clock-edit"></span> Offene Tickets</span>
                     <span></span>
                     <span class="badge bg-secondary rounded-pill" th:text="${open_tickets}"></span>
                 </a>
-                <a href="/ticket/jobs?state=all" class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="/ticket/jobs?state=all"
+                   class="list-group-item d-flex justify-content-between align-items-center">
                     <span><span class="mdi mdi-glasses"></span> Lektoriat</span>
                     <span></span>
                     <span class="badge bg-secondary rounded-pill" th:text="${open_tickets_corrector}"></span>
@@ -63,9 +31,6 @@
                 <a href="/ticket/create" class="list-group-item" th:if="${user.getGroup().toString()} == 'ADMIN'">
                     <span><span class="mdi mdi-book-plus"></span> Ticket anlegen</span>
                 </a>
-                <a href="#" class="list-group-item" th:unless="${user.getGroup().toString()} == 'ADMIN'">
-                   <br/>
-                </a>
 
                 <a href="#" class="list-group-item">
                     <span><span class="mdi mdi-account-search"></span> Kontaktverzeichnis</span>
@@ -76,31 +41,111 @@
                 <a href="#" class="list-group-item" th:unless="${user.getGroup().toString()} == 'ADMIN'">
                     <br/>
                 </a>
-            </ul>
-
+            </div>
         </div>
-        <div class="col" style="margin-left: 10px; margin-right: 10px; margin-bottom: 10px">
-            <div class="card bg-success text-white">
-                <div class="card-body d-flex justify-content-between">
-                    <div class="p-2">
-                        <h1>Herzlich Wilkommen im CMS <br>der Pfarrei Hl Hildegard von Bingen</h1>
+    </nav>
+    <!-- Sidebar -->
+</header>
+
+<main>
+
+    <div class="container-fluid">
+
+        <div class="card bg-success text-white">
+            <div class="card-body d-flex justify-content-between">
+                <div class="p-2">
+                    <h1>Hallo <span th:text="${user.getFirstname()}"/>, <br>Herzlich Willkommen im CMS <br>der Pfarrei
+                        Hl. Hildegard von Bingen</h1>
+                </div>
+                <span class="p-2"></span>
+                <div class="p-2">
+                    <img th:src="@{/img/Hildegard.png}" style="max-width: 170px;">
+                </div>
+            </div>
+        </div>
+
+        <br>
+
+        <div class="row d-flex">
+
+            <div class="col">
+                <div class="card" style="margin-bottom: 10px">
+                    <div class="card-body" style="background-color: #f5f5f5!important;">
+                        <b><span style="font-size: 30px" class="text-danger" th:text="${summery.getOpen()}"></span></b>
+                        <br>
+                        <span>Tickets Offen</span>
                     </div>
-                    <span class="p-2"></span>
-                    <div class="p-2">
-                        <img th:src="@{/img/Hildegard.png}" style="max-width: 170px;">
+                </div>
+            </div>
+            <div class="col">
+                <div class="card" style="margin-bottom: 10px">
+                    <div class="card-body" style="background-color: #f5f5f5!important;">
+                        <b><span style="font-size: 30px" class="text-danger" th:text="${summery.getCorrection()}"></span></b>
+                        <br>
+                        <span>Tickets im Lektoriat</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card" style="margin-bottom: 10px">
+                    <div class="card-body" style="background-color: #f5f5f5!important;">
+                        <b><span style="font-size: 30px" class="text-danger" th:text="${summery.getGlobal()}"></span></b>
+                        <br>
+                        <span>Tickets im System</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card" style="margin-bottom: 10px">
+                    <div class="card-body" style="background-color: #f5f5f5!important;">
+                        <b><span style="font-size: 30px" class="text-danger" th:text="${summery.publication}"></span></b>
+                        <br>
+                        <span>Veröffentlichte Tickets</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card" style="margin-bottom: 10px">
+                    <div class="card-body" style="background-color: #f5f5f5!important;">
+                        <b><span style="font-size: 30px" class="text-danger" th:text="${summery.getWaiting()}"></span></b>
+                        <br>
+                        <span>Wartende Tickets</span>
                     </div>
                 </div>
             </div>
 
         </div>
-    </div>
-    <div class="card" style="margin-left: 10px; margin-right: 10px">
-        <div class="card-body">
-            <h3 th:text="${user.getUsername()} + ' / ' + ${user.getGroup()}"></h3>
+        <br>
+
+
+        <div class="row">
+
+            <div class="col">
+
+                <h3>Deine Aufgaben (<span th:text="${tasks.size()}"></span>)</h3>
+                <div class="list-group">
+                    <a th:href="'/ticket/edit?uuid=' + ${ticket.getUUID()}" class="list-group-item list-group-item-action" aria-current="true" th:each="ticket:${tasks}">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1" th:text="${ticket.getName()}"></h5>
+                            <small th:text="${ticket.getDates().getGermanDate_DEADLINE()}"></small>
+                        </div>
+                        <p class="mb-1">
+
+                            <span th:class="${ticket.getTicketState().getIcon()}"
+                                  th:text="' ' + ${ticket.getTicketState().getName()}"></span>
+
+
+                        </p>
+                        <!--<small>And some small print.</small> -->
+                    </a>
+                </div>
+
+            </div>
+            <div class="col"></div>
         </div>
+
     </div>
-
-</div>
-
+    <br/>
+</main>
 </body>
 </html>

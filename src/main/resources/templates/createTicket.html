@@ -1,62 +1,40 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="de">
-<head>
-    <title>PR BEL CMS</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link th:href="@{/css/import/bootstrap.min.css}" rel="stylesheet">
-    <script th:src="@{/script/imports/jquery.min.js}"></script>
-    <script th:src="@{/script/imports/bootstrap.min.js}"></script>
-
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@6.5.95/css/materialdesignicons.min.css">
-    <style>
-
-        .fill {
-            min-width: 150px;
-        }
-
-    </style>
-</head>
+<head th:insert="fragments :: html_head"></head>
 <body>
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark sticky-top">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/">
-            <img th:src="@{/img/Logo_White.png}" style="max-width: 150px">
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="mynavbar">
-            <h1 class="navbar-nav me-auto text-white">
-            </h1>
-            <form th:action="@{/search}" th:method="post" class="d-flex">
-                <input class="form-control me-2" type="text" placeholder="Search" name="uuid">
-                <button class="btn btn-primary" type="submit"><span class="mdi mdi-book-search"></span></button>
-            </form>
-        </div>
-    </div>
-</nav>
+<nav th:replace="fragments :: navbar"></nav>
+<script src="https://cdn.tiny.cloud/1/44niyaud64mk77to8lx6omg5qw6wbnhn8kjue3tb4brqdps4/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 <br>
 
-<form th:action="@{/ticket/create/save}" th:method="post">
-    <div class="container-fluid row">
+<div class="container-" id="load">
+
+    <div class="card">
+
+        <div class="card-header">
+            <section class="text-center">
+                <h1>Bitte warten...</h1>
+            </section>
+        </div>
+        <div class="card-body text-center">
+            <span class="spinner-border card-img" style="min-height: 200px; min-width: 200px;"></span>
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<div class="container-fluid d-none" id="content">
+
+<form th:action="@{/public/createTicket/save}" th:method="post">
+    <div class="row">
 
 
         <div class="col">
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">Nutzer verwalten</h4>
-                    <div class="input-group fill" style="margin-bottom: 10px">
-                        <span class="input-group-text fill">UUID</span>
-                        <input type="text" class="form-control bg-white" placeholder="uuid" name="uuid" readonly
-                               th:value="${uuid}">
-                    </div>
-                    <div class="input-group fill" style="margin-bottom: 10px">
-                        <span class="input-group-text fill">Erstellt am</span>
-                        <input type="date" class="form-control bg-white" placeholder="Datum" readonly
-                               th:value="${currentDate}" name="currentDate">
-                    </div>
                     <div class="input-group fill" style="margin-bottom: 10px">
                         <span class="input-group-text fill">Deadline</span>
                         <input type="date" class="form-control" placeholder="deadline" required name="deadline">
@@ -69,8 +47,11 @@
                     <h4 class="card-title">Informationen</h4>
                     <div class="input-group fill" style="margin-bottom: 10px">
                         <span class="input-group-text fill">Name, Vorname</span>
-                        <input type="text" class="form-control bg-white" placeholder="Name, Vorname" required
-                               name="name" id="i_name">
+                        <input type="text" class="form-control bg-white" placeholder="Nachname" required
+                               name="lastname" id="i_lastname">
+                        <input type="text" class="form-control bg-white" placeholder="Vorname" required
+                               name="firstname" id="i_firstname">
+
                         <a class="btn btn-success mdi mdi-account-search" data-bs-toggle="modal"
                            data-bs-target="#myModal"></a>
                     </div>
@@ -89,20 +70,24 @@
                     </div>
                 </div>
             </div>
+            <br/>
+            <br>
+            <textarea name="text" id="myTextarea">Text hier eingeben</textarea>
         </div>
 
         <div class="col-lg-2">
             <div class="card">
                 <h4 class="text-center card-header">Aktionen</h4>
                 <div class="card-body d-grid">
-                    <button class="btn btn-primary btn-block" style="margin-bottom: 10px">Speichern</button>
-                    <button class="btn btn-primary btn-block" style="margin-bottom: 10px">Abbrechen</button>
+                    <button class="btn btn-primary btn-block" type="submit" style="margin-bottom: 10px">Speichern</button>
+                    <button class="btn btn-primary btn-block" type="reset" style="margin-bottom: 10px">Abbrechen</button>
                 </div>
             </div>
         </div>
 
     </div>
 </form>
+</div>
 </body>
 
 <!-- The Modal -->
@@ -138,6 +123,19 @@
 
 <script>
 
+    tinymce.init({
+        selector: 'textarea',
+        plugins: 'advcode casechange formatpainter image editimage linkchecker autolink lists checklist media mediaembed pageembed permanentpen powerpaste table advtable tableofcontents ',
+        toolbar: 'image editimage table tableofcontents',
+        toolbar_mode: 'floating',
+        tinycomments_mode: 'embedded',
+        tinycomments_author: 'Author name',
+    });
+    setTimeout(function () {
+        document.getElementById("content").classList.remove("d-none");
+        document.getElementById("load").classList.add("d-none");
+    }, 200);
+
     function create() {
         const sel = document.getElementById('personData').value;
         const myArray = sel.split("/");
@@ -148,7 +146,8 @@
         let email = myArray[3];
         let phone = myArray[4];
 
-        $("#i_name").val(lastname + ", " + firstname);
+        $("#i_firstname").val(firstname);
+        $("#i_lastname").val(lastname);
         $("#i_association").val(association);
         $("#i_email").val(email);
         $("#i_phone").val(phone);

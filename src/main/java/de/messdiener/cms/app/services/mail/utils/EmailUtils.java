@@ -19,11 +19,14 @@ public class EmailUtils {
 
     private EmailUtils(){
         LOGGER.setLevel(Level.ALL);
-
-
     }
 
-    private static Session createSession(){
+    public static Session createSession(){
+        //return createStratoSession();
+       return createGMAILSession();
+    }
+
+    private static Session createGMAILSession(){
         Properties properties = new Properties();
 
         properties.put("mail.smtp.auth",  "true");
@@ -36,6 +39,25 @@ public class EmailUtils {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(Cache.MAIL_ACCOUNT, Cache.MAIL_PASSWORD);
+            }
+        });
+        LOGGER.finest("Session wurde erfolgreich erstellt!");
+        return session;
+    }
+
+    private static Session createStratoSession(){
+        Properties properties = new Properties();
+
+        properties.put("mail.smtp.auth",  "true");
+        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.host", "smtp.strato.de");
+        properties.put("mail.smtp.ssl.protocols", "TLSv1.2");
+        properties.put("mail.smtp.port", "465");
+
+        Session session = Session.getInstance(properties, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(" system@cms.code.system.etu.messdiener.com", Cache.MAIL_PASSWORD);
             }
         });
         LOGGER.finest("Session wurde erfolgreich erstellt!");
@@ -58,7 +80,7 @@ public class EmailUtils {
         messageBodyPart.setHeader("Content-Type", "text/html");
 
         // Textteil des Body-Parts
-        messageBodyPart.setContent(entity.generateMail(), "text/html");
+        messageBodyPart.setContent(MailOverlay.generate(entity.getText(), entity.getLink()), "text/html");
         // Body-Part dem Multipart-Wrapper hinzufügen
         multipart.addBodyPart(messageBodyPart);
         // Message fertigstellen, indem sie mit dem Multipart-Content ausgestattet wird

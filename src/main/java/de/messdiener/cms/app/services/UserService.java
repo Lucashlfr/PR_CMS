@@ -26,7 +26,7 @@ public class UserService {
         try {
             databaseService.getConnection().prepareStatement(
                     "CREATE TABLE IF NOT EXISTS module_user (user_uuid VARCHAR(255), username VARCHAR(255), " +
-                            "password VARCHAR(255), permGroup VARCHAR(255), email VARCHAR(255))"
+                            "firstname VARCHAR(255), lastname VARCHAR(255), password VARCHAR(255), permGroup VARCHAR(255), email VARCHAR(255))"
             ).executeUpdate();
             LOGGER.finest("Database erfolgreich erstellt.");
         } catch (SQLException e) {
@@ -55,14 +55,16 @@ public class UserService {
         deleteUser(user);
 
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
-                "INSERT INTO module_user (user_uuid, username, password, permGroup, email) VALUES (?,?,?,?,?)"
+                "INSERT INTO module_user (user_uuid, username, firstname, lastname, password, permGroup, email) VALUES (?,?,?,?,?,?,?)"
         );
 
         preparedStatement.setString(1, user.getUser_UUID().toString());
         preparedStatement.setString(2, user.getUsername());
-        preparedStatement.setString(3, user.getPassword());
-        preparedStatement.setString(4, user.getGroup().toString());
-        preparedStatement.setString(5, user.getEmail());
+        preparedStatement.setString(3, user.getFirstname());
+        preparedStatement.setString(4, user.getLastname());
+        preparedStatement.setString(5, user.getPassword());
+        preparedStatement.setString(6, user.getGroup().toString());
+        preparedStatement.setString(7, user.getEmail());
 
         preparedStatement.executeUpdate();
 
@@ -98,9 +100,11 @@ public class UserService {
             String password = resultSet.getString("password");
             UserGroup group = UserGroup.valueOf(resultSet.getString("permGroup"));
             String email = resultSet.getString("email");
+            String firstname = resultSet.getString("firstname");
+            String lastname = resultSet.getString("lastname");
 
             if (group != UserGroup.DEAKTIVIERT)
-                users.add(new User(uuid, username, password, group, email));
+                users.add(User.of(uuid, username, firstname, lastname, password, group, email));
         }
         return users;
 

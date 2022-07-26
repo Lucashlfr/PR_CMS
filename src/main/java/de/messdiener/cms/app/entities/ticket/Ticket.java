@@ -1,10 +1,10 @@
 package de.messdiener.cms.app.entities.ticket;
 
 import de.messdiener.cms.app.entities.ticket.cache.TicketDate;
-import de.messdiener.cms.app.entities.user.User;
 import de.messdiener.cms.app.entities.ticket.cache.TicketLink;
 import de.messdiener.cms.app.entities.ticket.cache.TicketLog;
 import de.messdiener.cms.app.entities.ticket.cache.TicketPerson;
+import de.messdiener.cms.app.entities.user.User;
 import de.messdiener.cms.cache.Cache;
 import de.messdiener.cms.cache.enums.TicketState;
 import de.messdiener.cms.cache.enums.UserGroup;
@@ -25,8 +25,9 @@ public class Ticket {
     private ArrayList<TicketLog> ticketNotes;
     private ArrayList<TicketLink> ticketLinks;
     private TicketPerson ticketPerson;
+    private String html;
 
-    public Ticket(UUID uuid, long created, long lastUpdate, long deadline, UUID user_uuid, TicketState ticketState, ArrayList<TicketLog> ticketNotes, ArrayList<TicketLink> ticketLinks, TicketPerson ticketPerson) {
+    public Ticket(UUID uuid, long created, long lastUpdate, long deadline, UUID user_uuid, TicketState ticketState, ArrayList<TicketLog> ticketNotes, ArrayList<TicketLink> ticketLinks, TicketPerson ticketPerson, String html) {
         this.uuid = uuid;
         this.created = created;
         this.lastUpdate = lastUpdate;
@@ -36,8 +37,13 @@ public class Ticket {
         this.ticketNotes = ticketNotes;
         this.ticketLinks = ticketLinks;
         this.ticketPerson = ticketPerson;
+        this.html = html;
     }
 
+    public static Ticket empty(){
+        return new Ticket(UUID.randomUUID(), -1, -1, -1, UUID.randomUUID(),
+                TicketState.REJECTED, new ArrayList<>(), new ArrayList<>(), TicketPerson.empty(), "<h1>Kein Text! </h1>");
+    }
 
     public TicketDate getDates(){
         return new TicketDate(this);
@@ -120,11 +126,16 @@ public class Ticket {
     }
 
     public boolean userCanLector() throws SQLException {
+        return checkRightsForLector() && (getUser_UUID().equals(SecurityHelper.getUser().getUser_UUID()) || SecurityHelper.getUser().getGroup() == UserGroup.ADMIN);
+    }
+
+    private boolean checkRightsForLector() throws SQLException{
         return ((ticketState == TicketState.OPEN || ticketState == TicketState.CORRECTOR_1)
                 && (SecurityHelper.getUser().getGroup() == UserGroup.LEKTOR1 || SecurityHelper.getUser().getGroup() == UserGroup.ADMIN))
                 || ((ticketState == TicketState.CORRECTOR_2) && (SecurityHelper.getUser().getGroup() == UserGroup.LEKTOR2
                 || SecurityHelper.getUser().getGroup() == UserGroup.ADMIN));
     }
+
 
     public String getReason(){
         if(ticketState == TicketState.REJECTED){
@@ -137,4 +148,20 @@ public class Ticket {
         return (ticketState == TicketState.AWAITING_PUBLICATION) && SecurityHelper.getUser().isAdmin();
     }
 
+    public String getName(){
+        return ticketPerson.getName() + " [" + ticketPerson.getAssociation() +  "]";
+    }
+
+
+    public String getHTML() {
+        return html;
+    }
+
+    public void setHtml(String html) {
+        this.html = html;
+    }
+
+    public boolean isClosed(){
+        return ticketState == TicketState.REJECTED || ticketState == TicketState.PUBLISHED || ticketState == TicketState.AWAITING_PUBLICATION;
+    }
 }
