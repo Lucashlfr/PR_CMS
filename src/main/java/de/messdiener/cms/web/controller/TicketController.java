@@ -4,32 +4,41 @@ import de.messdiener.cms.app.entities.email.EmailEntity;
 import de.messdiener.cms.app.entities.ticket.Ticket;
 import de.messdiener.cms.app.entities.ticket.cache.TicketLink;
 import de.messdiener.cms.app.entities.ticket.cache.TicketLog;
+import de.messdiener.cms.app.entities.ticket.cache.TicketMonths;
 import de.messdiener.cms.app.entities.ticket.cache.TicketPerson;
 import de.messdiener.cms.app.entities.user.User;
 import de.messdiener.cms.app.services.mail.utils.MailTemplates;
 import de.messdiener.cms.cache.Cache;
+import de.messdiener.cms.cache.ContextPaths;
 import de.messdiener.cms.cache.enums.TicketState;
 import de.messdiener.cms.web.security.SecurityHelper;
 import de.messdiener.cms.web.utils.DateUtils;
 import de.messdiener.cms.web.utils.Utils;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.UUID;
 
 @Controller
 public class TicketController {
 
-    @GetMapping("/tickets")
-    public String index(Model model) throws SQLException {
+    @GetMapping(ContextPaths.TICKETS)
+    public String index(Model model, HttpSession httpSession) throws SQLException {
 
-
+        SecurityHelper.addSessionUser(httpSession);
         model.addAttribute("tickets", Cache.TICKET_SERVICE.getTickets());
 
         return "ticketOverview";
@@ -89,10 +98,10 @@ public class TicketController {
 
     private void extracted(Ticket ticket, User user) throws SQLException {
         Cache.TICKET_SERVICE.addLog(ticket, TicketLog.create(UUID.randomUUID(), System.currentTimeMillis(), SecurityHelper.getUser().getUser_UUID(),
-                "Ticket wurde " + user.getUsername() + " von " + SecurityHelper.getUsername() + " zugewiesen."
+                "Ticket wurde " + user.getNameString() + " von " + SecurityHelper.getNameString() + " zugewiesen."
         ));
 
-        EmailEntity email = new EmailEntity(user.getEmail(), "Neue Zuständigkeit", MailTemplates.createTemplate_newEditorToEditor(user, ticket, SecurityHelper.getUsername()), "https://localhost:8081/ticket/edit?uuid=" + ticket.getUUID().toString());
+        EmailEntity email = new EmailEntity(user.getEmail(), "Neue Zuständigkeit", MailTemplates.createTemplate_newEditorToEditor(user, ticket, SecurityHelper.getNameString()), "https://localhost:8081/ticket/edit?uuid=" + ticket.getUUID().toString());
         Cache.EMAIL_SERVICE.sendMail(email);
     }
 
@@ -103,22 +112,11 @@ public class TicketController {
         model.addAttribute("currentDate", DateUtils.convertLongToDate(System.currentTimeMillis(), DateUtils.DateType.ENGLISH));
 
         model.addAttribute("persons", Cache.TICKET_SERVICE.getTicketPersons());
+        System.out.println(Cache.TICKET_SERVICE.getTicketPersons().size());
 
         return "createTicket";
     }
 
-
-    @GetMapping("/ticket/jobs")
-    public String getYourJobs(Model model, @RequestParam("state")String state) throws SQLException {
-
-        if(state.equals(TicketState.OPEN.toString())) {
-            model.addAttribute("tickets", Cache.TICKET_SERVICE.getTicketsByUser(SecurityHelper.getUser().getUser_UUID(), TicketState.OPEN));
-        }else {
-            model.addAttribute("tickets", Cache.TICKET_SERVICE.getTicketsByUser(SecurityHelper.getUser().getUser_UUID()));
-        }
-
-        return "deineAuftraege";
-    }
 
     @GetMapping("/ticket/lektoriat")
     public String correction(Model model, @RequestParam("uuid")UUID uuid) throws SQLException {
@@ -126,10 +124,18 @@ public class TicketController {
         Ticket ticket = Cache.TICKET_SERVICE.getTicket(uuid).orElseThrow();
         model.addAttribute("ticket", ticket);
 
+
+
+        if(!ticket.getUser_UUID().equals(SecurityHelper.getUser().getUser_UUID())){
+            ticket.setUser_UUID(SecurityHelper.getUser().getUser_UUID());
+        }
+
         if(ticket.getTicketState() == TicketState.OPEN){
             ticket.setTicketState(TicketState.CORRECTOR_1);
         }
         Cache.TICKET_SERVICE.save(ticket);
+
+        model.addAttribute("disabled", !ticket.isCorrection());
 
         return "lektoriat";
     }
@@ -138,7 +144,7 @@ public class TicketController {
     public RedirectView correctionAccept(Model model, @RequestParam("uuid")UUID uuid) throws SQLException {
 
         Ticket ticket = Cache.TICKET_SERVICE.getTicket(uuid).orElseThrow();
-        TicketLog ticketLog = TicketLog.create(ticket.getTicketState().getName() + " genehmigt durch " + SecurityHelper.getUsername());
+        TicketLog ticketLog = TicketLog.create(ticket.getTicketState().getName() + " genehmigt durch " + SecurityHelper.getNameString());
 
         model.addAttribute("ticket", ticket);
 
@@ -167,7 +173,7 @@ public class TicketController {
         if(type.equals("reject")){
             ticket.setTicketState(TicketState.REJECTED);
             Cache.TICKET_SERVICE.save(ticket);
-            Cache.TICKET_SERVICE.addLog(ticket, TicketLog.create("Ticket wurde von " + SecurityHelper.getUsername() + " abgelehnt: " + text));
+            Cache.TICKET_SERVICE.addLog(ticket, TicketLog.create("Ticket wurde von " + SecurityHelper.getNameString() + " abgelehnt: " + text));
 
             EmailEntity email = new EmailEntity(ticket.getTicketPerson().getEmail(), "Abgelehnt",
 
@@ -178,7 +184,7 @@ public class TicketController {
 
             return new RedirectView("/ticket/edit?uuid=" + uuid);
         }
-        Cache.TICKET_SERVICE.addLog(ticket, TicketLog.create("Folgender Verbesserungsvorschlag wurde von " + SecurityHelper.getUsername() + " geschickt: " + text));
+        Cache.TICKET_SERVICE.addLog(ticket, TicketLog.create("Folgender Verbesserungsvorschlag wurde von " + SecurityHelper.getNameString() + " geschickt: " + text));
 
         EmailEntity email = new EmailEntity(ticket.getTicketPerson().getEmail(), "Verbersserungsvorschlag",
 
@@ -207,7 +213,7 @@ public class TicketController {
         ticket.setTicketState(TicketState.PUBLISHED);
         ticket.setUser_UUID(Cache.SYSTEM_USER.getUser_UUID());
         Cache.TICKET_SERVICE.save(ticket);
-        Cache.TICKET_SERVICE.addLog(ticket, TicketLog.create("Ticket wurde von " + SecurityHelper.getUsername() + " geschlossen"));
+        Cache.TICKET_SERVICE.addLog(ticket, TicketLog.create("Ticket wurde von " + SecurityHelper.getNameString() + " geschlossen (Veröffentlicht)."));
 
         EmailEntity email = new EmailEntity(ticket.getTicketPerson().getEmail(), "Abgelehnt",
 
@@ -228,7 +234,7 @@ public class TicketController {
     public RedirectView saveTicket(@RequestParam("lastname")String lastname, @RequestParam("firstname")String firstname,
                                    @RequestParam("association")String association, @RequestParam("email")String email,
                                    @RequestParam("phone")String phone, @RequestParam("deadline")String deadline,
-                                   @RequestParam("text")String text
+                                   @RequestParam("text")String text, @RequestParam("path")String path
                                    ) throws SQLException {
 
         UUID ticketUUID = UUID.randomUUID();
@@ -244,6 +250,10 @@ public class TicketController {
         Cache.TICKET_SERVICE.addLog(ticket, new TicketLog(UUID.randomUUID(), System.currentTimeMillis(), SecurityHelper.getUser().getUser_UUID(),
                 "Ticket wurde von " + firstname + " " + lastname + " angelegt!"));
 
+        if(path.equals("ADMIN")){
+            return new RedirectView("/ticket/edit?uuid=" + ticketUUID);
+        }
+
         return new RedirectView("/");
     }
 
@@ -258,9 +268,19 @@ public class TicketController {
         Cache.TICKET_SERVICE.save(ticket);
 
         Cache.TICKET_SERVICE.addLog(ticket, TicketLog.create(UUID.randomUUID(), System.currentTimeMillis(), SecurityHelper.getUser().getUser_UUID(),
-                user.getUsername() + " hat sich das Ticket zugewiesen."
+                user.getNameString() + " hat sich das Ticket zugewiesen."
         ));
         return new RedirectView("/ticket/edit?uuid=" + uuid);
+    }
+
+    @GetMapping("/calendar")
+    public String calendar(Model model) throws SQLException {
+
+
+        ArrayList<TicketMonths> ticketMonths = TicketMonths.createDisplay();
+
+        model.addAttribute("tickets", ticketMonths);
+        return "calendar";
     }
 
 }

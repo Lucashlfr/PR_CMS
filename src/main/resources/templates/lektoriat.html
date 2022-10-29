@@ -1,105 +1,177 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="de">
-<head th:insert="fragments :: html_head"></head>
-<body>
-<nav th:replace="fragments :: navbar"></nav>
-<br>
+<head th:insert="fragments_new :: html_head"></head>
+<body class="nav-fixed">
+<nav th:insert="fragments_new :: topnav"></nav>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav" th:insert="fragments_new :: sidbar"></div>
+    <div id="layoutSidenav_content">
+        <main>
+            <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+                <div class="container-fluid px-4">
+                    <div class="page-header-content">
+                        <div class="row align-items-center justify-content-between pt-3">
+                            <div class="col-auto mb-3">
+                                <h1 class="page-header-title">
+                                    <div class="page-header-icon"><i data-feather="file-text"></i></div>
+                                    <div th:text="${ticket.getTicketPerson().getFirstname()} + ' '
+                                    + ${ticket.getTicketPerson().getLastname()} + ' [' + ${ticket.getTicketPerson().getAssociation()} + ']'">
 
-<div class="container-fluid">
-
-    <div class="row">
-
-        <div class="col">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title">Allgemeine Informationen</h4>
-                    <div class="input-group fill" style="margin-bottom: 10px">
-                        <span class="input-group-text fill">UUID</span>
-                        <input type="text" class="form-control bg-white" placeholder="uuid" readonly th:value="${ticket.getUUID()}">
+                                    </div>
+                                </h1>
+                            </div>
+                            <div class="col-12 col-xl-auto mb-3">
+                                <a class="btn btn-sm btn-light text-primary" th:href="'/ticket/edit?uuid=' + ${ticket.getUUID()}">
+                                    <i class="me-1" data-feather="arrow-left"></i>
+                                    Zurück zum Ticket
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                    <div class="input-group fill" style="margin-bottom: 10px">
-                        <span class="input-group-text fill">Status</span>
-                        <input type="text" class="form-control bg-white" placeholder="Status" readonly th:value="${ticket.getTicketState().name()}">
+                </div>
+            </header>
+            <!-- Main page content-->
+            <div class="container-fluid">
+
+                <section th:if="${disabled}">
+                    <div class="container col-sm-7">
+
+                        <div class="card" style="margin-bottom: 10px">
+
+                            <div class="card-header bg-danger text-white">
+
+                                <h4 class="text-center">Fehler: Lektoriat bereits abgeschlossen</h4>
+                            </div>
+
+                            <div class="card-body text-center">
+                                <img th:src="@{/img/XSymbol.svg}" class="card-img" style="max-width: 150px">
+                            </div>
+
+                        </div>
+                        <div class="d-grid">
+
+                            <a th:href="'/ticket/edit?uuid=' + ${ticket.getUUID()}"
+                               class="btn btn-danger btn-block" style="margin-bottom: 10px">
+                                <span class="mdi mdi-backburger" style="margin-right: 5px"></span>
+                                Zurück zur Antrags-Seite</a>
+                        </div>
+
+                    </div>
+                </section>
+                <div class="container-fluid" th:unless="${disabled}">
+
+                    <div class="row">
+
+                        <div class="col">
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Antrag: <span
+                                            th:text="${ticket.getTicketPerson().getFirstname()} + ' ' + ${ticket.getTicketPerson().getLastname()} + ' [' + ${ticket.getTicketPerson().getAssociation()} + ']'"></span>
+                                    </h4>
+                                </div>
+                                <div class="card-body">
+                                    <div id="text" th:text="${ticket.getHTML()}"
+                                         style="overflow-y: scroll; height:600px;"></div>
+                                </div>
+                                <button onclick="update()" id="update" class="invisible">edit</button>
+                            </div>
+
+                            <br/>
+
+                            <section th:if="${ticket.getTicketLinks().size() > 0}">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">Angehängte Dateien</h4>
+                                        <div class="list-group list-group-flush">
+                                            <a th:each="link:${ticket.getTicketLinks()}" th:href="${link.getLink()}"
+                                               target="_blank"
+                                               class="list-group-item list-group-item-action"><span
+                                                    class="mdi mdi-download"
+                                                    style="margin-right: 5px"></span><span
+                                                    th:text="${link.getName()}"></span> </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+                            </section>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="card">
+                                <h4 class="text-center card-header">Lektoriat</h4>
+                                <div class="card-body d-grid">
+                                    <a href="#"
+                                       data-bs-toggle="modal" data-bs-target="#accept"
+                                       class="btn btn-primary btn-block text-start" style="margin-bottom: 10px">
+                                        <span class="mdi mdi-check-circle-outline" style="margin-right: 5px"></span>
+                                        Genehmigen</a>
+                                    <button class="btn btn-primary btn-block text-start" style="margin-bottom: 10px"
+                                            data-bs-toggle="modal" data-bs-target="#correct">
+                                        <span class="mdi mdi-file-document-edit" style="margin-right: 5px"></span>
+                                        Korregieren
+                                    </button>
+                                    <button class="btn btn-primary btn-block text-start" style="margin-bottom: 10px"
+                                            data-bs-toggle="modal" data-bs-target="#reject">
+                                        <span class="mdi mdi-cancel" style="margin-right: 5px"></span>
+                                        Vorschlagen / Ablehnen
+                                    </button>
+
+                                </div>
+                            </div>
+
+                        </div>
+
                     </div>
                 </div>
             </div>
-            <br>
-
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title">Angehängte Dateien</h4>
-                    <div class="list-group list-group-flush">
-                        <a th:each="link:${ticket.getTicketLinks()}" th:href="${link.getLink()}" target="_blank"
-                           class="list-group-item list-group-item-action"><span class="mdi mdi-download" style="margin-right: 5px"></span><span th:text="${link.getName()}"></span> </a>
-                    </div>
-                </div>
-            </div><br>
-
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title">Text</h4>
-                    <div id="text" th:text="${ticket.getHTML()}"></div>
-                </div>
-                <button onclick="update()" id="update" class="invisible">edit</button>
-            </div>
-
-            <br/>
-        </div>
-        <div class="col-lg-2">
-            <div class="card">
-                <h4 class="text-center card-header">Lektoriat</h4>
-                <div class="card-body d-grid">
-                    <a th:href="'/ticket/lektoriat/accept?uuid=' + ${ticket.getUUID()}" class="btn btn-primary btn-block text-start" style="margin-bottom: 10px">
-                        <span class="mdi mdi-check-circle-outline" style="margin-right: 5px"></span>
-                        Genehmigen</a>
-                    <button class="btn btn-primary btn-block text-start" style="margin-bottom: 10px" data-bs-toggle="modal" data-bs-target="#changes">
-                        <span class="mdi mdi-cancel" style="margin-right: 5px"></span>
-                        Vorschlagen / Ablehnen</button>
-                </div>
-            </div>
-
-        </div>
-
+        </main>
+        <footer th:insert="fragments_new :: footer"></footer>
     </div>
-
 </div>
-
+<div th:insert="fragments_new :: script"></div>
 </body>
 
-<form th:action="@{/ticket/lektoriat/proposeChanges}" th:method="post">
-    <div class="modal fade" id="changes">
-        <div class="modal-dialog modal-lg">
+<form th:action="@{/ticket/lektoriat/proposeChanges}" th:method="post" class="was-validated">
+    <div class="modal fade" id="reject">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-
-                <!-- Modal Header -->
-                <div class="modal-header">
-                    <h4 class="modal-title">Vorschlagen / Ablehnen</h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
 
                 <!-- Modal body -->
                 <div class="modal-body">
-                    <p th:text="${ticket.getTicketPerson().getGreeting()}"></p>
-                    <textarea class="form-control" rows="8" id="comment" required name="text" placeholder="Vorschläge..."></textarea>
-                    <input type="text" th:value="${ticket.getUUID()}" readonly
-                           style="max-width: 0; max-height: 0; display: none" name="uuid">
-                    <p>Viele Grüße</p>
-
-                    <div class="form-check">
-                        <input type="radio" class="form-check-input" id="radio1" name="type" value="purpose" checked>Vorschlag
-                        <label class="form-check-label" for="radio1"></label>
-                    </div>
-                    <div class="form-check">
-                        <input type="radio" class="form-check-input" id="radio2" name="type" value="reject">Ablehnen
-                        <label class="form-check-label" for="radio2"></label>
+                    <div class="text-center">
+                        <script src="https://cdn.lordicon.com/xdjxvujz.js"></script>
+                        <lord-icon
+                                src="https://cdn.lordicon.com/flvisirw.json"
+                                trigger="loop"
+                                delay="4000"
+                                colors="primary:#646e78,secondary:#7aa141,tertiary:#ebe6ef"
+                                style="width:100px;height:100px">
+                        </lord-icon>
+                        <h4>Vorschlagen / Ablehnen</h4>
                     </div>
 
-                </div>
 
-                <!-- Modal footer -->
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Senden</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    <div class="m-2">
+                        <select class="form-select m-1" required name="type">
+                            <option></option>
+                            <option value="purpose">Änderungen vorschlagen</option>
+                            <option value="reject">Antrag ablehnen</option>
+                        </select>
+                        <textarea class="form-control m-1" rows="8" id="comment" required name="text"
+                                  placeholder="Bitte Text eingeben"></textarea>
+                        <input type="text" th:value="${ticket.getUUID()}" readonly
+                               style="max-width: 0; max-height: 0; display: none" name="uuid">
+                    </div>
+
+                    <div class="d-flex">
+
+
+                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                            Abbrechen
+                        </button>
+                        <button type="submit" class="btn btn-primary btn-block flex-fill m-1">Abschicken</button>
+
+                    </div>
                 </div>
 
             </div>
@@ -107,19 +179,104 @@
     </div>
 </form>
 
+<div class="modal fade" id="accept">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="text-center">
+
+                    <script src="https://cdn.lordicon.com/xdjxvujz.js"></script>
+                    <lord-icon
+                            src="https://cdn.lordicon.com/hrqqslfe.json"
+                            trigger="loop"
+                            delay="4000"
+                            colors="primary:#7aa141,secondary:#ebe6ef"
+                            style="width:100px;height:100px">
+                    </lord-icon>
+                    <h4>Lektoriat freigeben</h4>
+                    <h6>Bist du sicher, dass du das Lektoriat für dieses Ticket freigeben möchtest?</h6>
+                    <div class="d-flex">
+
+                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                            Abbrechen
+                        </button>
+                        <a type="button" class="btn btn-success btn-block flex-fill m-1"
+                           th:href="'/ticket/lektoriat/accept?uuid=' + ${ticket.getUUID()}">Freigeben</a>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<!-- The Modal -->
+<div class="modal fade" id="correct">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="text-center">
+
+                    <script src="https://cdn.lordicon.com/xdjxvujz.js"></script>
+                    <lord-icon
+                            src="https://cdn.lordicon.com/rfbqeber.json"
+                            trigger="loop"
+                            delay="400"
+                            colors="primary:#646e78,secondary:#ebe6ef,tertiary:#7aa141"
+                            style="width:100px;height:100px">
+                    </lord-icon>
+                    <h4>Dokument korregieren</h4>
+                    <textarea name="test" id="myTextarea" class="editor" th:text="${ticket.getHTML()}">
+
+
+                    </textarea>
+                    <script src="https://cdn.tiny.cloud/1/44niyaud64mk77to8lx6omg5qw6wbnhn8kjue3tb4brqdps4/tinymce/6/tinymce.min.js"
+                            referrerpolicy="origin"></script>
+                    <script>
+                        tinymce.init({
+                            selector: 'textarea.editor',
+                            toolbar_mode: 'floating',
+                            tinycomments_mode: 'embedded',
+                            tinycomments_author: 'Author name',
+                        });
+
+                    </script>
+                    <div class="d-flex">
+
+                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                            Abbrechen
+                        </button>
+                        <button type="button" class="btn btn-success btn-block flex-fill m-1">Korrektur speichern
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<br/>
 </html>
 
 <script>
-
-
-    function update(){
+    function update() {
         document.getElementById("text").innerHTML = document.getElementById("text").innerText;
     }
 
-    $(document).ready( function () {
+    $(document).ready(function () {
         setTimeout(function () {
             document.getElementById("update").click();
         }, 100);
     });
 
 </script>
+

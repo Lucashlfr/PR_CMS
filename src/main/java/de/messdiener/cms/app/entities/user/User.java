@@ -1,8 +1,11 @@
 package de.messdiener.cms.app.entities.user;
 
+import de.messdiener.cms.app.entities.ticket.cache.TicketSummery;
+import de.messdiener.cms.cache.Cache;
 import de.messdiener.cms.cache.enums.UserGroup;
 
-import java.util.UUID;
+import java.sql.SQLException;
+import java.util.*;
 
 public class User {
 
@@ -13,8 +16,9 @@ public class User {
     private String password;
     private UserGroup group;
     private String email;
+    private ArrayList<Permission> permissions;
 
-    public User(UUID user_uuid, String username, String firstname, String lastname, String password, UserGroup group, String email) {
+    public User(UUID user_uuid, String username, String firstname, String lastname, String password, UserGroup group, String email, ArrayList<Permission> permissions) {
         this.user_uuid = user_uuid;
         this.username = username;
         this.firstname = firstname;
@@ -22,6 +26,7 @@ public class User {
         this.password = password;
         this.group = group;
         this.email = email;
+        this.permissions = permissions;
     }
 
     public User(String username, String firstname, String lastname, String password, UserGroup group, String email) {
@@ -32,14 +37,27 @@ public class User {
         this.password = password;
         this.group = group;
         this.email = email;
+        this.permissions = new ArrayList<>();
     }
 
-    public static User of(UUID user_uuid, String username, String firstname, String lastname, String password, UserGroup group, String email) {
-        return new User(user_uuid, username, firstname, lastname, password, group, email);
+    public User(UUID fromString, String username, String firstname, String lastname, String password, UserGroup userGroup, String mail) {
+        this.user_uuid = fromString;
+        this.username = username;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.password = password;
+        this.group = userGroup;
+        this.email = mail;
+        this.permissions = new ArrayList<>();
+    }
+
+
+    public static User of(UUID user_uuid, String username, String firstname, String lastname, String password, UserGroup group, String email, ArrayList<Permission> permissions) {
+        return new User(user_uuid, username, firstname, lastname, password, group, email, permissions);
     }
 
     public static User empty(){
-        return of(UUID.randomUUID(), "", "", "", "", UserGroup.USER, "");
+        return of(UUID.randomUUID(), "", "", "", "", UserGroup.USER, "", new ArrayList<>());
     }
 
     public String getUsername() {
@@ -96,8 +114,16 @@ public class User {
         return user_uuid + "/" + username + "/" + password + "/" + email + "/" + group.toString() + "/" + firstname + "/" + lastname;
     }
 
+    public String getNameString(){
+        return firstname + " " + lastname + " (" + username + ")";
+    }
+
+    public String getName(){
+        return firstname + " " + lastname;
+    }
+
     public boolean isAdmin(){
-        return group == UserGroup.ADMIN;
+        return userHasPermission("admin");
     }
 
     public String getFirstname() {
@@ -114,5 +140,64 @@ public class User {
 
     public void setLastname(String lastname) {
         this.lastname = lastname;
+    }
+
+    public boolean isEnabled(){
+        return !(group == UserGroup.DEAKTIVIERT || group == UserGroup.REQUESTED);
+    }
+
+    public ArrayList<Permission> getPermissions() {
+
+        permissions.sort((s1, s2) -> s1.getName().compareToIgnoreCase(s2.getName()));
+
+        return permissions;
+    }
+
+    public String getPermissionString(){
+        return Permission.generatePermString(permissions);
+    }
+
+    public ArrayList<Permission> getOtherPermission() throws SQLException {
+
+
+        ArrayList<Permission> perms = new ArrayList<>();
+
+        for(Permission perm : Cache.USER_SERVICE.getPermissions()){
+            if(permissions.stream().anyMatch(p -> p.getName().equals(perm.getName())))continue;
+            perms.add(perm);
+        }
+        return perms;
+
+    }
+
+    public void addPermission(Permission permission){
+        permissions.add(permission);
+    }
+
+    public void save() throws SQLException {
+        Cache.USER_SERVICE.saveUser(this);
+    }
+
+    public void removePermission(String permName) {
+        for (int i = 0; i < permissions.size(); i++) {
+            if(permissions.get(i).getName().equals(permName))
+                permissions.remove(i);
+        }
+    }
+
+    public boolean userHasPermission(String permission){
+        for(Permission perm : permissions){
+            if(perm.getName().equals("*") || perm.getName().equalsIgnoreCase(permission))
+                return true;
+        }
+        return false;
+    }
+
+    public TicketSummery getSummeray() throws SQLException {
+        return new TicketSummery(user_uuid);
+    }
+
+    public String getSortName(){
+        return lastname + " " + firstname + " (" + username + ")";
     }
 }

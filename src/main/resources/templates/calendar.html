@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head th:insert="fragments_new :: html_head"></head>
+<body class="nav-fixed">
+<nav th:insert="fragments_new :: topnav"></nav>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav" th:insert="fragments_new :: sidbar"></div>
+    <div id="layoutSidenav_content">
+        <main>
+            <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+                <div class="container-fluid px-4">
+                    <div class="page-header-content">
+                        <div class="row align-items-center justify-content-between pt-3">
+                            <div class="col-auto mb-3">
+                                <h1 class="page-header-title">
+                                    <div class="page-header-icon"><i data-feather="calendar"></i></div>
+                                    Post-Kalender
+                                </h1>
+                            </div>
+                            <div class="col-12 col-xl-auto mb-3 d-none">
+                                <a class="btn btn-sm btn-light text-primary" href="/ticket/create">
+                                    <i class="me-1" data-feather="plus"></i>
+                                    Ticket erstellen
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- Main page content-->
+            <div class="container-fluid px-4">
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table ">
+                            <thead>
+                            <tr>
+                                <th>Datum</th>
+                                <th>Status</th>
+                                <th>Beschreibung</th>
+                                <th>Link</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            <section th:each="month:${tickets}">
+
+                                <tr>
+                                    <td colspan="4" class="text-center bg-primary text-white"><strong th:text="${month.getMonthNumberName().getName()}"></strong></td>
+                                </tr>
+                                <tr th:each="ticket:${month.getTickets()}" th:unless="${ticket.isRejected()}">
+                                    <td th:text="${ticket.getDates().getGermanDate_DEADLINE()}"></td>
+                                    <td th:class="${ticket.getTicketState().getIcon()}" th:text="${ticket.getTicketState().getName()}"></td>
+                                    <td th:text="${ticket.getDescription()}"></td>
+                                    <td><a th:href="'/ticket/edit?uuid=' + ${ticket.getUUID()}">Zum Ticket</a> </td>
+                                </tr>
+
+                            </section>
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer th:insert="fragments_new :: footer"></footer>
+    </div>
+</div>
+<div th:insert="fragments_new :: script"></div>
+</body>
+</html>

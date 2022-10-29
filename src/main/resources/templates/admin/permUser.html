@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head th:insert="fragments_new :: html_head"></head>
+<body class="nav-fixed">
+<nav th:insert="fragments_new :: topnav"></nav>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav" th:insert="fragments_new :: sidbar"></div>
+    <div id="layoutSidenav_content">
+        <main>
+            <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+                <div class="container-xl px-4">
+                    <div class="page-header-content">
+                        <div class="row align-items-center justify-content-between pt-3">
+                            <div class="col-auto mb-3">
+                                <h1 class="page-header-title">
+                                    <div class="page-header-icon"><i data-feather="file"></i></div>
+                                    Rechte bearbeiten
+                                </h1>
+                            </div>
+                            <div class="col-12 col-xl-auto mb-3">
+                                <a class="btn btn-sm btn-light text-primary" th:href="'/admin/user/edit?uuid=' + ${user.getUser_UUID()}">
+                                <i class="me-1" data-feather="arrow-left"></i>
+                                Zurück
+                            </a></div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- Main page content-->
+            <div class="container-xl px-4 mt-4">
+                <div class="card">
+                    <div class="card-header">Rechte bearbeiten</div>
+                    <div class="card-body">
+                        <div class="" style="margin-bottom: 10px">
+                            <table class="table table-bordered">
+                                <tbody>
+                                <tr>
+                                    <td style="width: 70px;">UUID</td>
+                                    <td th:text="${user.getUser_UUID()}"></td>
+                                </tr>
+                                <tr>
+                                    <td>Benutzername</td>
+                                    <td th:text="${user.getUsername()}"></td>
+                                </tr>
+                                <tr>
+                                    <td>Name</td>
+                                    <td th:text="${user.getLastname()} + ', ' + ${user.getFirstname()}"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <hr>
+
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th style="width: 20px"></th>
+                                <th>Berechtigung</th>
+                                <th>Beschreibung</th>
+                                <th style="width: 50px">
+
+                                    <button class="btn btn-datatable btn-success mdi mdi-plus" data-bs-toggle="modal"
+                                            data-bs-target="#links"></button>
+
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="perm:${user.getPermissions()}">
+                                <td><span class="text-success mdi mdi-check-circle"></span></td>
+                                <td th:text="${perm.getName()}"></td>
+                                <td th:text="${perm.getDescription()}"></td>
+                                <td>
+                                    <a th:href="'/admin/permRemove?uuid=' + ${user.getUser_UUID()} + '&permName=' + ${perm.getName()}"
+                                       class="btn btn-datatable btn-danger mdi mdi-delete"></a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer th:insert="fragments_new :: footer"></footer>
+
+    </div>
+</div>
+<div th:insert="fragments_new :: script"></div>
+</body>
+
+<!-- The Modal -->
+<div class="modal fade" id="links">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="text-center">
+
+                    <script src="https://cdn.lordicon.com/xdjxvujz.js"></script>
+                    <lord-icon
+                            src="https://cdn.lordicon.com/xzksbhzh.json"
+                            trigger="loop"
+                            delay="4000"
+                            style="width:100px;height:100px">
+                    </lord-icon>
+                    <h4>Berechtigung hinzufügen</h4>
+                    <h6>Hier kannst du ein dem User ein neues Recht zuweisen. </h6>
+
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Berechtigung</th>
+                            <th>Beschreibung</th>
+                            <th style="width: 50px">
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="perm:${user.getOtherPermission()}">
+                            <td th:text="${perm.getName()}"></td>
+                            <td th:text="${perm.getDescription()}"></td>
+                            <td>
+                                <a th:href="'/admin/permAdd?uuid=' + ${user.getUser_UUID()} + '&permName=' + ${perm.getName()}"
+                                   class="btn btn-success mdi mdi-plus"></a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <div class="d-flex">
+                    <button type="button" class="btn btn-black btn-block flex-fill m-1"
+                            data-bs-dismiss="modal">Zurück
+                    </button>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+</html>

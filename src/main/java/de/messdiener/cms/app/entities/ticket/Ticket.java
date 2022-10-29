@@ -7,7 +7,6 @@ import de.messdiener.cms.app.entities.ticket.cache.TicketPerson;
 import de.messdiener.cms.app.entities.user.User;
 import de.messdiener.cms.cache.Cache;
 import de.messdiener.cms.cache.enums.TicketState;
-import de.messdiener.cms.cache.enums.UserGroup;
 import de.messdiener.cms.web.security.SecurityHelper;
 
 import java.sql.SQLException;
@@ -126,14 +125,14 @@ public class Ticket {
     }
 
     public boolean userCanLector() throws SQLException {
-        return checkRightsForLector() && (getUser_UUID().equals(SecurityHelper.getUser().getUser_UUID()) || SecurityHelper.getUser().getGroup() == UserGroup.ADMIN);
+        return checkRightsForLector() && (getUser_UUID().equals(SecurityHelper.getUser().getUser_UUID()) || SecurityHelper.getUser().userHasPermission("LEKTOR_1"));
     }
 
     private boolean checkRightsForLector() throws SQLException{
         return ((ticketState == TicketState.OPEN || ticketState == TicketState.CORRECTOR_1)
-                && (SecurityHelper.getUser().getGroup() == UserGroup.LEKTOR1 || SecurityHelper.getUser().getGroup() == UserGroup.ADMIN))
-                || ((ticketState == TicketState.CORRECTOR_2) && (SecurityHelper.getUser().getGroup() == UserGroup.LEKTOR2
-                || SecurityHelper.getUser().getGroup() == UserGroup.ADMIN));
+                && (SecurityHelper.getUser().userHasPermission("LEKTOR_1") || SecurityHelper.getUser().userHasPermission("ADMIN")))
+                || ((ticketState == TicketState.CORRECTOR_2) && (SecurityHelper.getUser().userHasPermission("LEKTOR_2")
+                || SecurityHelper.getUser().userHasPermission("ADMIN")));
     }
 
 
@@ -162,6 +161,35 @@ public class Ticket {
     }
 
     public boolean isClosed(){
-        return ticketState == TicketState.REJECTED || ticketState == TicketState.PUBLISHED || ticketState == TicketState.AWAITING_PUBLICATION;
+        switch (ticketState){
+            case REJECTED:
+            case PUBLISHED:
+            case AWAITING_PUBLICATION:
+                return true;
+        }
+        return false;
+    }
+
+    public boolean isCorrection(){
+        switch (ticketState){
+            case CORRECTOR_1:
+            case CORRECTOR_2:
+                return true;
+        }
+        return false;
+    }
+
+    public boolean userCanAddData() throws SQLException {
+        User user = SecurityHelper.getUser();
+        if(isClosed()) return false;
+        return getUser_UUID().equals(user.getUser_UUID()) || user.isAdmin();
+    }
+
+    public String getDescription(){
+        return getTicketPerson().getName() + " | " + getTicketPerson().getAssociation();
+    }
+
+    public boolean isRejected(){
+        return ticketState == TicketState.REJECTED;
     }
 }

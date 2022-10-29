@@ -1,77 +1,85 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="de">
-<head th:insert="fragments :: html_head"></head>
-<body>
-<nav th:replace="fragments :: navbar"></nav>
-<br>
+<head th:insert="fragments_new :: html_head"></head>
+<body class="nav-fixed">
+<nav th:insert="fragments_new :: topnav"></nav>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav" th:insert="fragments_new :: sidbar"></div>
+    <div id="layoutSidenav_content">
+        <main>
+            <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+                <div class="container-fluid px-4">
+                    <div class="page-header-content">
+                        <div class="row align-items-center justify-content-between pt-3">
+                            <div class="col-auto mb-3">
+                                <h1 class="page-header-title">
+                                    <div class="page-header-icon"><i data-feather="list"></i></div>
+                                    Posts List
+                                </h1>
+                            </div>
+                            <div class="col-12 col-xl-auto mb-3">
+                                <a class="btn btn-sm btn-light text-primary" href="/ticket/create">
+                                    <i class="me-1" data-feather="plus"></i>
+                                    Ticket erstellen
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- Main page content-->
+            <div class="container-fluid px-4">
+                <div class="card">
+                    <div class="card-body text-center" id="load">
+                        <span class="spinner-border card-img" style="min-height: 200px; min-width: 200px;"></span>
+                    </div>
+                    <div class="card-body d-none" id="content" style="overflow-y: scroll">
+                        <table id="table_id" class="display" style="min-width: 100%!important; max-width: 100%!important;">
+                            <thead>
+                            <tr>
+                                <th>SORTDATE_DEADLINE</th>
+                                <th>Name, Vorname</th>
+                                <th>Verband / Gruppe</th>
+                                <th>Erstellt am</th>
+                                <th>Deadline</th>
+                                <th>Bearbeiter</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="ticket:${tickets}">
+                                <td th:text="${ticket.getDeadline()}"></td>
+                                <td th:text="${ticket.getTicketPerson().getName()}"></td>
+                                <td th:text="${ticket.getTicketPerson().getAssociation()}"></td>
+                                <td th:text="${ticket.getDates().getGermanDate_CREATED()}"></td>
+                                <td th:text="${ticket.getDates().getGermanDate_DEADLINE()}"></td>
+                                <td th:text="${ticket.getEditor().getFirstname()} + ' ' + ${ticket.getEditor().getLastname()}"></td>
+                                <td class="d-grid">
+                                    <div th:class="${ticket.getTicketState().getClassName()}"
+                                            th:text="${ticket.getTicketState().getName()}"></div>
+                                </td>
+                                <td>
+                                    <a class="btn btn-datatable btn-icon btn-transparent-dark me-2"
+                                       th:href="'/ticket/edit?uuid=' + ${ticket.getUUID()}"><i data-feather="edit"></i></a>
+                                </td>
+                            </tr>
 
-<div class="container-fluid" id="load">
 
-    <div class="card">
-
-        <div class="card-header">
-            <section class="text-center">
-                <h1>Bitte warten...</h1>
-            </section>
-        </div>
-        <div class="card-body text-center">
-            <span class="spinner-border card-img" style="min-height: 200px; min-width: 200px;"></span>
-        </div>
-
-
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer th:insert="fragments_new :: footer"></footer>
     </div>
-
 </div>
-
-<div class="container-fluid d-none" id="content">
-
-    <div class="card">
-        <h1 class="card-header text-center">Übersicht der Anträge</h1>
-
-        <div class="card-body">
-
-            <table id="table_id" class="display" style="min-width: 100%">
-                <thead>
-                <tr>
-                    <th>SORTDATE_DEADLINE</th>
-                    <th>Name, Vorname</th>
-                    <th>Verband / Gruppe</th>
-                    <th>Erstellt am</th>
-                    <th>Deadline</th>
-                    <th>Bearbeiter</th>
-                    <th>Status</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="ticket:${tickets}">
-                    <td th:text="${ticket.getDeadline()}"></td>
-                    <td th:text="${ticket.getTicketPerson().getName()}"></td>
-                    <td th:text="${ticket.getTicketPerson().getAssociation()}"></td>
-                    <td th:text="${ticket.getDates().getGermanDate_CREATED()}"></td>
-                    <td th:text="${ticket.getDates().getGermanDate_DEADLINE()}"></td>
-                    <td th:text="${ticket.getEditor().getUsername()}">Nicht zugewießen</td>
-                    <td class="d-grid"><button th:class="${ticket.getTicketState().getClassName()}" th:text="${ticket.getTicketState().getName()}"></button></td>
-                    <td><a class="btn btn-primary" th:href="'/ticket/edit?uuid=' + ${ticket.getUUID()}"><span class="mdi mdi-book-arrow-right"></span> </a></td>
-                </tr>
-
-
-                </tbody>
-            </table>
-
-        </div>
-
-    </div>
-
-</div>
-
+<div th:insert="fragments_new :: script"></div>
 </body>
-
-
-<script th:src="@{/script/imports/jquery.min.js}"></script>
-<script th:src="@{/script/imports/jquery.dataTables.min.js}"></script>
+</html>
 <script>
-    $(document).ready( function () {
+    $(document).ready(function () {
         $('#table_id').DataTable({
             language: {
                 "decimal": ",",
@@ -118,14 +126,12 @@
                     className: 'dt-body-right'
                 }
 
-            ]
+            ],
+            responsive: true
         });
-
         setTimeout(function () {
             document.getElementById("content").classList.remove("d-none");
             document.getElementById("load").classList.add("d-none");
-        }, 200);
+        }, 10);
     });
 </script>
-
-</html>

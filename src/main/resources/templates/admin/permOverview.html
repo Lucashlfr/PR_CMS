@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head th:insert="fragments_new :: html_head"></head>
+<body class="nav-fixed">
+<nav th:insert="fragments_new :: topnav"></nav>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav" th:insert="fragments_new :: sidbar"></div>
+    <div id="layoutSidenav_content">
+        <main>
+            <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+                <div class="container-xl px-4">
+                    <div class="page-header-content">
+                        <div class="row align-items-center justify-content-between pt-3">
+                            <div class="col-auto mb-3">
+                                <h1 class="page-header-title">
+                                    <div class="page-header-icon"><span class="mdi mdi-security"></span></div>
+                                    Berechtigungen
+                                </h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- Main page content-->
+            <div class="container-xl px-4 mt-4">
+                <div class="card">
+                    <div class="card-header">Rechte verwalten</div>
+                    <div class="card-body">
+                        <table id="table" class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>Berechtigung</th>
+                                <th>Beschreibung</th>
+                                <th style="width: 50px">
+
+                                    <button class="btn btn-datatable btn-success mdi mdi-plus" data-bs-toggle="modal"
+                                            data-bs-target="#links"></button>
+
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="perm:${permissions}">
+                                <td th:text="${perm.getName()}"></td>
+                                <td th:text="${perm.getDescription()}"></td>
+                                <td>
+                                    <a class="btn btn-datatable btn-danger mdi mdi-delete" th:href="'/admin/deletePerm?permName=' + ${perm.getName()} + '&permDesc=' + ${perm.getDescription()}"></a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer th:insert="fragments_new :: footer"></footer>
+    </div>
+</div>
+<div th:insert="fragments_new :: script"></div>
+</body>
+<div class="modal fade" id="links">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="text-center">
+
+                    <script src="https://cdn.lordicon.com/xdjxvujz.js"></script>
+                    <lord-icon
+                            src="https://cdn.lordicon.com/xzksbhzh.json"
+                            trigger="loop"
+                            delay="4000"
+                            style="width:100px;height:100px">
+                    </lord-icon>
+                    <h4>Berechtigung anlegen</h4>
+                    <h6>Hier kannst du ein neues Recht anlegen. </h6>
+
+                </div>
+
+                <form th:action="@{/admin/savePerm}" th:method="post" class="was-validated">
+
+                    <div class="form-floating mb-3 mt-3">
+                        <input type="text" class="form-control" id="permName" placeholder="Enter email" name="permName"
+                               required>
+                        <label for="permName">Name des Rechts</label>
+                    </div>
+
+                    <div class="form-floating mb-3 mt-3">
+                        <input type="text" class="form-control" id="permDesc" placeholder="Enter email" name="permDesc"
+                               required>
+                        <label for="permDesc">Beschreibung</label>
+                    </div>
+
+
+                    <div class="d-flex">
+                        <button type="button" class="btn btn-black btn-block flex-fill m-1"
+                                data-bs-dismiss="modal">Abbrechen
+                        </button>
+
+                        <button type="submit" class="btn btn-success btn-block flex-fill m-1">Speichern
+                        </button>
+
+
+
+                    </div>
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+</html>

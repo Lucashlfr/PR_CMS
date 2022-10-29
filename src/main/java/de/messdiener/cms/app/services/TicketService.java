@@ -122,7 +122,7 @@ public class TicketService {
 
         if (log)
             addLog(ticket, new TicketLog(UUID.randomUUID(), System.currentTimeMillis(), ticketLink.getCreator_UUID(),
-                    "Neuer Link von " + user.getUsername() + " angelegt. " + ticketLink.getLink()));
+                    "Neuer Link von " + user.getNameString() + " angelegt. " + ticketLink.getLink()));
     }
 
     public void addPerson(TicketPerson ticketPerson) throws SQLException {
@@ -148,7 +148,7 @@ public class TicketService {
         databaseService.delete("module_tickets_links", "ticketLink_uuid", ticketLink.getLink_UUID().toString());
 
         addLog(ticket, new TicketLog(UUID.randomUUID(), System.currentTimeMillis(), ticketLink.getCreator_UUID(),
-                "Link " + ticketLink.getLink() + " von " + SecurityHelper.getUsername() + " gelöscht."));
+                "Link " + ticketLink.getLink() + " von " + SecurityHelper.getNameString() + " gelöscht."));
     }
 
     public Optional<Ticket> getTicket(UUID uuid) throws SQLException {
@@ -160,7 +160,7 @@ public class TicketService {
         Set<Ticket> tickets = new HashSet<>();
 
         ResultSet resultSet = databaseService.getConnection().prepareStatement(
-                "SELECT * FROM module_tickets"
+                "SELECT * FROM module_tickets ORDER BY deadline"
         ).executeQuery();
 
         while (resultSet.next()) {
@@ -242,7 +242,7 @@ public class TicketService {
 
         ResultSet resultSet = preparedStatement.executeQuery();
 
-        if (resultSet.next()) {
+        while (resultSet.next()) {
 
             UUID ticketPerson_UUID = UUID.fromString(resultSet.getString("ticketPerson_UUID"));
             String lastname = resultSet.getString("lastname");

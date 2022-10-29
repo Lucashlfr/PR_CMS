@@ -1,6 +1,7 @@
 package de.messdiener.cms.app.services.mail.utils;
 
 import de.messdiener.cms.app.entities.ticket.Ticket;
+import de.messdiener.cms.app.entities.user.RegisterRequest;
 import de.messdiener.cms.app.entities.user.User;
 
 public class MailTemplates {
@@ -16,7 +17,7 @@ public class MailTemplates {
     private static String createTicketLink(Ticket ticket){
         return "Ticket Nr. " + ticket.getUUID().toString()
                 + " [" + ticket.getTicketPerson().getName()
-                + " (" + ticket.getTicketPerson().getAssociation() + "), " + ticket.getDates().getGermanDate_CREATED() + "]";
+                + " (" + ticket.getTicketPerson().getAssociation() + "), " + ticket.getDates().getGermanDate_CREATED() + "] ";
     }
 
     public static String createTemplate_newEditorToEditor(User user, Ticket ticket, String by){
@@ -33,4 +34,12 @@ public class MailTemplates {
         return "1";
     }
 
+    public static String createTemplate_Verification(RegisterRequest registerRequest){
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Hallo ").append(registerRequest.getFirstname()).append(", <br><br>dein Code lautet: <br>").append(registerRequest.getRequestCode())
+                .append("<br><br>").append(createAdoption());
+
+        return stringBuilder.toString();
+    }
 }

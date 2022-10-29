@@ -4,7 +4,7 @@ import de.messdiener.cms.cache.Cache;
 
 public class EmailEntity {
 
-    private String reciver;
+    String reciver;
     private String topic;
     private String text;
     private String link;

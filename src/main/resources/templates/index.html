@@ -1,151 +1,208 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="de">
-<head th:insert="fragments :: html_head_index"></head>
-<body>
-<nav th:replace="fragments :: navbar"></nav>
-<br>
-
-<header>
-    <!-- Sidebar -->
-    <nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse bg-white">
-        <div class="position-sticky">
-            <div class="list-group list-group-flush mx-3 mt-4">
-                <a href="/ticket/jobs?state=OPEN"
-                   class="list-group-item d-flex justify-content-between align-items-center">
-                    <span><span class="mdi mdi-clock-edit"></span> Offene Tickets</span>
-                    <span></span>
-                    <span class="badge bg-secondary rounded-pill" th:text="${open_tickets}"></span>
-                </a>
-                <a href="/ticket/jobs?state=all"
-                   class="list-group-item d-flex justify-content-between align-items-center">
-                    <span><span class="mdi mdi-glasses"></span> Lektoriat</span>
-                    <span></span>
-                    <span class="badge bg-secondary rounded-pill" th:text="${open_tickets_corrector}"></span>
-                </a>
-                <a href="/tickets" class="list-group-item d-flex justify-content-between align-items-center">
-                    <span><span class="mdi mdi-book-information-variant"></span> Alle Tickets</span>
-                    <span></span>
-                    <span class="badge bg-secondary rounded-pill" th:text="${allTickets}"></span>
-                </a>
-
-                <a href="/ticket/create" class="list-group-item" th:if="${user.getGroup().toString()} == 'ADMIN'">
-                    <span><span class="mdi mdi-book-plus"></span> Ticket anlegen</span>
-                </a>
-
-                <a href="#" class="list-group-item">
-                    <span><span class="mdi mdi-account-search"></span> Kontaktverzeichnis</span>
-                </a>
-                <a href="/admin?state=new" class="list-group-item" th:if="${user.getGroup().toString()} == 'ADMIN'">
-                    <span><span class="mdi mdi-security"></span> Adminportal</span>
-                </a>
-                <a href="#" class="list-group-item" th:unless="${user.getGroup().toString()} == 'ADMIN'">
-                    <br/>
-                </a>
-            </div>
-        </div>
-    </nav>
-    <!-- Sidebar -->
-</header>
-
-<main>
-
-    <div class="container-fluid">
-
-        <div class="card bg-success text-white">
-            <div class="card-body d-flex justify-content-between">
-                <div class="p-2">
-                    <h1>Hallo <span th:text="${user.getFirstname()}"/>, <br>Herzlich Willkommen im CMS <br>der Pfarrei
-                        Hl. Hildegard von Bingen</h1>
-                </div>
-                <span class="p-2"></span>
-                <div class="p-2">
-                    <img th:src="@{/img/Hildegard.png}" style="max-width: 170px;">
-                </div>
-            </div>
-        </div>
-
-        <br>
-
-        <div class="row d-flex">
-
-            <div class="col">
-                <div class="card" style="margin-bottom: 10px">
-                    <div class="card-body" style="background-color: #f5f5f5!important;">
-                        <b><span style="font-size: 30px" class="text-danger" th:text="${summery.getOpen()}"></span></b>
-                        <br>
-                        <span>Tickets Offen</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card" style="margin-bottom: 10px">
-                    <div class="card-body" style="background-color: #f5f5f5!important;">
-                        <b><span style="font-size: 30px" class="text-danger" th:text="${summery.getCorrection()}"></span></b>
-                        <br>
-                        <span>Tickets im Lektoriat</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card" style="margin-bottom: 10px">
-                    <div class="card-body" style="background-color: #f5f5f5!important;">
-                        <b><span style="font-size: 30px" class="text-danger" th:text="${summery.getGlobal()}"></span></b>
-                        <br>
-                        <span>Tickets im System</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card" style="margin-bottom: 10px">
-                    <div class="card-body" style="background-color: #f5f5f5!important;">
-                        <b><span style="font-size: 30px" class="text-danger" th:text="${summery.publication}"></span></b>
-                        <br>
-                        <span>Veröffentlichte Tickets</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card" style="margin-bottom: 10px">
-                    <div class="card-body" style="background-color: #f5f5f5!important;">
-                        <b><span style="font-size: 30px" class="text-danger" th:text="${summery.getWaiting()}"></span></b>
-                        <br>
-                        <span>Wartende Tickets</span>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-        <br>
-
-
-        <div class="row">
-
-            <div class="col">
-
-                <h3>Deine Aufgaben (<span th:text="${tasks.size()}"></span>)</h3>
-                <div class="list-group">
-                    <a th:href="'/ticket/edit?uuid=' + ${ticket.getUUID()}" class="list-group-item list-group-item-action" aria-current="true" th:each="ticket:${tasks}">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1" th:text="${ticket.getName()}"></h5>
-                            <small th:text="${ticket.getDates().getGermanDate_DEADLINE()}"></small>
+<head th:insert="fragments_new :: html_head"></head>
+<body class="nav-fixed">
+<nav th:insert="fragments_new :: topnav"></nav>
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav" th:insert="fragments_new :: sidbar"></div>
+        <div id="layoutSidenav_content">
+            <main>
+                <header class="page-header page-header-dark bg-green pb-10">
+                    <div class="container-xl px-4">
+                        <div class="page-header-content pt-4">
+                            <div class="row align-items-center justify-content-between">
+                                <div class="col-auto mt-4">
+                                    <h1 class="page-header-title">
+                                        <div class="page-header-icon"><i data-feather="activity" class="text-white"></i></div>
+                                        CMS der Pfarrei Bellheim
+                                    </h1>
+                                    <div class="page-header-subtitle text-white">Herzlich willkommen, Lucas :)</div>
+                                </div>
+                            </div>
                         </div>
-                        <p class="mb-1">
+                    </div>
+                </header>
+                <!-- Main page content-->
+                <div class="container-xl px-4 mt-n10">
+                    <div class="row">
+                        <div class="col-xxl-4 col-xl-12 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body h-100 p-5">
+                                    <div class="row align-items-center">
+                                        <div class="col-xl-8 col-xxl-12">
+                                            <div class="text-center text-xl-start text-xxl-center mb-4 mb-xl-0 mb-xxl-4">
+                                                <h1 class="text-primary">Willkommen im PR CMS</h1>
+                                                <p class="text-gray-700 mb-0">Verwalte, korrigiere oder erstelle neue tolle Texte!<br>Klick dich einfach mal durch</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-4 col-xxl-12 text-center">
+                                            <img class="img-fluid"
+                                                 th:src="@{/dist/assets/img/illustrations/at-work.svg}" style="max-width: 26rem" /></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xxl-4 col-xl-6 mb-4">
+                            <div class="card card-header-actions h-100">
+                                <div class="card-header">
+                                    Recent Activity
+                                </div>
+                                <div class="card-body">
+                                    <div class="timeline timeline-xs d-none">
+                                        <!-- Timeline Item 1-->
+                                        <div class="timeline-item">
+                                            <div class="timeline-item-marker">
+                                                <div class="timeline-item-marker-text">27 min</div>
+                                                <div class="timeline-item-marker-indicator bg-green"></div>
+                                            </div>
+                                            <div class="timeline-item-content">
+                                                New order placed!
+                                                <a class="fw-bold text-dark" href="#!">Order #2912</a>
+                                                has been successfully placed.
+                                            </div>
+                                        </div>
+                                        <!-- Timeline Item 2-->
+                                        <div class="timeline-item">
+                                            <div class="timeline-item-marker">
+                                                <div class="timeline-item-marker-text">58 min</div>
+                                                <div class="timeline-item-marker-indicator bg-blue"></div>
+                                            </div>
+                                            <div class="timeline-item-content">
+                                                Your
+                                                <a class="fw-bold text-dark" href="#!">weekly report</a>
+                                                has been generated and is ready to view.
+                                            </div>
+                                        </div>
+                                        <!-- Timeline Item 3-->
+                                        <div class="timeline-item">
+                                            <div class="timeline-item-marker">
+                                                <div class="timeline-item-marker-text">2 hrs</div>
+                                                <div class="timeline-item-marker-indicator bg-purple"></div>
+                                            </div>
+                                            <div class="timeline-item-content">
+                                                New user
+                                                <a class="fw-bold text-dark" href="#!">Valerie Luna</a>
+                                                has registered
+                                            </div>
+                                        </div>
+                                        <!-- Timeline Item 4-->
+                                        <div class="timeline-item">
+                                            <div class="timeline-item-marker">
+                                                <div class="timeline-item-marker-text">1 day</div>
+                                                <div class="timeline-item-marker-indicator bg-yellow"></div>
+                                            </div>
+                                            <div class="timeline-item-content">Server activity monitor alert</div>
+                                        </div>
+                                        <!-- Timeline Item 5-->
+                                        <div class="timeline-item">
+                                            <div class="timeline-item-marker">
+                                                <div class="timeline-item-marker-text">1 day</div>
+                                                <div class="timeline-item-marker-indicator bg-green"></div>
+                                            </div>
+                                            <div class="timeline-item-content">
+                                                New order placed!
+                                                <a class="fw-bold text-dark" href="#!">Order #2911</a>
+                                                has been successfully placed.
+                                            </div>
+                                        </div>
+                                        <!-- Timeline Item 6-->
+                                        <div class="timeline-item">
+                                            <div class="timeline-item-marker">
+                                                <div class="timeline-item-marker-text">1 day</div>
+                                                <div class="timeline-item-marker-indicator bg-purple"></div>
+                                            </div>
+                                            <div class="timeline-item-content">
+                                                Details for
+                                                <a class="fw-bold text-dark" href="#!">Marketing and Planning Meeting</a>
+                                                have been updated.
+                                            </div>
+                                        </div>
+                                        <!-- Timeline Item 7-->
+                                        <div class="timeline-item">
+                                            <div class="timeline-item-marker">
+                                                <div class="timeline-item-marker-text">2 days</div>
+                                                <div class="timeline-item-marker-indicator bg-green"></div>
+                                            </div>
+                                            <div class="timeline-item-content">
+                                                New order placed!
+                                                <a class="fw-bold text-dark" href="#!">Order #2910</a>
+                                                has been successfully placed.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xxl-4 col-xl-6 mb-4">
+                            <div class="card card-header-actions h-100">
+                                <div class="card-header">
+                                    Deine Aufgaben
+                                    <div class="dropdown no-caret">
+                                        <button class="btn btn-transparent-dark btn-icon dropdown-toggle" id="dropdownMenuButton" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="text-gray-500" data-feather="more-vertical"></i></button>
+                                        <div class="dropdown-menu dropdown-menu-end animated--fade-in-up" aria-labelledby="dropdownMenuButton">
+                                            <a class="dropdown-item" href="#!">
+                                                <div class="dropdown-item-icon"><i class="text-gray-500" data-feather="list"></i></div>
+                                                Manage Tasks
+                                            </a>
+                                            <a class="dropdown-item" href="#!">
+                                                <div class="dropdown-item-icon"><i class="text-gray-500" data-feather="plus-circle"></i></div>
+                                                Add New Task
+                                            </a>
+                                            <a class="dropdown-item" href="#!">
+                                                <div class="dropdown-item-icon"><i class="text-gray-500" data-feather="minus-circle"></i></div>
+                                                Delete Tasks
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <h4 class="small">
+                                        Offene Tickets
+                                        <span class="float-end fw-bold" th:text="${summery.getOpen()} + ' Tickets'"></span>
+                                    </h4>
+                                    <div class="progress mb-4"><div class="progress-bar bg-danger" role="progressbar"
+                                                                    th:style="'width:' + ${summery.openPercentage()} + '%'"
+                                                                    th:aria-valuenow="${summery.openPercentage()}"
+                                                                    aria-valuemin="0" aria-valuemax="100"></div></div>
+                                    <h4 class="small">
+                                        Tickets zum Korrigieren
+                                        <span class="float-end fw-bold" th:text="${summery.getLectore()} + ' Tickets'"></span>
+                                    </h4>
+                                    <div class="progress mb-4">
+                                        <div class="progress-bar bg-warning" role="progressbar" th:style="'width:' + ${summery.lectorePercentage()} + '%'"
+                                             th:aria-valuenow="${summery.lectorePercentage()}"
+                                             aria-valuemin="0" aria-valuemax="100"></div></div>
+                                    <h4 class="small">
+                                        Tickets zum Veröffentlichen
+                                        <span class="float-end fw-bold" th:text="${summery.getWaiting_for_publication()} + ' Tickets'"></span>
+                                    </h4>
+                                    <div class="progress mb-4"><div class="progress-bar bg-primary" role="progressbar"
+                                                                    th:style="'width:' + ${summery.awaitingPercentage()} + '%'"
+                                                                    th:aria-valuenow="${summery.awaitingPercentage()}"
+                                                                    aria-valuemin="0" aria-valuemax="100"></div></div>
+                                    <h4 class="small">
+                                        Veröffentlichte Tickets
+                                        <span class="float-end fw-bold" th:text="${summery.getClosed()} + ' Tickets'"></span>
+                                    </h4>
+                                    <div class="progress mb-4"><div class="progress-bar bg-success" role="progressbar"
+                                                                    th:style="'width:' + ${summery.closedPercentage()} + '%'"
+                                                                    th:aria-valuenow="${summery.closedPercentage()}"
+                                                                    aria-valuemin="0" aria-valuemax="100"></div></div>
+                                </div>
+                                <div class="card-footer position-relative">
+                                    <div class="d-flex align-items-center justify-content-between small text-body">
+                                        <a class="stretched-link text-body" href="/taskCenter">Zum Task Center <span class="mdi mdi-arrow-right"></span></a>
 
-                            <span th:class="${ticket.getTicketState().getIcon()}"
-                                  th:text="' ' + ${ticket.getTicketState().getName()}"></span>
-
-
-                        </p>
-                        <!--<small>And some small print.</small> -->
-                    </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-            </div>
-            <div class="col"></div>
+            </main>
+            <footer th:insert="fragments_new :: footer"></footer>
         </div>
-
     </div>
-    <br/>
-</main>
+    <div th:insert="fragments_new :: script"></div>
 </body>
 </html>

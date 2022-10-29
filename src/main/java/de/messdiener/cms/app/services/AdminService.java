@@ -1,10 +1,8 @@
 package de.messdiener.cms.app.services;
 
 import de.messdiener.cms.app.entities.admin.AdminToggleEntity;
-import de.messdiener.cms.app.entities.user.User;
 import de.messdiener.cms.app.services.sql.DatabaseService;
 import de.messdiener.cms.cache.Cache;
-import de.messdiener.cms.cache.enums.UserGroup;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,12 +18,16 @@ public class AdminService {
 
     public AdminService(){
 
-
+        System.out.println("LETS GOOOOOO");
 
         try {
             databaseService.getConnection().prepareStatement(
                     "CREATE TABLE IF NOT EXISTS module_admin (uuid VARCHAR(255), name VARCHAR(255), toggle_value VARCHAR(255), toggle_type VARCHAR(255))"
             ).executeUpdate();
+
+            createIfNotExists(AdminToggleEntity.of(UUID.fromString("d7fa859d-72b7-44fc-b1bd-ce34c0ad8fcf"),
+                    "toggle_enable_publicForm", "false", AdminToggleEntity.Type.BOOLEAN));
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -42,6 +44,9 @@ public class AdminService {
         preparedStatement.setString(2, adminToggleEntity.getName());
         preparedStatement.setString(3, adminToggleEntity.getValue());
         preparedStatement.setString(4, adminToggleEntity.getType());
+
+        System.out.println(adminToggleEntity.getUUID().toString());
+
 
         preparedStatement.executeUpdate();
     }
@@ -62,6 +67,11 @@ public class AdminService {
 
     public AdminToggleEntity get(String name) throws SQLException {
         return getToggles().stream().filter(t -> t.getName().equalsIgnoreCase(name)).findFirst().orElse(AdminToggleEntity.empty());
+    }
+
+    public void createIfNotExists(AdminToggleEntity adminToggleEntity) throws SQLException {
+        if(!databaseService.exists("module_admin", "uuid", adminToggleEntity.getUUID().toString()))
+            save(adminToggleEntity);
     }
 
 }

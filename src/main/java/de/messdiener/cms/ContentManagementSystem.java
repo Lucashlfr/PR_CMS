@@ -12,9 +12,10 @@ import java.util.UUID;
 public class ContentManagementSystem {
 
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) {
         SpringApplication.run(ContentManagementSystem.class, args);
         enableMail(false);
+
     }
 
     private static void enableMail(boolean b) {

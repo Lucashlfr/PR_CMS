@@ -1,137 +1,306 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="de">
-<head>
-    <title>PR BEL CMS</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link th:href="@{/css/import/bootstrap.min.css}" rel="stylesheet">
-    <script th:src="@{/script/imports/jquery.min.js}"></script>
-    <script th:src="@{/script/imports/bootstrap.min.js}"></script>
+<head th:insert="fragments_new :: html_head"></head>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@6.5.95/css/materialdesignicons.min.css">
-
-    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
-    <script src="https://cdn.tiny.cloud/1/44niyaud64mk77to8lx6omg5qw6wbnhn8kjue3tb4brqdps4/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
-
-    <style>
-        .h-custom {
-            height: calc(100% - 73px);
-        }
-
-        @media (max-width: 450px) {
-            .h-custom {
-                height: 100%;
-            }
-        }
-    </style>
-
-</head>
-<body>
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark sticky-top">
-    <div class="container-fluid">
-        <h1 class="text-white">CMS - Antrag erstellen</h1>
-        <img class="navbar-brand" th:src="@{/img/Logo_White.png}" style="max-width: 150px">
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark sticky-top" style="z-index: 5;">
+    <div class="container-fluid ">
+        <!-- <img src="https://messdiener-knittelsheim.de/wp-content/uploads/2022/08/Logo_White.png" style="max-width: 120px"> -->
+        <h1></h1>
+        <img src="https://messdiener-knittelsheim.de/wp-content/uploads/2022/08/Logo_White_Vollton.png"
+             style="max-width: 180px; margin-bottom: 5px!important;">
+        <h1></h1>
     </div>
 </nav>
-<br/>
+<div id="container-fluid">
+    <main>
+        <header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
+            <div class="container-xl px-4">
+                <div class="page-header-content pt-4">
+                    <div class="row align-items-center justify-content-between">
+                        <div class="col-auto mt-4">
+                            <h1 class="page-header-title">
+                                <div class="page-header-icon"><h1 class="mdi mdi-book-plus text-white"></h1></div>
+                                Antrag erstellen
+                            </h1>
+                            <div class="page-header-subtitle text-white">Erstelle neue großartige Texte!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Main page content-->
+        <form class="was-validated">
+            <div class="container-xl px-4 mt-n10">
+                <!-- Wizard card example with navigation-->
+                <div class="card">
+                    <div class="card-header border-bottom">
+                        <!-- Wizard navigation-->
+                        <div class="nav nav-pills nav-justified flex-column flex-xl-row nav-wizard" id="cardTab"
+                             role="tablist">
+                            <!-- Wizard navigation item 1-->
+                            <a class="nav-item nav-link active" id="wizard1-tab" href="#wizard1" data-bs-toggle="tab"
+                               role="tab" aria-controls="wizard1" aria-selected="true">
+                                <div class="wizard-step-icon">1</div>
+                                <div class="wizard-step-text">
+                                    <div class="wizard-step-text-name">Persönliche Daten</div>
+                                    <div class="wizard-step-text-details">Grundlegende Angaben und Informationen</div>
+                                </div>
+                            </a>
+                            <!-- Wizard navigation item 2-->
+                            <a class="nav-item nav-link" id="wizard2-tab" href="#wizard2" data-bs-toggle="tab"
+                               role="tab" aria-controls="wizard2" aria-selected="true">
+                                <div class="wizard-step-icon">2</div>
+                                <div class="wizard-step-text">
+                                    <div class="wizard-step-text-name">Details zum Antrag</div>
+                                    <div class="wizard-step-text-details">Deadline, Medien, usw.</div>
+                                </div>
+                            </a>
+                            <!-- Wizard navigation item 3-->
+                            <a class="nav-item nav-link" id="wizard3-tab" href="#wizard3" data-bs-toggle="tab"
+                               role="tab" aria-controls="wizard3" aria-selected="true">
+                                <div class="wizard-step-icon">3</div>
+                                <div class="wizard-step-text">
+                                    <div class="wizard-step-text-name">Inhalt</div>
+                                    <div class="wizard-step-text-details">Das Wichtigste</div>
+                                </div>
+                            </a>
+                            <!-- Wizard navigation item 4-->
+                            <a class="nav-item nav-link" id="wizard4-tab" href="#wizard4" data-bs-toggle="tab"
+                               role="tab" aria-controls="wizard4" aria-selected="true" onclick="check()">
+                                <div class="wizard-step-icon">4</div>
+                                <div class="wizard-step-text">
+                                    <div class="wizard-step-text-name">Überprüfen & Abschicken</div>
+                                    <div class="wizard-step-text-details">Übermittlung der Daten</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content" id="cardTabContent">
+                            <!-- Wizard tab pane item 1-->
+                            <div class="tab-pane py-5 py-xl-10 fade show active" id="wizard1" role="tabpanel"
+                                 aria-labelledby="wizard1-tab">
+                                <div class="row justify-content-center">
+                                    <div class="col-xxl-6 col-xl-8">
+                                        <h3 class="text-primary">Schritt 1</h3>
+                                        <h5 class="card-title mb-4">Grundlegende Angaben und Informationen</h5>
+                                        <div class="row gx-3">
+                                            <div class="mb-3 col-md-6">
+                                                <label class="small mb-1" for="inputFirstName">Vorname</label>
+                                                <input class="form-control" id="inputFirstName" type="text" name="firstname"
+                                                       placeholder="Vorname" required/>
+                                            </div>
+                                            <div class="mb-3 col-md-6">
+                                                <label class="small mb-1" for="inputLastName">Nachname</label>
+                                                <input class="form-control" id="inputLastName" type="text" name="lastname"
+                                                       placeholder="Nachname" required/>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="small mb-1" for="association">Verband / Gruppe</label>
+                                            <input class="form-control" id="association" type="text" name="association"
+                                                   placeholder="z.B. kfd, Pfarrei, Arbeiterverein" required/>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="small mb-1" for="inputEmailAddress">Email-Adresse</label>
+                                            <input class="form-control" id="inputEmailAddress" type="email" name="email"
+                                                   placeholder="xx@mail.de" required/>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="small mb-1" for="inputPhone">Telefon-Nummer</label>
+                                            <input class="form-control" id="inputPhone" type="tel"
+                                                   placeholder="07272 / XXXXX"
+                                                   required/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Wizard tab pane item 2-->
+                            <div class="tab-pane py-5 py-xl-10 fade" id="wizard2" role="tabpanel"
+                                 aria-labelledby="wizard2-tab">
+                                <div class="row justify-content-center">
+                                    <div class="col-xxl-6 col-xl-8">
+                                        <h3 class="text-primary">Schritt 2</h3>
+                                        <h5 class="card-title mb-4">Details zum Antrag</h5>
+                                        <div class="mb-3">
+                                            <label class="small mb-1" for="inputDeadline">Datum der
+                                                Veröffentlichung</label>
+                                            <input class="form-control" id="inputDeadline" type="date" name="deadline" required/>
+                                        </div>
 
-<div class="container-" id="load">
+                                        <div class="mb-3">
+                                            <h1 class="text-primary"><label class="small mb-1">Wo soll der Artikel
+                                                veröffentlicht werden?</label></h1>
+                                            <input type="checkbox" name="inputGroups">
+                                        </div>
 
-    <div class="card">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Wizard tab pane item 3-->
+                            <div class="tab-pane py-5 py-xl-10 fade" id="wizard3" role="tabpanel"
+                                 aria-labelledby="wizard3-tab">
+                                <h3 class="text-primary">Schritt 3</h3>
+                                <h5 class="card-title mb-4">Bearbeite deinen Text</h5>
+                                <textarea name="test" id="myTextarea">Erstelle deinen Artikel :)</textarea>
+                            </div>
+                            <!-- Wizard tab pane item 4-->
+                            <div class="tab-pane py-5 py-xl-10 fade" id="wizard4" role="tabpanel"
+                                 aria-labelledby="wizard4-tab">
+                                <div class="row justify-content-center">
+                                    <div class="col-xxl-6 col-xl-8">
+                                        <h3 class="text-primary">Step 4</h3>
+                                        <h5 class="card-title mb-4">Review the following information and submit</h5>
+                                        <table class="table table-bordered">
 
-        <div class="card-header">
-            <section class="text-center">
-                <h1>Bitte warten...</h1>
-            </section>
+                                            <tbody>
+                                            <tr>
+                                                <td style="width: 5px" id="itd1"></td>
+                                                <td style="width: 150px">Vorname</td>
+                                                <td id="td1"></td>
+                                            </tr>
+                                            <tr>
+                                                <td id="itd2"></td>
+                                                <td style="width: 150px">Nachname</td>
+                                                <td id="td2"></td>
+                                            </tr>
+                                            <tr>
+                                                <td id="itd3"></td>
+                                                <td style="width: 150px">Einheit</td>
+                                                <td id="td3"></td>
+                                            </tr>
+                                            <tr>
+                                                <td id="itd4"></td>
+                                                <td style="width: 150px">E-Mail</td>
+                                                <td id="td4"></td>
+                                            </tr>
+                                            <tr>
+                                                <td id="itd5"></td>
+                                                <td style="width: 150px">Tel.-Nr.</td>
+                                                <td id="td5"></td>
+                                            </tr>
+                                            <tr>
+                                                <td id="itd6"></td>
+                                                <td style="width: 150px">Deadline</td>
+                                                <td id="td6"></td>
+                                            </tr>
+                                            <tr>
+                                                <td id="itd7"></td>
+                                                <td style="width: 150px">Meidum</td>
+                                                <td id="td7"></td>
+                                            </tr>
+
+                                            <br>
+                                            <tr>
+                                                <td colspan="3"></td>
+                                            </tr>
+                                            <tr>
+                                                <td id="itdText"></td>
+                                                <td>Text</td>
+                                                <td id="tdText"><span class="text-success mdi mdi-check-circle"></span></td>
+                                            </tr>
+
+                                            </tbody>
+
+                                        </table>
+                                        <hr class="my-4"/>
+                                        <div class="d-grid btn-block" id="button">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </main>
+    <footer class="footer-admin mt-auto footer-light">
+        <div class="container-xl px-4">
+            <div class="row">
+                <div class="col-md-6 small">Copyright &copy; Lucas Helfer 2021</div>
+                <div class="col-md-6 text-md-end small">
+                    <a href="#!">Privacy Policy</a>
+                    &middot;
+                    <a href="#!">Terms &amp; Conditions</a>
+                </div>
+            </div>
         </div>
-        <div class="card-body text-center">
-            <span class="spinner-border card-img" style="min-height: 200px; min-width: 200px;"></span>
-        </div>
-
-
-    </div>
-
+    </footer>
 </div>
 
-
-<div class="container d-none" id="content">
-    <form class="was-validated" th:action="@{/public/createTicket/save}" th:method="POST">
-        <h3 class="text-center">Allgemeine Informationen</h3>
-        <div class="row mb-2">
-            <section class="col">
-                <div class="form-floating">
-                    <input type="text" class="form-control" id="lastname" placeholder="Nachname eingeben"
-                           name="lastname"
-                           required>
-                    <label for="lastname">Nachname</label>
-                </div>
-            </section>
-            <section class="col">
-                <div class="form-floating">
-                    <input type="text" class="form-control" id="firstname" placeholder="Vorname eingeben"
-                           name="firstname" required>
-                    <label for="firstname">Vorname</label>
-                </div>
-            </section>
-        </div>
-        <div class="form-floating mb-2">
-            <input type="text" class="form-control" id="association" placeholder="Grupe / Verband eingeben"
-                   name="association" required>
-            <label for="association">Grupe / Verband</label>
-        </div>
-        <div class="row mb-3">
-            <section class="col">
-                <div class="form-floating">
-                    <input type="email" class="form-control" id="email" placeholder="E-Mail eingeben"
-                           name="email"
-                           required>
-                    <label for="email">E-Mail</label>
-                </div>
-            </section>
-            <section class="col">
-                <div class="form-floating">
-                    <input type="tel" class="form-control" id="phone" placeholder="Telefon-Nr. eingeben"
-                           name="phone" required>
-                    <label for="phone">Telefon-Nr.</label>
-                </div>
-            </section>
-        </div>
-        <div class="border border-bottom mt-3"></div>
-        <h3 class="text-center mt-2">Beitrag</h3>
-        <div class="form-floating mb-2">
-            <input type="date" class="form-control" id="deadline" placeholder="Deadline"
-                   name="deadline" required>
-            <label for="deadline">Deadline</label>
-        </div>
-
-        <textarea name="text" id="myTextarea">Text hier eingeben</textarea>
-        <br/>
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="check1" name="ds" value="true" required>
-            <label class="form-check-label text-black">Ich habe die Datenschutzbedingungen gelesen und akzeptiere diese</label>
-        </div>
-        <div class="d-grid gap-3">
-            <button type="submit" class="btn btn-primary btn-block">Speichern</button>
-        </div>
-
-    </form>
-</div>
-<br>
-</body>
-</html>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+<script src="https://cdn.tiny.cloud/1/44niyaud64mk77to8lx6omg5qw6wbnhn8kjue3tb4brqdps4/tinymce/6/tinymce.min.js"
+        referrerpolicy="origin"></script>
 <script>
     tinymce.init({
         selector: 'textarea',
-        plugins: 'advcode casechange formatpainter image editimage linkchecker autolink lists checklist media mediaembed pageembed permanentpen powerpaste table advtable tableofcontents ',
-        toolbar: 'image editimage table tableofcontents',
         toolbar_mode: 'floating',
         tinycomments_mode: 'embedded',
         tinycomments_author: 'Author name',
     });
-    setTimeout(function () {
-        document.getElementById("content").classList.remove("d-none");
-        document.getElementById("load").classList.add("d-none");
-    }, 200);
 
-    </script>
+    fehlendeFelder = "";
+
+    function check() {
+
+        let b1 = checkText();
+        let b2 = checkSingleIsNotNull("inputLastName", "Nachname", "td1");
+        let b3 = checkSingleIsNotNull("inputFirstName", "Vorname", "td2");
+        let b4 = checkSingleIsNotNull("association", "Gruppe / Verband", "td3");
+        let b5 = checkSingleIsNotNull("inputEmailAddress", "E-Mail", "td4");
+        let b6 = checkSingleIsNotNull("inputPhone", "Telefon-Nr.", "td5");
+        let b7 = checkSingleIsNotNull("inputDeadline", "Deadline", "td6");
+
+
+        if(b1 && b2 && b3 && b4 && b5 && b6 && b7){
+            document.getElementById("button").innerHTML = "<button class='btn btn-primary btn-block' type='button' id='submit'>Submit</button>";
+        }else {
+            document.getElementById("button").innerHTML = "<button class='btn btn-danger btn-block' type='button' id='submit' disabled>Speichern nicht möglich!</button>";
+        }
+
+    }
+
+    function checkText(){
+
+        let bool = tinymce.get("myTextarea").getContent().includes("<img src=\"data:image/") || tinymce.get("myTextarea").getContent().includes("<img src=\"blob:http")
+
+        if(bool){
+            document.getElementById("itdText").innerHTML = "<span class='text-danger mdi mdi-alert-circle'></span>"
+            document.getElementById("tdText").innerHTML = "<span class='text-danger'>Bilder falsch eingefügt. <br>Bitte wie im Tutorial machen!</span>";
+        }else {
+            document.getElementById("itdText").innerHTML = "<span class='text-success mdi mdi-check-circle'></span>"
+        }
+
+        return !bool;
+    }
+
+    function checkSingleIsNotNull(element, name, output){
+        let bool = !(document.getElementById(element).value === "");
+
+        setValue(element, output);
+
+        return bool;
+    }
+
+    function setValue(input, output){
+        let iText = document.getElementById(input).value;
+
+        if(iText === "") {
+            document.getElementById("i" + output).innerHTML = "<span class='text-danger mdi mdi-alert-circle'></span>"
+            document.getElementById(output).innerHTML = "<span class='text-danger'>Fehlt!</span>";
+        } else {
+            document.getElementById("i" + output).innerHTML = "<span class='text-success mdi mdi-check-circle'></span>"
+            document.getElementById(output).innerText = iText;
+        }
+
+
+    }
+
+</script>
+
+</body>
+</html>

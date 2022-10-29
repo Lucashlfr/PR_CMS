@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="de">
 <head th:insert="fragments :: html_head"></head>
-<body>
+<body style="background-color: #f5f5f5">
 <nav th:replace="fragments :: navbar"></nav>
 <br>
 
@@ -12,189 +12,266 @@
         <strong th:text="${alertText}"></strong>
     </div>
     <br>
+</div>
 
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button"
-                    role="tab" aria-controls="home" aria-selected="true">Home
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button"
-                    role="tab" aria-controls="profile" aria-selected="false">User
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
-                    role="tab" aria-controls="contact" aria-selected="false">User anlegen
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="toggle-tab" data-bs-toggle="tab" data-bs-target="#toggle" type="button"
-                    role="tab" aria-controls="toggle" aria-selected="false">Toggles
-            </button>
-        </li>
-    </ul>
-    <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+<div class="container" th:unless="${session.sessionUser.userHasPermission('ADMIN')}">
+    <h1>KEINE RECHTE!</h1>
+</div>
 
-            <div class="card card-body">
+<div class="container" th:if="${session.sessionUser.userHasPermission('ADMIN')}">
 
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" th:checked="${toggle_enable_publicForm.getValueB()}">
-                    <label class="form-check-label" for="flexSwitchCheckDefault">Default switch checkbox input</label>
+    <div class="row d-flex">
+
+        <div class="col-12 col-md-3 ">
+            <div class="card h-100">
+                <div class=" card-body h-100">
+                    <!-- Nav pills -->
+                    <ul class="nav flex-column nav-pills">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="pill" href="#persData"><span
+                                    class="mdi mdi-account-circle"></span> Allgemeine Einstellungen</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="pill" href="#accountSettings"><span
+                                    class="mdi mdi-account-network"></span> Benutzer</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="pill" href="#security"><span
+                                    class="mdi mdi-security"></span> Berechtigungen</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="pill" href="#menu2"><span
+                                    class="mdi mdi-message"></span> Nachrichten</a>
+                        </li>
+                    </ul>
                 </div>
-
             </div>
-
-
+            <br>
         </div>
-        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
 
-            <div class="card card-body">
-                <select class="form-select" onchange="loadUser(this);" style="margin-bottom: 10px" required>
-                    <option></option>
-                    <option th:each="user:${users}" th:value="${user.getAdminString()}"
-                            th:text="${user.getUsername()}"></option>
-                </select>
-                <br/>
-                <form th:action="@{/admin/saveUser}" th:method="post">
-                    <div class="input-group" style="margin-bottom: 10px">
-                        <span class="input-group-text mdi mdi-server"></span>
-                        <input type="text" class="form-control bg-white" placeholder="UUID" readonly id="t_uuid"
-                               name="t_uuid">
+
+        <div class="col-12 col-md-9">
+
+            <div class="card">
+
+                <div class="card-body">
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div class="tab-pane active align-content-start" id="persData">
+                            <h5>Persönliche Daten</h5>
+                            <form action="/action_page.php" class="was-validated">
+
+
+                            </form>
+
+                        </div>
+                        <div class="tab-pane fade" id="accountSettings">
+                            <h5>Benutzer verwalten</h5>
+                            <form th:action="@{/admin/saveUser}" th:method="post" class="was-validated">
+                                <div class="" style="margin-bottom: 10px">
+                                    <div class="" style="margin-bottom: 10px">
+                                        <select class="form-select" onchange="loadUser(this);"
+                                                style="margin-bottom: 10px" required>
+                                            <option onselect="clear()"></option>
+                                            <option th:each="user:${users}" th:value="${user.getAdminString()}"
+                                                    th:text="${user.getUsername()}"></option>
+                                        </select>
+                                    </div>
+                                    <hr>
+                                    <div class="" style="margin-bottom: 10px">
+                                        <label for="t_username" class="form-label">Benutzername</label>
+                                        <input type="text" class="form-control bg-white" placeholder="Username"
+                                               id="t_username"
+                                               name="t_username" required>
+                                    </div>
+                                    <div class="row" style="margin-bottom: 10px">
+                                        <div class="col-12 col-md-6">
+                                            <label for="t_firstname" class="form-label">Vorname</label>
+                                            <input type="text" class="form-control bg-white" placeholder="Vorname"
+                                                   id="t_firstname"
+                                                   name="t_firstname" required>
+
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <label for="t_lastname" class="form-label">Nachname</label>
+                                            <input type="text" class="form-control bg-white" placeholder="Nachname"
+                                                   id="t_lastname"
+                                                   name="t_lastname" required>
+
+                                        </div>
+                                    </div>
+                                    <div class="" style="margin-bottom: 10px">
+                                        <label for="t_email" class="form-label">Email</label>
+                                        <input type="text" class="form-control bg-white" placeholder="E-Mail-Adresse"
+                                               id="t_email"
+                                               name="t_email" required>
+                                    </div>
+                                    <div class="" style="margin-bottom: 10px">
+                                        <label for="t_password" class="form-label">Password</label>
+                                        <input type="password" class="form-control bg-white" placeholder="Password"
+                                               id="t_password"
+                                               name="t_password" required>
+                                    </div>
+                                </div>
+
+                                <hr>
+                                <div class="" style="margin-bottom: 10px">
+
+                                    <div class="d-flex justify-content-between" style="margin-bottom: 10px">
+                                        <h3 class="text-primary">Berechtigungen</h3>
+                                        <a  class="btn btn-primary mdi mdi-security" id="link"></a>
+                                    </div>
+
+                                    <table class="table table-bordered">
+                                        <thead>
+                                        <tr>
+                                            <th style="width: 20px"></th>
+                                            <th>Berechtigung</th>
+                                            <th>Beschreibung</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="tbody">
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <input type="text" class="invisible" name="t_group" value="ADMIN">
+                                <input type="text" class="form-control bg-white invisible" placeholder="UUID" readonly
+                                       id="t_uuid"
+                                       name="t_uuid">
+
+                                <div class="d-flex">
+
+                                    <button type="button" class="btn btn-secondary btn-block flex-fill"
+                                            style="margin-right: 10px">Abbrechen
+                                    </button>
+                                    <button type="submit" id="submit" class="btn btn-primary btn-block flex-fill">Speichern
+                                    </button>
+
+
+                                </div>
+
+                            </form>
+                        </div>
+                        <div class="tab-pane fade" id="security">
+                            <h5>Berechtigungen</h5>
+
+                            <table id="table" class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>Berechtigung</th>
+                                    <th>Beschreibung</th>
+                                    <th style="width: 50px">
+
+                                        <button class="btn btn-success mdi mdi-plus" data-bs-toggle="modal"
+                                                data-bs-target="#links"></button>
+
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="perm:${permissions}">
+                                    <td th:text="${perm.getName()}"></td>
+                                    <td th:text="${perm.getDescription()}"></td>
+                                    <td>
+                                        <button class="btn btn-danger mdi mdi-delete"></button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+
+                        </div>
                     </div>
-
-                    <div class="input-group" style="margin-bottom: 10px">
-                        <span class="input-group-text mdi mdi-account"></span>
-                        <input type="text" class="form-control bg-white" placeholder="Username" id="t_username"
-                               name="t_username" required>
-                    </div>
-
-                    <div class="input-group" style="margin-bottom: 10px">
-                        <span class="input-group-text mdi mdi-account-injury"></span>
-                        <input type="text" class="form-control bg-white" placeholder="Vorname" id="t_firstname"
-                               name="t_firstname" required>
-                        <input type="text" class="form-control bg-white" placeholder="Nachname" id="t_lastname"
-                               name="t_lastname" required>
-                    </div>
-
-                    <div class="input-group" style="margin-bottom: 10px">
-                        <span class="input-group-text mdi mdi-shield-key"></span>
-                        <input type="password" class="form-control bg-white" placeholder="Password" id="t_password"
-                               name="t_password" required>
-                    </div>
-
-                    <div class="input-group" style="margin-bottom: 10px">
-                        <span class="input-group-text mdi mdi-email"></span>
-                        <input type="text" class="form-control bg-white" placeholder="E-Mail-Adresse" id="t_email"
-                               name="t_email" required>
-                    </div>
-
-                    <div class="input-group" style="margin-bottom: 10px">
-                        <span class="input-group-text mdi mdi-account-group"></span>
-                        <select type="text" list="t_group_l" class="form-control bg-white" id="t_group" name="t_group"
-                                required>
-                            <option></option>
-                            <option th:each="group:${groups}" th:text="${group.toString()}"
-                                    th:value="${group.toString()}"></option>
-                        </select>
-                    </div>
-
-                    <button class="btn btn-primary" id="submit" type="submit">Speichern</button>
-                </form>
-            </div>
-
-        </div>
-        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-            <div class="card card-body">
-                <form th:action="@{/admin/saveUser}" th:method="post">
-                    <div class="input-group" style="margin-bottom: 10px">
-                        <span class="input-group-text mdi mdi-server"></span>
-                        <input type="text" class="form-control bg-white" placeholder="UUID" readonly
-                               th:value="${random}"
-                               name="t_uuid">
-                    </div>
-
-                    <div class="input-group" style="margin-bottom: 10px">
-                        <span class="input-group-text mdi mdi-account"></span>
-                        <input type="text" class="form-control bg-white" placeholder="Username"
-                               name="t_username">
-                    </div>
-
-                    <div class="input-group" style="margin-bottom: 10px">
-                        <span class="input-group-text mdi mdi-account-injury"></span>
-                        <input type="text" class="form-control bg-white" placeholder="Vorname"
-                               name="t_firstname">
-                        <input type="text" class="form-control bg-white" placeholder="Nachname"
-                               name="t_lastname">
-                    </div>
-
-                    <div class="input-group" style="margin-bottom: 10px">
-                        <span class="input-group-text mdi mdi-shield-key"></span>
-                        <input type="password" class="form-control bg-white" placeholder="Password"
-                               name="t_password">
-                    </div>
-
-                    <div class="input-group" style="margin-bottom: 10px">
-                        <span class="input-group-text mdi mdi-email"></span>
-                        <input type="text" class="form-control bg-white" placeholder="E-Mail-Adresse"
-                               name="t_email">
-                    </div>
-
-                    <div class="input-group" style="margin-bottom: 10px">
-                        <span class="input-group-text mdi mdi-account-group"></span>
-                        <select type="text" list="t_group_l" class="form-control bg-white" name="t_group"
-                                >
-                            <option></option>
-                            <option th:each="group:${groups}" th:text="${group.toString()}"
-                                    th:value="${group.toString()}"></option>
-                        </select>
-                    </div>
-
-                    <button class="btn btn-primary" type="submit" >Speichern</button>
-                </form>
-            </div>
-        </div>
-        <div class="tab-pane fade" id="toggle" role="tabpanel" aria-labelledby="toggle-tab">
-            <div class="card card-body">
-
-
-                <table class="table table-bordered">
-                    <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Value</th>
-                        <th>Type</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="to:${toggles}">
-                        <td th:text="${to.getName()}"></td>
-                        <td th:text="${to.getValue()}"></td>
-                        <td th:text="${to.getType()}"></td>
-                    </tr>
-                    </tbody>
-                </table>
-
+                </div>
 
             </div>
         </div>
     </div>
 
-
 </div>
 
+<table id="table_perm_user" class="d-none">
+    <thead>
+    <tr>
+        <th>User</th>
+        <th>Perm</th>
+        <th>PermDesc</th>
+    </tr>
+    </thead>
+    <tbody>
+    <section th:each="user:${users}">
+        <tr th:each="perm:${user.getPermissions()}">
+            <td th:text="${user.getUser_UUID()}"></td>
+            <td th:text="${perm.getName()}"></td>
+            <td th:text="${perm.getDescription()}"></td>
+        </tr>
+    </section>
+    </tbody>
+</table>
+
+
+
+<!-- The Modal -->
+<div class="modal fade" id="links">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="text-center">
+
+                    <script src="https://cdn.lordicon.com/xdjxvujz.js"></script>
+                    <lord-icon
+                            src="https://cdn.lordicon.com/xzksbhzh.json"
+                            trigger="loop"
+                            delay="4000"
+                            style="width:100px;height:100px">
+                    </lord-icon>
+                    <h4>Berechtigung anlegen</h4>
+                    <h6>Hier kannst du ein neues Recht anlegen. </h6>
+
+                </div>
+
+                <form th:action="@{/admin/savePerm}" th:method="post" class="was-validated">
+
+                    <div class="form-floating mb-3 mt-3">
+                        <input type="text" class="form-control" id="permName" placeholder="Enter email" name="permName"
+                               required>
+                        <label for="permName">Name des Rechts</label>
+                    </div>
+
+                    <div class="form-floating mb-3 mt-3">
+                        <input type="text" class="form-control" id="permDesc" placeholder="Enter email" name="permDesc"
+                               required>
+                        <label for="permDesc">Beschreibung</label>
+                    </div>
+
+
+                    <div class="d-flex">
+
+
+                        <button type="submit" class="btn btn-success btn-block flex-fill m-1">Speichern
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-block flex-fill m-1"
+                                data-bs-dismiss="modal">Abbrechen
+                        </button>
+
+
+                    </div>
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</div>
 
 </body>
 
 <script>
 
-    $(document).ready(function () {
-
-        swap(false);
-
-    });
 
     function loadUser(sel) {
         const myArray = sel.value.split("/");
@@ -207,20 +284,6 @@
         let firstname = myArray[5];
         let lastname = myArray[6];
 
-        if(uuid ===""){
-            swap(false);
-
-            $("#t_uuid").val("");
-            $("#t_username").val("");
-            $("#t_password").val("");
-            $("#t_email").val("");
-            $("#t_group").val("");
-            $("#t_firstname").val("");
-            $("#t_lastname").val("");
-
-            return;
-        }
-
         $("#t_uuid").val(uuid);
         $("#t_username").val(username);
         $("#t_password").val(password);
@@ -229,35 +292,90 @@
         $("#t_firstname").val(firstname);
         $("#t_lastname").val(lastname);
 
+        getPermString(uuid);
         swap(true);
 
     }
 
-    function swap(v1){
-        propRequiered("#t_username",v1);
-        propRequiered("#t_password",v1);
-        propRequiered("#t_email",v1);
-        propRequiered("#t_group",v1);
-        propRequiered("#t_firstname",v1);
-        propRequiered("#t_lastname",v1);
+    function clear() {
+        swap(false);
+        $("#t_uuid").val("");
+        $("#t_username").val("");
+        $("#t_password").val("");
+        $("#t_email").val("");
+        $("#t_group").val("");
+        $("#t_firstname").val("");
+        $("#t_lastname").val("");
+    }
+
+    function swap(v1) {
+        propRequiered("#t_username", v1);
+        propRequiered("#t_password", v1);
+        propRequiered("#t_email", v1);
+        propRequiered("#t_group", v1);
+        propRequiered("#t_firstname", v1);
+        propRequiered("#t_lastname", v1);
 
         document.querySelector("#submit").disabled = !v1;
 
-        propreadOnly("#t_username",!v1);
-        propreadOnly("#t_password",!v1);
-        propreadOnly("#t_email",!v1);
-        propreadOnly("#t_group",!v1);
-        propreadOnly("#t_firstname",!v1);
-        propreadOnly("#t_lastname",!v1);
+        propreadOnly("#t_username", !v1);
+        propreadOnly("#t_password", !v1);
+        propreadOnly("#t_email", !v1);
+        propreadOnly("#t_group", !v1);
+        propreadOnly("#t_firstname", !v1);
+        propreadOnly("#t_lastname", !v1);
     }
 
-    function propRequiered(id, value){
-        $(id).prop("required",value);
-    }
-    function propreadOnly(id, value){
-        $(id).prop("readOnly",value);
+    function propRequiered(id, value) {
+        $(id).prop("required", value);
     }
 
+    function propreadOnly(id, value) {
+        $(id).prop("readOnly", value);
+    }
+
+    function getPermString(userUUID) {
+
+        document.getElementById('link').setAttribute('href', '/admin/permUser?uuid=' + userUUID);
+
+        $('#tbody').empty();
+        let activeTable = document.getElementById('table_perm_user');
+
+        let tbody = document.getElementById('tbody');
+
+        for (let r = 1, n = activeTable.rows.length; r < n; r++) {
+
+            let uuid = activeTable.rows[r].cells[0].innerHTML;
+
+            let permName = activeTable.rows[r].cells[1].innerHTML;
+            let permDes = activeTable.rows[r].cells[2].innerHTML;
+            //console.log(data.toString() + "[" + date + " | " + b + "| " + activeTable.rows[r].cells[1].innerHTML + "]");
+            if (uuid.toString().includes(userUUID)) {
+                let tr = document.createElement("tr");
+                tbody.appendChild(tr);
+
+                let td = document.createElement("td");
+                    let span = document.createElement("span");
+                    span.classList.add("text-success");
+                    span.classList.add("mdi");
+                    span.classList.add("mdi-check-circle");
+                    td.appendChild(span);
+                tr.appendChild(td);
+
+                let td2 = document.createElement("td");
+                td2.appendChild(document.createTextNode(permName))
+                tr.appendChild(td2);
+
+                let td3 = document.createElement("td");
+                td3.appendChild(document.createTextNode(permDes))
+                tr.appendChild(td3);
+            }
+        }
+
+
+
+        return "";
+    }
 
 </script>
 

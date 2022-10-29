@@ -1,125 +1,168 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="de">
-<head th:insert="fragments :: html_head"></head>
-<body>
-<nav th:replace="fragments :: navbar"></nav>
-<br>
+<head th:insert="fragments_new :: html_head"></head>
+<body class="nav-fixed">
+<nav th:insert="fragments_new :: topnav"></nav>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav" th:insert="fragments_new :: sidbar"></div>
+    <div id="layoutSidenav_content">
+        <main>
+            <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+                <div class="container-fluid px-4">
+                    <div class="page-header-content">
+                        <div class="row align-items-center justify-content-between pt-3">
+                            <div class="col-auto mb-3">
+                                <h1 class="page-header-title">
+                                    <div class="page-header-icon"><i data-feather="file-text"></i></div>
+                                    <div th:text="${ticket.getTicketPerson().getFirstname()} + ' '
+                                    + ${ticket.getTicketPerson().getLastname()} + ' [' + ${ticket.getTicketPerson().getAssociation()} + ']'">
 
-<div class="container-fluid">
+                                    </div>
+                                </h1>
+                            </div>
+                            <div class="col-12 col-xl-auto mb-3">
+                                <a class="btn btn-sm btn-light text-primary" href="/tickets">
+                                    <i class="me-1" data-feather="arrow-left"></i>
+                                    Zurück zu allen Tickets
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- Main page content-->
+            <div class="container-fluid px-4">
+                <div class="row gx-4">
+                    <div class="col-lg-10">
+                        <div class="card mb-4">
+                            <div class="card-header">Stammdaten</div>
+                            <div class="card-body">
+                                <table class="table">
+                                    <tbody>
+                                    <tr>
+                                        <td style="width: 200px"><span class="mdi mdi-access-point"/> Status:</td>
+                                        <td><span th:class="${ticket.getTicketState().getIcon()}"></span> <span
+                                                th:text="${ticket.getTicketState().getName()}"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="mdi mdi-account"/> Bearbeiter:</td>
+                                        <td th:text="${ticket.getEditor().getNameString()}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="mdi mdi-clock-plus"/> Erstellt am:</td>
+                                        <td th:text="${ticket.getDates().getGermanDate_CREATED()}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="mdi mdi-calendar"></span> Deadline:</td>
+                                        <td th:text="${ticket.getDates().getGermanDate_DEADLINE()}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="mdi mdi-update"></span> Letztes Update:</td>
+                                        <td th:text="${ticket.getDates().getGermanDate_LASTUPDATE()}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card card-header-actions mb-4">
+                            <div class="card-header">
+                                Post Preview
+                                <i class="text-muted" data-feather="info" data-bs-toggle="tooltip" data-bs-placement="left" title="The post preview text shows below the post title, and is the post summary on blog pages."></i>
+                            </div>
+                            <div class="card-body text-center" id="load">
+                                <span class="spinner-border card-img" style="min-height: 200px; min-width: 200px;"></span>
+                            </div>
 
-    <div class="row">
+                            <div class="card-body d-none" id="content">
+                                <div id="text" th:text="${ticket.getHTML()}"
+                                     style="overflow-y: scroll; height:400px; overflow-x: scroll"></div>
+                            </div>
+                            <button onclick="update()" id="update" class="invisible">edit</button>
+                        </div>
+                        <div class="card card-header-actions mb-4 mb-lg-0">
+                            <div class="card-header">
+                                Workflow
+                                <i class="text-muted" data-feather="info" data-bs-toggle="tooltip" data-bs-placement="left" title="Markdown is supported within the post content editor."></i>
+                            </div>
+                            <div class="card-body">
+                                <table class="table">
+                                    <tbody>
+                                    <tr th:each="log:${ticket.getTicketLogs()}">
+                                        <td style="width: 150px" th:text="${log.getGermandate()}"></td>
+                                        <td th:text="${log.getText()}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="card card-header-actions mb-4 mb-lg-0" th:if="${ticket.getTicketLinks().size() > 0}">
+                            <div class="card-header">
+                                Angehängte Dateien
+                                <i class="text-muted" data-feather="info" data-bs-toggle="tooltip" data-bs-placement="left" title="Markdown is supported within the post content editor."></i>
+                            </div>
+                            <div class="card-body">
+                                <div class="list-group list-group-flush">
+                                    <a th:each="link:${ticket.getTicketLinks()}" th:href="${link.getLink()}" target="_blank"
+                                       class="list-group-item list-group-item-action"><span class="mdi mdi-download"
+                                                                                            style="margin-right: 5px"></span><span
+                                            th:text="${link.getName()}"></span> </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="card card-header-actions">
+                            <div class="card-header">
+                                Aktionen
+                                <i class="text-muted" data-feather="info" data-bs-toggle="tooltip" data-bs-placement="left" title="Your updates will be live once a moderator approves the changes."></i>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid">
+                                    <a href="#"
+                                       class="fw-500 btn btn-primary  text-start" style="margin-bottom: 10px"
+                                       data-bs-toggle="modal" data-bs-target="#accept"
+                                       th:if="${ticket.isCloseable()}">
+                                        <span class="mdi mdi-check-circle-outline" style="margin-right: 5px"></span>
+                                        Beenden</a>
 
-        <div class="col">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title">Allgemeine Informationen</h4>
-                    <div class="input-group fill" style="margin-bottom: 10px">
-                        <span class="input-group-text fill">UUID</span>
-                        <input type="text" class="form-control bg-white" placeholder="Technische ID" readonly
-                               name="uuid" th:value="${ticket.getUUID()}">
-                    </div>
-                    <div class="input-group fill" style="margin-bottom: 10px">
-                        <span class="input-group-text fill">Erstellt am</span>
-                        <input type="date" class="form-control bg-white" placeholder="Erstellungsdatum" readonly
-                               name="creationDate" th:value="${ticket.getDates().getEnglishDate_CREATED()}">
-                    </div>
-                    <div class="input-group fill" style="margin-bottom: 10px">
-                        <span class="input-group-text fill">Deadline</span>
-                        <input type="date" class="form-control bg-white" placeholder="Deadline" readonly name="deadline"
-                               th:value="${ticket.getDates().getEnglishDate_DEADLINE()}">
-                    </div>
-                    <div class="input-group fill" style="margin-bottom: 10px">
-                        <span class="input-group-text fill">Bearbeiter</span>
-                        <input type="text" class="form-control bg-white" placeholder="Bearbeiter" readonly name="user"
-                               th:value="${ticket.getEditor().getUsername()}">
-                    </div>
-                    <div class="input-group fill" style="margin-bottom: 10px">
-                        <span class="input-group-text fill">Status</span>
-                        <input type="text" th:class="'form-control bg-white ' + ${ticket.getTicketState().getIcon()}" placeholder="Status" readonly name="state"
-                               th:value="${ticket.getTicketState().getName()}">
+                                    <button class="fw-500 btn btn-primary  text-start" style="margin-bottom: 10px"
+                                            data-bs-toggle="modal" data-bs-target="#user" th:unless="${ticket.isClosed()}"
+                                            th:if="${user.isAdmin()}">
+                                        <span class="mdi mdi-account-arrow-right" style="margin-right: 5px"></span>
+                                        Bearbeiter zuweisen
+                                    </button>
+
+                                    <a th:href="'/ticket/lektoriat?uuid=' + ${ticket.getUUID()}"
+                                       class=" fw-500 btn btn-primary  text-start" style="margin-bottom: 10px"
+                                       th:if="${ticket.userCanLector()}">
+                                        <span class="mdi mdi-glasses" style="margin-right: 5px"></span>
+                                        Lektoriat</a>
+                                    <button class="fw-500 btn btn-primary  text-start" style="margin-bottom: 10px"
+                                            data-bs-toggle="modal" data-bs-target="#contact">
+                                        <span class="mdi mdi-contacts" style="margin-right: 5px"></span>
+                                        Kontaktdaten
+                                    </button>
+                                    <button class="fw-500 btn btn-primary  text-start" style="margin-bottom: 10px"
+                                            data-bs-toggle="modal" data-bs-target="#links" th:if="${ticket.userCanAddData()}">
+                                        <span class="mdi mdi-file" style="margin-right: 5px"></span>
+                                        Dateien verwalten
+                                    </button>
+                                    <a class="fw-500 btn btn-primary  text-start" style="margin-bottom: 10px"
+                                       th:if="${user.isAdmin()}" data-bs-toggle="modal" data-bs-target="#delete">
+                                        <span class="mdi mdi-delete" style="margin-right: 5px"></span>
+                                        Löschen</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <br>
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title">Informationen</h4>
-                    <div class="input-group fill" style="margin-bottom: 10px">
-                        <span class="input-group-text fill">Name, Vorname</span>
-                        <input type="text" class="form-control bg-white" placeholder="Name, Vorname" readonly
-                               name="name" th:value="${ticket.getTicketPerson().getName()}">
-                    </div>
-                    <div class="input-group fill" style="margin-bottom: 10px">
-                        <span class="input-group-text fill">Gruppe/Verband</span>
-                        <input type="text" class="form-control bg-white" placeholder="Gruppe/verband" readonly
-                               name="association" th:value="${ticket.getTicketPerson().getAssociation()}">
-                    </div>
-                </div>
-            </div>
-            <br/>
-
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title">Angehängte Dateien</h4>
-                    <div class="list-group list-group-flush">
-                        <a th:each="link:${ticket.getTicketLinks()}" th:href="${link.getLink()}" target="_blank"
-                           class="list-group-item list-group-item-action"><span class="mdi mdi-download" style="margin-right: 5px"></span><span th:text="${link.getName()}"></span> </a>
-                    </div>
-                </div>
-            </div>
-
-            <br/>
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title">Workflow Dokumentation</h4>
-                    <ul class="list-group">
-                        <li class="list-group-item" th:each="log:${ticket.getTicketLogs()}"
-                            th:text="'[' + ${log.getGermandate()} + '] ' + ${log.getText()}"></li>
-                    </ul>
-                </div>
-            </div>
-            <br/>
-        </div>
-        <div class="col-lg-2">
-            <div class="card">
-                <h4 class="text-center card-header">Aktionen</h4>
-                <div class="card-body d-grid">
-
-                    <a th:href="'/ticket/close?uuid=' + ${ticket.getUUID()}" class="btn btn-primary btn-block text-start" style="margin-bottom: 10px"
-                       th:if="${ticket.isCloseable()}">
-                        <span class="mdi mdi-check-circle-outline" style="margin-right: 5px"></span>
-                        Beenden</a>
-
-                    <button class="btn btn-primary btn-block text-start" style="margin-bottom: 10px"
-                            data-bs-toggle="modal" data-bs-target="#user" th:unless="${ticket.isClosed()}" th:if="${user.isAdmin()}">
-                        <span class="mdi mdi-account-arrow-right" style="margin-right: 5px"></span>
-                        Bearbeiter zuweisen
-                    </button>
-
-                    <a th:href="'/ticket/lektoriat?uuid=' + ${ticket.getUUID()}" class="btn btn-primary btn-block text-start" style="margin-bottom: 10px"
-                        th:if="${ticket.userCanLector()}">
-                        <span class="mdi mdi-glasses" style="margin-right: 5px"></span>
-                        Lektoriat</a>
-                    <button class="btn btn-primary btn-block text-start" style="margin-bottom: 10px"
-                            data-bs-toggle="modal" data-bs-target="#contact">
-                        <span class="mdi mdi-contacts" style="margin-right: 5px"></span>
-                        Kontaktdaten</button>
-                    <button class="btn btn-primary btn-block text-start" style="margin-bottom: 10px"
-                            data-bs-toggle="modal" data-bs-target="#links" th:unless="${ticket.isClosed()}">
-                        <span class="mdi mdi-file" style="margin-right: 5px"></span>
-                        Dateien verwalten
-                    </button>
-                    <a class="btn btn-primary btn-block text-start" style="margin-bottom: 10px" th:if="${user.isAdmin()}" th:href="'/ticket/delete?uuid=' + ${ticket.getUUID()}">
-                        <span class="mdi mdi-delete" style="margin-right: 5px"></span>
-                        Löschen</a>
-                </div>
-            </div>
-        </div>
-
+        </main>
+        <footer th:insert="fragments_new :: footer"></footer>
     </div>
-
 </div>
-
+<div th:insert="fragments_new :: script"></div>
 </body>
 
 <!-- The LINK Modal -->
@@ -166,39 +209,51 @@
     </div>
 </div>
 
-<!-- The LINK Modal -->
+<!-- The User Modal -->
 <div class="modal fade" id="user">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-
-            <!-- Modal Header -->
-            <div class="modal-header">
-                <h4 class="modal-title">Bearbeiter zuweisen</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
 
             <!-- Modal body -->
             <div class="modal-body">
                 <form th:method="post" th:action="@{/ticket/save/user}">
-                    <div class="input-group mb-3">
-                        <span class="input-group-text mdi mdi-account-arrow-right bg-primary text-white"></span>
-                        <select class="form-select" id="sel1" name="useruuid">
-                            <option selected> </option>
-                            <option th:each="user:${users}" th:text="${user.getUsername()}" th:value="${user.getUser_UUID()}"></option>
-                        </select>
-                        <button type="submit" class="btn btn-success mdi mdi-send"></button>
-                        <input type="text" th:value="${ticket.getUUID()}" style="max-width: 0; max-height: 0; display: none" name="uuid">
+                    <div class="text-center">
+
+                        <script src="https://cdn.lordicon.com/xdjxvujz.js"></script>
+                        <script src="https://cdn.lordicon.com/xdjxvujz.js"></script>
+                        <lord-icon
+                                src="https://cdn.lordicon.com/zthozvfn.json"
+                                trigger="loop"
+                                delay="4000"
+                                style="width:100px;height:100px">
+                        </lord-icon>
+                        <h4>Bearbeiter zuweisen</h4>
+                        <h6>Wer soll das Ticket bearbeiten?</h6>
+
+                        <div class="form-floating m-1">
+                            <select class="form-select" id="sel1" name="useruuid">
+                                <option selected></option>
+                                <option th:each="user:${users}" th:text="${user.getUsername()}"
+                                        th:value="${user.getUser_UUID()}"></option>
+                            </select>
+                            <label for="sel1" class="form-label">Bearbeiter auswählen:</label>
+                        </div>
+                        <input type="text" th:value="${ticket.getUUID()}"
+                               style="max-width: 0; max-height: 0; display: none" name="uuid">
+                        <div class="d-flex">
+
+                            <button type="button" class="btn btn-dark  flex-fill m-1"
+                                    data-bs-dismiss="modal">Abbrechen
+                            </button>
+                            <a type="button" class="btn btn-primary flex-fill m-1"
+                               th:href="'/ticket/assignMe?uuid=' + ${ticket.getUUID()}">Dir zuweisen</a>
+                            <button type="submit" class="btn btn-success  flex-fill m-1">Speichern</button>
+
+                        </div>
                     </div>
                 </form>
-
             </div>
 
-            <!-- Modal footer -->
-            <div class="modal-footer">
-                <a type="button" class="btn btn-info mdi mdi-account-arrow-left text-white"
-                   th:href="'/ticket/assignMe?uuid=' + ${ticket.getUUID()}"> Mir zuweisen</a>
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-            </div>
 
         </div>
     </div>
@@ -206,51 +261,140 @@
 
 <!-- The Contact Modal -->
 <div class="modal fade" id="contact">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-
-            <!-- Modal Header -->
-            <div class="modal-header">
-                <h4 class="modal-title">Kontaktdaten</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
 
             <!-- Modal body -->
             <div class="modal-body">
+                <div class="text-center">
 
+                    <script src="https://cdn.lordicon.com/xdjxvujz.js"></script>
+                    <lord-icon
+                            src="https://cdn.lordicon.com/zthozvfn.json"
+                            trigger="loop"
+                            delay="4000"
+                            style="width:100px;height:100px">
+                    </lord-icon>
+                    <h4>Kontaktdaten</h4>
+                    <h6>Folgende Daten wurden hinterlegt:</h6>
+                </div>
                 <table class="table">
                     <tbody>
                     <tr>
-                        <td>Name</td>
+                        <td>Name:</td>
                         <td th:text="${ticket.getTicketPerson().getName()}"></td>
                     </tr>
                     <tr>
-                        <td>Telefon-Nr.</td>
+                        <td>Telefon-Nr.:</td>
                         <td th:text="${ticket.getTicketPerson().getPhone()}"></td>
                     </tr>
                     <tr>
-                        <td>E-Mail</td>
+                        <td>E-Mail:</td>
                         <td th:text="${ticket.getTicketPerson().getEmail()}"></td>
                     </tr>
                     </tbody>
                 </table>
+                <div class="d-flex">
 
+                    <button type="button" class="btn btn-dark  flex-fill m-1" data-bs-dismiss="modal">
+                        Schließen
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<!-- The Delete Modal -->
+<div class="modal fade" id="delete">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="text-center">
+
+                    <script src="https://cdn.lordicon.com/xdjxvujz.js"></script>
+                    <lord-icon
+                            src="https://cdn.lordicon.com/inrunzby.json"
+                            trigger="loop"
+                            delay="4000"
+                            colors="primary:#ffc738,secondary:#ffffff"
+                            style="width:100px;height:100px">
+                    </lord-icon>
+                    <h4>Ticket löschen</h4>
+                    <h6>Bist du sicher, dass du dieses Ticket löschen möchtest?</h6>
+                    <div class="d-flex">
+
+                        <button type="button" class="btn btn-dark  flex-fill m-1" data-bs-dismiss="modal">
+                            Abbrechen
+                        </button>
+                        <a type="button" class="btn btn-danger  flex-fill m-1"
+                           th:href="'/ticket/delete?uuid=' + ${ticket.getUUID()}">Löschen</a>
+
+                    </div>
+                </div>
             </div>
 
-            <!-- Modal footer -->
-            <div class="modal-footer">
-                <a type="button" class="btn btn-primary"
-
-                   href="#"
-
-                >E-Mail schreiben</a>
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-            </div>
 
         </div>
     </div>
 </div>
 
+<!-- The Accept Modal -->
+<div class="modal fade" id="accept">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
 
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="text-center">
+
+                    <script src="https://cdn.lordicon.com/xdjxvujz.js"></script>
+                    <lord-icon
+                            src="https://cdn.lordicon.com/hrqqslfe.json"
+                            trigger="loop"
+                            delay="4000"
+                            colors="primary:#7aa141,secondary:#ebe6ef"
+                            style="width:100px;height:100px">
+                    </lord-icon>
+                    <h4>Ticket schließen</h4>
+                    <h6>Bist du sicher, dass du das Ticket schließen möchtest?</h6>
+                    <div class="d-flex">
+
+                        <button type="button" class="btn btn-dark  flex-fill m-1" data-bs-dismiss="modal">
+                            Abbrechen
+                        </button>
+                        <a th:href="'/ticket/close?uuid=' + ${ticket.getUUID()}"
+                           type="button" class="btn btn-success  flex-fill m-1">Freigeben</a>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
 
 </html>
+
+<script>
+
+
+    function update() {
+        document.getElementById("text").innerHTML = document.getElementById("text").innerText;
+    }
+
+    $(document).ready(function () {
+        setTimeout(function () {
+            document.getElementById("update").click();
+            document.getElementById("content").classList.remove("d-none");
+            document.getElementById("load").classList.add("d-none");
+        }, 250);
+    });
+
+</script>

@@ -5,79 +5,65 @@ import de.messdiener.cms.cache.Cache;
 import de.messdiener.cms.cache.enums.TicketState;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class TicketSummery {
+
+    private final int allocatedTickets;
+    private final int open;
+    private final int lectore;
+    private final int waiting_for_publication;
+    private final int closed;
+
+    public TicketSummery(UUID uuid) throws SQLException {
+
+        allocatedTickets = Cache.TICKET_SERVICE.getTicketsByUser(uuid).size();
+        open = Cache.TICKET_SERVICE.getTicketsByUser(uuid, TicketState.OPEN).size();
+        lectore = Cache.TICKET_SERVICE.getTicketsByUser(uuid, TicketState.CORRECTOR_1).size() + Cache.TICKET_SERVICE.getTicketsByUser(uuid, TicketState.CORRECTOR_2).size();
+        waiting_for_publication = Cache.TICKET_SERVICE.getTicketsByUser(uuid, TicketState.AWAITING_PUBLICATION).size();
+        closed = Cache.TICKET_SERVICE.getTicketsByUser(uuid, TicketState.PUBLISHED).size();
+    }
+
+    public int getAllocatedTickets() {
+        return Math.max(allocatedTickets, 0);
+    }
     
-    private int open;
-    private int correction;
-    private int global;
-    private int publication;
-    private int waiting;
-
-    public TicketSummery(int open, int correction, int global, int publication, int waiting) {
-        this.open = open;
-        this.correction = correction;
-        this.global = global;
-        this.publication = publication;
-        this.waiting = waiting;
-    }
-
-    public static TicketSummery create() throws SQLException {
-
-        Set<Ticket> tickets = Cache.TICKET_SERVICE.getTickets();
-        int open = collect(TicketState.OPEN);
-        int correction = collect(TicketState.CORRECTOR_1) + collect(TicketState.CORRECTOR_2);
-        int global = tickets.size();
-        int publication = collect(TicketState.PUBLISHED);
-        int waiting = collect(TicketState.AWAITING_PUBLICATION);
-
-        return new TicketSummery(open, correction, global, publication, waiting);
-    }
-
-    private static int collect(TicketState ticketState) throws SQLException {
-        Set<Ticket> tickets = Cache.TICKET_SERVICE.getTickets();
-        return tickets.stream().filter(t -> t.getTicketState() == ticketState).collect(Collectors.toSet()).size();
+    public double calcAllc(){
+        return getAllocatedTickets() > 0 ? getAllocatedTickets() : 0.01;
     }
 
     public int getOpen() {
-        return open;
+        return Math.max(open, 0);
     }
 
-    private void setOpen(int open) {
-        this.open = open;
+    public int getLectore() {
+        return Math.max(lectore, 0);
     }
 
-    public int getCorrection() {
-        return correction;
+    public int getWaiting_for_publication() {
+        return Math.max(waiting_for_publication, 0);
     }
 
-    private void setCorrection(int correction) {
-        this.correction = correction;
+    public int getClosed() {
+        return Math.max(closed, 0);
     }
 
-    public int getGlobal() {
-        return global;
+    public double openPercentage(){
+        return (100 / (calcAllc())) * open;
     }
 
-    private void setGlobal(int global) {
-        this.global = global;
+    public double lectorePercentage(){
+        return (100 / ( calcAllc())) * lectore;
     }
 
-    public int getPublication() {
-        return publication;
+    public double awaitingPercentage(){
+        return (100 / ( calcAllc())) * waiting_for_publication;
+    }
+    public double closedPercentage(){
+        return (100 / ( calcAllc())) * closed;
     }
 
-    private void setPublication(int publication) {
-        this.publication = publication;
-    }
-
-    public int getWaiting() {
-        return waiting;
-    }
-
-    private void setWaiting(int waiting) {
-        this.waiting = waiting;
-    }
 }

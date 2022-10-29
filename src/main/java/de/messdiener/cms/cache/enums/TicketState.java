@@ -5,12 +5,12 @@ import java.util.List;
 
 public enum TicketState {
 
-    OPEN("Offen", "btn btn-danger btn-block", "mdi mdi-alert-circle-outline text-info"),
-    CORRECTOR_1("Lektoriat 1", "btn btn-warning btn-block", "mdi mdi-glasses text-warning"),
-    CORRECTOR_2("Lektoriat 2", "btn btn-warning btn-block", "mdi mdi-glasses text-warning"),
-    AWAITING_PUBLICATION("Zur Veröffentlichung", "btn btn-info btn-block text-white", "mdi mdi-clock-outline text-info"),
-    PUBLISHED("Veröffentlicht", "btn btn-success btn-block", "mdi mdi-check-circle-outline text-success"),
-    REJECTED("Abgelehnt", "btn btn-danger btn-block", "mdi mdi-cancel text-danger");
+    OPEN("Offen", "badge bg-red-soft text-red", "mdi mdi-alert-circle-outline text-info"),
+    CORRECTOR_1("Lektoriat 1", "badge bg-yellow-soft text-yellow", "mdi mdi-glasses text-warning"),
+    CORRECTOR_2("Lektoriat 2", "badge bg-yellow-soft text-yellow", "mdi mdi-glasses text-warning"),
+    AWAITING_PUBLICATION("Zur Veröffentlichung", "badge bg-info-soft text-info", "mdi mdi-clock-outline text-info"),
+    PUBLISHED("Veröffentlicht", "badge bg-success-soft text-success", "mdi mdi-check-circle-outline text-success"),
+    REJECTED("Abgelehnt", "badge bg-danger-soft text-danger", "mdi mdi-cancel text-danger");
 
     private final String name;
     private final String className;

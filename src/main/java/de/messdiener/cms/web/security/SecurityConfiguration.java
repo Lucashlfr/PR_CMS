@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -29,7 +28,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
     @Override
-    public UserDetailsService userDetailsService() {
+    public InMemoryUserDetailsManager userDetailsService() {
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -39,7 +38,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         try {
             Cache.USER_SERVICE.saveUser(new de.messdiener.cms.app.entities.user.User("oneUser", "oneUser", "lastname", "oneUser",
-                    UserGroup.ADMIN,Cache.MAIL));
+                    UserGroup.ADMIN, Cache.MAIL));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -58,6 +57,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        Cache.setPasswordEncoder(passwordEncoder);
+        Cache.setUserDetailsManager(userDetailsManager);
         return userDetailsManager;
     }
 
@@ -66,12 +67,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.sessionManagement()
                 .invalidSessionUrl("/login")
                 .sessionFixation().migrateSession();
-        http.authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/static/**", "/img/**", "/css/**", "/script/**").permitAll() // "/index", "/", "/login"
+        http.
+                requiresChannel(channel ->
+                channel.anyRequest().requiresSecure())
+                .authorizeRequests()
+                .antMatchers(HttpMethod.GET, "/static/**", "/dist/**", "/img/**", "/css/**", "/script/**").permitAll() // "/index", "/", "/login"
                 .and()
                 .authorizeRequests()
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                .antMatchers("/verify/**").permitAll()
+                .antMatchers("/register/**").permitAll()
                 .antMatchers("/public/**").permitAll()
                 .antMatchers("/ticket/**").hasAnyRole(de.messdiener.cms.app.entities.user.User.empty().getGroups())
                 .antMatchers("/").hasAnyRole(de.messdiener.cms.app.entities.user.User.empty().getGroups())
@@ -79,17 +83,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 //.anyRequest().authenticated().and().formLogin().permitAll();
 
 
-        .anyRequest().authenticated().and()
+
+                .anyRequest().authenticated().and()
                 .formLogin()
                 .usernameParameter("username")
                 .passwordParameter("password")
                 .failureUrl("/login?error")
                 .loginPage("/login")
                 .permitAll()
-                .and().logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/login?success").addLogoutHandler(new SecurityContextLogoutHandler())).csrf().disable();
+                .and().logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/login?success")
+                        .addLogoutHandler(new SecurityContextLogoutHandler())).csrf().disable();
+
+
 
     }
-
 
     @Override
     public void configure(WebSecurity web) {
@@ -98,7 +105,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/static/**"); // #3
     }
 
-
+    public static SecurityConfiguration getInstance() {
+        return new SecurityConfiguration();
+    }
 
 
 }

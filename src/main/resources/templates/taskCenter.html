@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head th:insert="fragments_new :: html_head"></head>
+<body class="nav-fixed">
+<nav th:insert="fragments_new :: topnav"></nav>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav" th:insert="fragments_new :: sidbar"></div>
+    <div id="layoutSidenav_content">
+
+        <main>
+            <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+                <div class="container-xl px-4">
+                    <div class="page-header-content">
+                        <div class="row align-items-center justify-content-between pt-3">
+                            <div class="col-auto mb-3">
+                                <h1 class="page-header-title">
+                                    <div class="page-header-icon"><i data-feather="file"></i></div>
+                                    Task Center
+                                </h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- Main page content-->
+            <div class="container-xl px-4 mt-5">
+                <!-- Illustration dashboard card example-->
+                <div class="card card-waves mb-4 mt-5">
+                    <div class="card-body p-5">
+                        <div class="row align-items-center justify-content-between">
+                            <div class="col">
+                                <h2 class="text-primary">Willkommen zurück,<br>Du hast <span
+                                        th:text="${summery.getAllocatedTickets()}"></span> Aufgaben!</h2>
+                            </div>
+                            <div class="col d-none d-lg-block mt-xxl-n4"><img class="img-fluid px-xl-4 mt-xxl-n5"
+                                                                              src="http://portal.messdiener-knittelsheim.de/css-files/assets/img/illustrations/statistics.svg"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <!-- Dashboard info widget 1-->
+                        <div class="card border-start-lg border-start-danger h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <h1 class="fw-bold text-danger mb-1">Offene Tickets</h1>
+                                        <div class="h2" th:text="${summery.getOpen()} + ' Tickets'"></div>
+                                    </div>
+                                    <div class="ms-2"><span style="font-size: 50px"
+                                                            class="mdi mdi-alert fa-2x text-gray-200"></span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <!-- Dashboard info widget 2-->
+                        <div class="card border-start-lg border-start-warning h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <h1 class="fw-bold text-warning mb-1">Tickets zum Korrigieren</h1>
+                                        <div class="h2" th:text="${summery.getLectore()} + ' Tickets'"></div>
+                                    </div>
+                                    <div class="ms-2"><span style="font-size: 50px"
+                                                            class="mdi mdi-glasses fa-2x text-gray-200"></span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <!-- Dashboard info widget 3-->
+                        <div class="card border-start-lg border-start-primary h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <h1 class="fw-bold text-primary mb-1">Tickets zum Veröffentlichen</h1>
+                                        <div class="h2"
+                                             th:text="${summery.getWaiting_for_publication()} + ' Tickets'"></div>
+                                    </div>
+                                    <div class="ms-2"><span style="font-size: 50px"
+                                                            class="mdi mdi-clock fa-2x text-gray-200"></span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <!-- Dashboard info widget 4-->
+                        <div class="card border-start-lg border-start-success h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <h1 class="fw-bold text-success mb-1">Veröffentlichte Tickets</h1>
+                                        <div class="h2" th:text="${summery.getClosed()} + ' Tickets'"></div>
+                                    </div>
+                                    <div class="ms-2"><span style="font-size: 50px"
+                                                            class="mdi mdi-check-circle fa-2x text-gray-200"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mb-4 mt-5">
+                    <div class="card-header">Deine Aufgaben</div>
+                    <div class="card-body p-5">
+                        <div class="list-group">
+                            <a th:href="'/ticket/edit?uuid=' + ${ticket.getUUID()}"
+                               class="list-group-item list-group-item-action" aria-current="true"
+                               th:each="ticket:${tasks}">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1" th:text="${ticket.getName()}"></h5>
+                                    <small th:text="${ticket.getDates().getGermanDate_DEADLINE()}"></small>
+                                </div>
+                                <p class="mb-1">
+
+                            <span th:class="${ticket.getTicketState().getIcon()}"
+                                  th:text="' ' + ${ticket.getTicketState().getName()}"></span>
+
+
+                                </p>
+                            </a>
+
+                            <a href="#" class="list-group-item list-group-item-action" aria-current="true"
+                               th:if="${tasks.size()} == 0">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">Aktuell keine Aufgaben für dich. Genieß das schöne Wetter :)</h5>
+                                </div>
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer th:insert="fragments_new :: footer"></footer>
+    </div>
+</div>
+<div th:insert="fragments_new :: script"></div>
+</body>
+</html>

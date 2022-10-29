@@ -9,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpSession;
 import java.sql.SQLException;
 
 @Component
@@ -26,10 +27,18 @@ public class SecurityHelper {
         return Cache.USER_SERVICE.getUsers().stream().filter(user -> user.getUsername().equals(getAuthentication().getName())).findFirst().orElseThrow();
     }
 
+    public static String getNameString() throws SQLException {
+        return getUser().getNameString();
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-
+    public static void addSessionUser(HttpSession httpSession) throws SQLException {
+        if(httpSession.getAttribute("sessionUser") == null){
+            httpSession.setAttribute("sessionUser", getUser());
+        }
+    }
 }

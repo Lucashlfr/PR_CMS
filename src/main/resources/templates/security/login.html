@@ -1,85 +1,124 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="de">
-<head>
-    <title>PR BEL CMS</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link th:href="@{/css/import/bootstrap.min.css}" rel="stylesheet">
-    <script th:src="@{/script/imports/jquery.min.js}"></script>
-    <script th:src="@{/script/imports/bootstrap.min.js}"></script>
+<head th:insert="fragments_new :: html_head"></head>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@6.5.95/css/materialdesignicons.min.css">
-
-    <style>
-        .h-custom {
-            height: calc(100% - 73px);
-        }
-
-        @media (max-width: 450px) {
-            .h-custom {
-                height: 100%;
-            }
-        }
-    </style>
-
-</head>
-<body>
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark sticky-top">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="javascript:void(0)">
-            <img th:src="@{/img/Logo_White.png}" style="max-width: 150px">
-        </a>
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark sticky-top" style="z-index: 5;">
+    <div class="container-fluid ">
+        <!-- <img src="https://messdiener-knittelsheim.de/wp-content/uploads/2022/08/Logo_White.png" style="max-width: 120px"> -->
+        <h1></h1>
+        <img src="https://messdiener-knittelsheim.de/wp-content/uploads/2022/08/Logo_White_Vollton.png"
+             style="max-width: 180px; margin-bottom: 5px!important;">
+        <h1></h1>
     </div>
 </nav>
+<div id="container-fluid">
+    <main>
+        <!-- Main page content-->
+        <div class="container ">
+            <div class="row">
+                <div class="col-lg-8 px-4 mt-4 ">
+                    <!-- Knowledge base home header option-->
+                    <header class="card card-waves">
+                        <div class="card-body px-5 pt-5 pb-0">
+                            <div class="row align-items-center justify-content-between">
+                                <div class="col-lg-6">
+                                    <h1 style="font-size: 50px" class="text-primary">PR CMS</h1>
+                                    <p class="lead mb-4">Verwalte, korrigiere oder erstelle neue tolle Texte!</p>
+                                </div>
+                                <div class="col-lg-4"><img class="img-fluid"
+                                                           th:src="@{/dist/assets/img/illustrations/team-spirit.svg}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+                    <br>
+                    <a class="card card-icon lift lift-sm mb-4"
+                       href="https://cms.code.system.etu.messdiener.com/public/createTicket">
+                        <div class="row g-0">
+                            <div class="col-auto card-icon-aside bg-primary"><h1 class="text-white-50 mdi mdi-compass" style="font-size: 50px"></h1></div>
+                            <div class="col">
+                                <div class="card-body py-5">
+                                    <h5 class="card-title text-primary mb-2">Fange an</h5>
+                                    <p class="card-text mb-1">Erstelle einen neuen Antrag,
+                                        wir kümmern uns um den Rest</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <!-- Knowledge base main category card 2-->
+                    <a class="card card-icon lift lift-sm mb-4"
+                       href="https://cms.code.system.etu.messdiener.com/register">
+                        <div class="row g-0">
+                            <div class="col-auto card-icon-aside bg-secondary"><h1 class="text-white-50 mdi mdi-account-group" style="font-size: 50px"></h1></div>
+                            <div class="col">
+                                <div class="card-body py-5">
+                                    <h5 class="card-title text-secondary mb-2">Account anfordern</h5>
+                                    <p class="card-text mb-1">Du möchtest uns unterstützen? Sehr gerne!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <!-- Knowledge base main category card 3-->
+                    <a class="card card-icon lift lift-sm mb-4"
+                       href="https://cms.code.system.etu.messdiener.com/public/tickets">
+                        <div class="row g-0">
+                            <div class="col-auto card-icon-aside bg-teal"><h1 class="text-white-50 mdi mdi-book" style="font-size: 50px"></h1>
+                            </div>
+                            <div class="col">
+                                <div class="card-body py-5">
+                                    <h5 class="card-title text-teal mb-2">Auskunft</h5>
+                                    <p class="card-text mb-1">Transparenz ist uns sehr wichtig! Hier findest du den
+                                        aktuellen Status zu deinen Tickets</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-4 px-4 mt-4 ">
 
-<div class="container-fluid h-custom">
-    <div class="row d-flex justify-content-center align-items-center h-100">
-        <div class="col-md-9 col-lg-6 col-xl-5">
-            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
-                 class="img-fluid" alt="Sample image">
+
+                    <div class="card">
+                        <form th:action="@{/login}" th:method="post" class="">
+                            <div class="card-header"><h1 class="text-primary" style="font-size: 30px; margin-bottom: 0">Login</h1></div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="username">Benutzername</label>
+                                    <input class="form-control mb-1" id="username" type="text"
+                                           placeholder="Benutzername" name="username">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="password">Email address</label>
+                                    <input class="form-control mb-1" id="password" type="password"
+                                           placeholder="Passwort eingeben" name="password">
+                                </div>
+
+                                <div class="d-grid">
+                                    <button type="submit"  class="btn btn-primary">Login</button>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <a class="text-body" href="#">Passwort vergessen</a>
+                            </div>
+                        </form>
+                    </div>
+
+
+                </div>
+            </div>
         </div>
-        <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-            <h1>Login CMS der Pfarrei Bellheim</h1>
-            <form th:action="@{/login}" th:method="post" class="was-validated">
-                <!-- Email input -->
-                <div class="form-floating mb-4 mt-4">
-                    <input type="text" class="form-control" id="username" placeholder="Nutzername eingeben" name="username" required>
-                    <label for="username">Benutzername</label>
+    </main>
+    <footer class="footer-admin mt-auto footer-light">
+        <div class="container-xl px-4">
+            <div class="row">
+                <div class="col-md-6 small">Copyright &copy; Lucas Helfer 2021</div>
+                <div class="col-md-6 text-md-end small">
+                    <a href="#!">Privacy Policy</a>
+                    &middot;
+                    <a href="#!">Terms &amp; Conditions</a>
                 </div>
-
-                <!-- Password input -->
-                <div class="form-floating mb-3 mt-3">
-                    <input type="password" class="form-control" id="password" placeholder="Passwort eingeben" name="password" required>
-                    <label for="password">Passwort</label>
-                </div>
-
-                <div class="d-flex justify-content-between align-items-center">
-                    <a href="#!" class="text-body">Forgot password?</a>
-                    <p class="small fw-bold mt-2 pt-1 mb-0">Don't have an account? <a href="#!" class="link-danger">Register</a>
-                    </p>
-                </div>
-
-                <div class="text-center text-lg-start mt-4 pt-2 d-grid">
-                    <button type="submit" class="btn btn-primary btn-lg btn-block"
-                            style="padding-left: 2.5rem; padding-right: 2.5rem;">Login
-                    </button>
-
-                </div>
-
-            </form>
+            </div>
         </div>
-    </div>
-</div>
-<div class="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 bg-primary fixed-bottom">
-    <!-- Copyright -->
-    <div class="text-white mb-3 mb-md-0 ">
-        Copyright © 2020. All rights reserved.
-    </div>
-    <!-- Copyright -->
-
-    <!-- Right -->
-    <!-- Right -->
+    </footer>
 </div>
 
-</body>
 </html>

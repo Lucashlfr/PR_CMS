@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head th:insert="fragments_new :: html_head"></head>
+<body class="nav-fixed">
+<nav th:insert="fragments_new :: topnav"></nav>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav" th:insert="fragments_new :: sidbar"></div>
+    <div id="layoutSidenav_content">
+        <main>
+            <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+                <div class="container-xl px-4">
+                    <div class="page-header-content">
+                        <div class="row align-items-center justify-content-between pt-3">
+                            <div class="col-auto mb-3">
+                                <h1 class="page-header-title">
+                                    <div class="page-header-icon"><i data-feather="user"></i></div>
+                                    User bearbeiten
+                                </h1>
+                            </div>
+                            <div class="col-12 col-xl-auto mb-3">
+                                <a class="btn btn-sm btn-light text-primary" href="/admin/user">
+                                    <i class="me-1" data-feather="arrow-left"></i>
+                                    Back to Users List
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- Main page content-->
+            <div class="container-xl px-4 mt-4">
+                <div class="row">
+                    <div class="col-xl-4">
+                        <!-- Profile picture card-->
+                        <div class="card mb-4 mb-xl-0">
+                            <div class="card-header">Profile Picture</div>
+                            <div class="card-body text-center">
+                                <!-- Profile picture image-->
+                                <img class="img-account-profile rounded-circle mb-2" src="http://portal.messdiener-knittelsheim.de/css-files/assets//img/illustrations/profiles/profile-1.png" alt="" />
+                                <!-- Profile picture help block-->
+                                <div class="small font-italic text-muted mb-4">JPG or PNG no larger than 5 MB</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-8">
+                        <!-- Account details card-->
+                        <div class="card mb-4">
+                            <div class="card-header">Account Details</div>
+                            <div class="card-body">
+                                <form th:action="@{/admin/saveUser}" th:method="post" class="was-validated">
+                                    <input type="text" class="form-control bg-white invisible" placeholder="UUID" readonly
+                                           id="t_uuid" th:value="${user.getUser_UUID()}"
+                                           name="t_uuid">
+                                    <!-- Form Row-->
+                                    <div class="row gx-3 mb-3">
+                                        <!-- Form Group (first name)-->
+                                        <div class="col-md-6">
+                                            <label class="small mb-1" for="t_firstname">Vorname</label>
+                                            <input type="text" class="form-control bg-white" placeholder="Username"
+                                                   id="t_firstname" th:value="${user.getFirstname()}"
+                                                   name="t_firstname" required>
+                                        </div>
+                                        <!-- Form Group (last name)-->
+                                        <div class="col-md-6">
+                                            <label class="small mb-1" for="t_lastname">Nachname</label>
+                                            <input type="text" class="form-control bg-white" placeholder="Vorname"
+                                                   id="t_lastname" th:value="${user.getLastname()}"
+                                                   name="t_lastname" required>
+                                        </div>
+                                    </div>
+                                    <!-- Form Group (email address)-->
+                                    <div class="mb-3">
+                                        <label class="small mb-1" for="t_email">Email address</label>
+                                        <input type="text" class="form-control bg-white" placeholder="E-Mail-Adresse"
+                                               id="t_email" th:value="${user.getEmail()}"
+                                               name="t_email" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="small mb-1" for="t_username">Benutzername</label>
+                                        <input type="text" class="form-control bg-white" placeholder="Username"
+                                               id="t_username" th:value="${user.getUsername()}"
+                                               name="t_username" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="t_password" class="form-label">Password</label>
+                                        <input type="password" class="form-control bg-white" placeholder="Password"
+                                               id="t_password" th:value="${user.getPassword()}"
+                                               name="t_password" required>
+                                    </div>
+                                    <!-- Form Group (Roles)-->
+                                    <div class="mb-3">
+                                        <label for="t_group" class="small mb-1">Role</label>
+                                        <input class="form-control" list="t_group_l" id="t_group" th:value="${user.getGroup()}" name="t_group">
+                                        <datalist id="t_group_l">
+                                            <option th:each="group:${user.getGroup().values()}" th:text="${group}" th:value="${group}"></option>
+                                        </datalist>
+                                    </div>
+                                    <!-- Submit button-->
+                                    <button class="btn btn-primary" type="submit">Speichern</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="card card-header-actions mb-4">
+                            <div class="card-header">
+                                Rechteverwaltung
+                                <div>
+                                    <a class="btn btn-blue btn-icon" th:href="'/admin/permUser?uuid=' + ${user.getUser_UUID()}">
+                                        <span class="mdi mdi-security"></span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th style="width: 20px"></th>
+                                        <th>Berechtigung</th>
+                                        <th>Beschreibung</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="tbody">
+                                        <tr th:each="perm:${user.getPermissions()}">
+                                            <td class="text-green mdi mdi-check-circle"></td>
+                                            <td th:text="${perm.getName()}"></td>
+                                            <td th:text="${perm.getDescription()}"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer th:insert="fragments_new :: footer"></footer>
+    </div>
+</div>
+<div th:insert="fragments_new :: script"></div>
+</body>
+</html>

@@ -1,9 +1,11 @@
 package de.messdiener.cms.web.controller;
 
+import de.messdiener.cms.app.entities.user.Permission;
 import de.messdiener.cms.app.entities.user.User;
 import de.messdiener.cms.cache.Cache;
 import de.messdiener.cms.app.entities.email.EmailEntity;
 import de.messdiener.cms.cache.enums.UserGroup;
+import de.messdiener.cms.web.security.SecurityHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,27 +13,40 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.HttpSession;
 import java.sql.SQLException;
 import java.util.UUID;
 
 @Controller
 public class AdminController {
 
-    @GetMapping("/admin")
-    public String index(Model model, @RequestParam("state")String state) throws SQLException {
+    @GetMapping("/admin/perm")
+    public String perm(HttpSession httpSession, Model model) throws SQLException {
+        SecurityHelper.addSessionUser(httpSession);
 
-        model.addAttribute("random", UUID.randomUUID());
+        model.addAttribute("permissions", Cache.USER_SERVICE.getPermissions());
+
+        return "admin/permOverview";
+    }
+
+    @GetMapping("/admin/user")
+    public String users(HttpSession httpSession, Model model) throws SQLException {
+
+        SecurityHelper.addSessionUser(httpSession);
+
         model.addAttribute("users", Cache.USER_SERVICE.getUsers());
-        model.addAttribute("groups", UserGroup.values());
 
-        model.addAttribute("toggles", Cache.ADMIN_SERVICE.getToggles());
-        model.addAttribute("toggle_enable_publicForm", Cache.ADMIN_SERVICE.get("enable_publicForm"));
+        return "admin/userOverview";
+    }
 
-        if(state.equals("ok")){
-            addAlertToModel(model, "alert-success", "Nutzer erfolgreich gespeichert");
-        }
+    @GetMapping("/admin/user/edit")
+    public String edit(HttpSession httpSession, Model model, @RequestParam("uuid")UUID userUUID) throws SQLException {
+        SecurityHelper.addSessionUser(httpSession);
 
-        return "admin";
+        User user = Cache.USER_SERVICE.getUser(userUUID).orElseThrow();
+        model.addAttribute("user", user);
+
+        return "admin/editUser";
     }
 
 
@@ -61,7 +76,9 @@ public class AdminController {
 
         Cache.USER_SERVICE.saveUser(user);
 
-        return new RedirectView("/admin?state=ok");
+        Cache.USER_SERVICE.createUserInSecurity(user);
+
+        return new RedirectView("/admin/user");
     }
 
     public void addAlertToModel(Model model, String alertClass, String alertText){
@@ -69,4 +86,59 @@ public class AdminController {
         model.addAttribute("alertClass", "alert " + alertClass +  " alert-dismissible");
         model.addAttribute("alertText", alertText);
     }
+
+    @PostMapping("/admin/savePerm")
+    public RedirectView save(@RequestParam("permName")String permName, @RequestParam("permDesc")String permDesc) throws SQLException {
+
+        Cache.USER_SERVICE.createPermission(new Permission(permName, permDesc));
+
+        return new RedirectView("/admin/perm");
+    }
+
+
+    @GetMapping("/admin/deletePerm")
+    public RedirectView delete(@RequestParam("permName")String permName, @RequestParam("permDesc")String permDesc) throws SQLException {
+
+        Cache.USER_SERVICE.deletePermission(new Permission(permName, permDesc));
+
+        return new RedirectView("/admin/perm");
+    }
+
+    @GetMapping("/admin/permUser")
+    public String permUser(HttpSession httpSession, Model model, @RequestParam("uuid")UUID userUUID) throws SQLException {
+        SecurityHelper.addSessionUser(httpSession);
+
+        User user = Cache.USER_SERVICE.getUser(userUUID).orElseThrow();
+
+        model.addAttribute("user", user);
+
+        return "admin/permUser";
+    }
+
+    @GetMapping("/admin/permAdd")
+    public RedirectView addPerm(@RequestParam("uuid")UUID userUUID, @RequestParam("permName")String permName) throws SQLException {
+
+        User user = Cache.USER_SERVICE.getUser(userUUID).orElseThrow();
+        Permission permission = Cache.USER_SERVICE.getPermission(permName);
+        user.addPermission(permission);
+
+        user.save();
+
+        return new RedirectView("/admin/permUser?uuid=" +userUUID);
+
+    }
+
+    @GetMapping("/admin/permRemove")
+    public RedirectView permRemove(@RequestParam("uuid")UUID userUUID, @RequestParam("permName")String permName) throws SQLException {
+
+        User user = Cache.USER_SERVICE.getUser(userUUID).orElseThrow();
+        user.removePermission(permName);
+
+        user.save();
+
+        return new RedirectView("/admin/permUser?uuid=" +userUUID);
+
+    }
+
+
 }
