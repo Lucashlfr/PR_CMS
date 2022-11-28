@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head th:insert="fragments_new :: html_head"></head>
+<body class="nav-fixed">
+<nav th:insert="fragments_new :: topnav"></nav>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav" th:insert="fragments_new :: sidbar"></div>
+    <div id="layoutSidenav_content">
+
+        <main>
+            <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+                <div class="container-xl px-4">
+                    <div class="page-header-content">
+                        <div class="row align-items-center justify-content-between pt-3">
+                            <div class="col-auto mb-3">
+                                <h1 class="page-header-title">
+                                    <div class="page-header-icon"><i data-feather="bookmark"></i></div>
+                                    Protokolle
+                                </h1>
+                            </div>
+                            <div class="col-12 col-xl-auto mb-3">
+                                <a class="btn btn-sm btn-light text-primary" href="#" data-bs-toggle="modal"
+                                   data-bs-target="#files">
+                                    <i class="me-1" data-feather="plus"></i>
+                                    Anliegen anlegen
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- Main page content-->
+            <div class="container-xl px-4 mt-5">
+
+                <div class="card">
+                    <div class="card-header">Protokolle</div>
+                    <div class="card-body">
+
+                        <table id="table_id" class="display"
+                               style="min-width: 100%!important; max-width: 100%!important;">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>Anliegen</th>
+                                <th>Von</th>
+                                <th>Datum</th>
+                                <th>Elemente</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            <tr th:each="protocol:${protocols}">
+                                <td th:text="${protocol.getLastUpdate()}"></td>
+                                <td th:text="${protocol.getRequest_name()}"></td>
+                                <td th:text="${protocol.getOwner().getName()}"></td>
+                                <td th:text="${protocol.getDate()}"></td>
+                                <td th:text="${protocol.getElements().size()}"></td>
+                                <td>
+                                    <a class="btn btn-datatable btn-icon btn-transparent-dark me-2"
+                                       th:href="'/dc/protocol?uuid=' + ${protocol.getUUID()}"><span
+                                            class="mdi mdi-book-arrow-right"></span></a>
+                                </td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer th:insert="fragments_new :: footer"></footer>
+    </div>
+</div>
+<div th:insert="fragments_new :: script"></div>
+</body>
+
+<form th:method="post" th:action="@{/dc/protocol/create}" enctype="multipart/form-data">
+    <div class="modal fade" id="files">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="text-center">
+
+                        <script src="https://cdn.lordicon.com/qjzruarw.js"></script>
+                        <lord-icon
+                                src="https://cdn.lordicon.com/xzksbhzh.json"
+                                trigger="loop"
+                                delay="4000"
+                                style="width:100px;height:100px">
+                        </lord-icon>
+                        <h4>Protokoll erstellen</h4>
+                        <h6>Lege eine Protokoll-Datei an</h6>
+                    </div>
+
+                    <div class=" mb-3 mt-3">
+                        <input type="text" class="form-control" id="name" placeholder="Name des Anliegen" name="name">
+                    </div>
+
+                    <div class="d-flex">
+
+                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                            Schließen
+                        </button>
+
+                        <button type="submit" class="btn btn-success btn-block flex-fill m-1">
+                            Speichern
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</form>
+
+
+</html>
+<script>
+    $(document).ready(function () {
+        $('#table_id').DataTable({
+            language: {
+                "decimal": ",",
+                "thousands": ".",
+                "infoPostFix": "",
+                "infoFiltered": "(gefiltert aus insgesamt _MAX_ Einträgen)",
+                "loadingRecords": "Bitte warten Sie - Daten werden geladen ...",
+                "lengthMenu": "Anzeigen von _MENU_ Einträgen",
+                "paginate": {
+                    "first": "Erste",
+                    "last": "Letzte",
+                    "next": "Nächste",
+                    "previous": "Zurück"
+                },
+                "processing": "Verarbeitung läuft ...",
+                "search": "Suche:",
+                "searchPlaceholder": "Suchbegriff",
+                "zeroRecords": "Keine Daten! Bitte ändern Sie Ihren Suchbegriff.",
+                "emptyTable": "Keine Einträge zum Anzeigen vorhanden",
+                "aria": {
+                    "sortAscending": ": aktivieren, um Spalte aufsteigend zu sortieren",
+                    "sortDescending": ": aktivieren, um Spalte absteigend zu sortieren"
+                },
+                "info": "Zeigt _START_ bis _END_  von _TOTAL_ Einträgen",
+                "infoEmpty": "Keine Einträge zum Anzeigen vorhanden",
+                "select": {
+                    "rows": {
+                        _: '%d Zeilen ausgewählt',
+                        0: 'Zeile anklicken um auszuwählen',
+                        1: 'Eine Zeile ausgewählt'
+                    }
+                }
+            },
+            "columnDefs": [
+                {
+                    "targets": [5],
+                    className: 'dt-body-right'
+                }, {
+                    "targets": [0],
+                    className: 'd-none'
+                }
+
+            ],
+            responsive: true, paging: false,
+        });
+    });
+</script>

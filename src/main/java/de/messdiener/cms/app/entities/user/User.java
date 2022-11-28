@@ -1,6 +1,8 @@
 package de.messdiener.cms.app.entities.user;
 
+import de.messdiener.cms.app.entities.messdiener.Messdiener;
 import de.messdiener.cms.app.entities.ticket.cache.TicketSummery;
+import de.messdiener.cms.app.services.CloudService;
 import de.messdiener.cms.cache.Cache;
 import de.messdiener.cms.cache.enums.UserGroup;
 
@@ -17,8 +19,11 @@ public class User {
     private UserGroup group;
     private String email;
     private ArrayList<Permission> permissions;
+    private String img_path;
+    private Optional<UUID> person_uuid;
 
-    public User(UUID user_uuid, String username, String firstname, String lastname, String password, UserGroup group, String email, ArrayList<Permission> permissions) {
+    public User(UUID user_uuid, String username, String firstname, String lastname, String password, UserGroup group, String email,
+                ArrayList<Permission> permissions, String img_path, Optional<UUID> person_uuid) {
         this.user_uuid = user_uuid;
         this.username = username;
         this.firstname = firstname;
@@ -27,9 +32,11 @@ public class User {
         this.group = group;
         this.email = email;
         this.permissions = permissions;
+        this.img_path = img_path;
+        this.person_uuid = person_uuid;
     }
 
-    public User(String username, String firstname, String lastname, String password, UserGroup group, String email) {
+    public User(String username, String firstname, String lastname, String password, UserGroup group, String email, String img_path, Optional<UUID> person_uuid) {
         this.user_uuid = UUID.randomUUID();
         this.username = username;
         this.firstname = firstname;
@@ -38,9 +45,11 @@ public class User {
         this.group = group;
         this.email = email;
         this.permissions = new ArrayList<>();
+        this.img_path = img_path;
+        this.person_uuid = person_uuid;
     }
 
-    public User(UUID fromString, String username, String firstname, String lastname, String password, UserGroup userGroup, String mail) {
+    public User(UUID fromString, String username, String firstname, String lastname, String password, UserGroup userGroup, String mail, String img_path, Optional<UUID> person_uuid) {
         this.user_uuid = fromString;
         this.username = username;
         this.firstname = firstname;
@@ -49,15 +58,18 @@ public class User {
         this.group = userGroup;
         this.email = mail;
         this.permissions = new ArrayList<>();
+        this.img_path = img_path;
+        this.person_uuid = person_uuid;
     }
 
 
-    public static User of(UUID user_uuid, String username, String firstname, String lastname, String password, UserGroup group, String email, ArrayList<Permission> permissions) {
-        return new User(user_uuid, username, firstname, lastname, password, group, email, permissions);
+    public static User of(UUID user_uuid, String username, String firstname, String lastname, String password, UserGroup group, String email,
+                          ArrayList<Permission> permissions, String img_path, Optional<UUID> person_uuid) {
+        return new User(user_uuid, username, firstname, lastname, password, group, email, permissions, img_path, person_uuid);
     }
 
-    public static User empty(){
-        return of(UUID.randomUUID(), "", "", "", "", UserGroup.USER, "", new ArrayList<>());
+    public static User empty() {
+        return of(UUID.randomUUID(), "", "", "", "", UserGroup.USER, "", new ArrayList<>(), "DEFAULT", Optional.empty());
     }
 
     public String getUsername() {
@@ -92,7 +104,7 @@ public class User {
         return group;
     }
 
-    public String[] getGroups(){
+    public String[] getGroups() {
         UserGroup[] groups = UserGroup.values();
         String[] strings = new String[groups.length];
 
@@ -110,19 +122,19 @@ public class User {
         this.email = email;
     }
 
-    public String getAdminString(){
+    public String getAdminString() {
         return user_uuid + "/" + username + "/" + password + "/" + email + "/" + group.toString() + "/" + firstname + "/" + lastname;
     }
 
-    public String getNameString(){
+    public String getNameString() {
         return firstname + " " + lastname + " (" + username + ")";
     }
 
-    public String getName(){
+    public String getName() {
         return firstname + " " + lastname;
     }
 
-    public boolean isAdmin(){
+    public boolean isAdmin() {
         return userHasPermission("admin");
     }
 
@@ -142,7 +154,15 @@ public class User {
         this.lastname = lastname;
     }
 
-    public boolean isEnabled(){
+    public Optional<UUID> getPerson_uuid() {
+        return person_uuid;
+    }
+
+    public void setPermissions(ArrayList<Permission> permissions) {
+        this.permissions = permissions;
+    }
+
+    public boolean isEnabled() {
         return !(group == UserGroup.DEAKTIVIERT || group == UserGroup.REQUESTED);
     }
 
@@ -153,7 +173,7 @@ public class User {
         return permissions;
     }
 
-    public String getPermissionString(){
+    public String getPermissionString() {
         return Permission.generatePermString(permissions);
     }
 
@@ -162,15 +182,15 @@ public class User {
 
         ArrayList<Permission> perms = new ArrayList<>();
 
-        for(Permission perm : Cache.USER_SERVICE.getPermissions()){
-            if(permissions.stream().anyMatch(p -> p.getName().equals(perm.getName())))continue;
+        for (Permission perm : Cache.USER_SERVICE.getPermissions()) {
+            if (permissions.stream().anyMatch(p -> p.getName().equals(perm.getName()))) continue;
             perms.add(perm);
         }
         return perms;
 
     }
 
-    public void addPermission(Permission permission){
+    public void addPermission(Permission permission) {
         permissions.add(permission);
     }
 
@@ -180,14 +200,14 @@ public class User {
 
     public void removePermission(String permName) {
         for (int i = 0; i < permissions.size(); i++) {
-            if(permissions.get(i).getName().equals(permName))
+            if (permissions.get(i).getName().equals(permName))
                 permissions.remove(i);
         }
     }
 
-    public boolean userHasPermission(String permission){
-        for(Permission perm : permissions){
-            if(perm.getName().equals("*") || perm.getName().equalsIgnoreCase(permission))
+    public boolean userHasPermission(String permission) {
+        for (Permission perm : permissions) {
+            if (perm.getName().equals("*") || perm.getName().equalsIgnoreCase(permission))
                 return true;
         }
         return false;
@@ -197,7 +217,36 @@ public class User {
         return new TicketSummery(user_uuid);
     }
 
-    public String getSortName(){
+    public String getSortName() {
         return lastname + " " + firstname + " (" + username + ")";
+    }
+
+    public String getImg_path() {
+        return img_path;
+    }
+
+    public void setImg_path(String img_path) {
+        this.img_path = img_path;
+    }
+
+    public String getImgAdress() throws IllegalAccessException {
+        if (getImg_path().equals("DEFAULT")) {
+            return "/dist/assets/img/illustrations/profiles/profile-1.png";
+        } else if (getImg_path().startsWith("/")) {
+            return getImg_path();
+        } else {
+            return CloudService.getPath(UUID.fromString(getImg_path()));
+        }
+        //throw new IllegalAccessException("");
+    }
+
+    public Optional<Messdiener> getPerson() throws SQLException {
+        if (person_uuid.isPresent())
+            return Cache.MESSDIENER_SERVICE.find(person_uuid.get());
+        return Optional.empty();
+    }
+
+    public String personUUID(){
+        return person_uuid.isPresent() ? person_uuid.get().toString() : "";
     }
 }

@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head th:insert="fragments_new :: html_head"></head>
+<body class="nav-fixed">
+<nav th:insert="fragments_new :: topnav"></nav>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav" th:insert="fragments_new :: sidbar"></div>
+    <div id="layoutSidenav_content">
+        <main>
+            <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+                <div class="container-fluid px-4">
+                    <div class="page-header-content">
+                        <div class="row align-items-center justify-content-between pt-3">
+                            <div class="col-auto mb-3">
+                                <h1 class="page-header-title">
+                                    <div class="page-header-icon"><i data-feather="users"></i></div>
+                                    Messdiener <span class="mdi mdi-arrow-right"></span> <span
+                                        th:text="${person.getFirstname()} + ' ' + ${person.getLastname()}"></span>
+                                </h1>
+                            </div>
+                            <div class="col-12 col-xl-auto mb-3" th:if="${session.sessionUser.userHasPermission('mms_edit_messdiener')}">
+                                <a class="btn btn-sm btn-light text-primary" href="javascript:void(0);"
+                                   data-bs-toggle="modal" data-bs-target="#verfügbarkeiten">
+                                    <i class="me-1 mdi mdi-church"></i>
+                                    Verfügbarkeiten
+                                </a>
+                                <a class="btn btn-sm btn-light text-primary" href="javascript:void(0);"
+                                   data-bs-toggle="modal" data-bs-target="#edit">
+                                    <i class="me-1 mdi mdi-account-edit"></i>
+                                    Bearbeiten
+                                </a>
+                                <a class="btn btn-sm btn-light text-primary" href="#" data-bs-toggle="modal"
+                                   data-bs-target="#files">
+                                    <i class="me-1" data-feather="plus"></i>
+                                    Datei
+                                </a>
+                                <a class="btn btn-sm btn-light text-primary" href="#" data-bs-toggle="modal"
+                                   data-bs-target="#img">
+                                    <i class="me-1" data-feather="plus"></i>
+                                    Bild
+                                </a>
+                                <a class="btn btn-sm btn-light text-primary" href="javascript:void(0);"
+                                   data-bs-toggle="modal" data-bs-target="#delete">
+                                    <i class="me-1 mdi mdi-delete"></i>
+                                    Löschen
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- Main page content-->
+            <div class="container-fluid px-4">
+                <div class="row">
+
+                    <div class="col-xl-2">
+                        <div class="card mb-4 mb-xl-0">
+                            <div class="card-header">Bild</div>
+                            <div class="card-body text-center">
+                                <!-- Profile picture image-->
+                                <img class="mb-2 img-fluid card-img" th:src="${person.getPath()}"
+                                     alt=""/>
+                                <!-- Profile picture help block-->
+                            </div>
+                        </div>
+                        <br>
+                        <div class="card mb-4 mb-xl-0">
+                            <div class="card-header">Dateien</div>
+                            <div class="card-body">
+                                <div class="list-group list-group-flush">
+                                    <a th:each="file:${person.getFiles()}" th:href="'/download?uuid=' + ${file.getUUID()}" target="_blank"
+                                       class="list-group-item list-group-item-action">
+                                        <span class="mdi mdi-download"></span>
+                                        <span th:text="${file.getName().split('_')[2]}"></span></a>
+                                    <span th:if="${person.getFiles().size() == 0}" class="list-group-item" href="#">
+                                        Keine Dateien hinterlegt
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-xl-10">
+                        <div class="card mb-4" style="min-height: 100%!important;">
+                            <div class="card-header">Stammdaten</div>
+                            <div class="card-body " id="content" style="overflow-y: scroll">
+                                <table class="table table-bordered">
+
+                                    <tbody>
+                                    <tr>
+                                        <td style="width: 150px!important">Name, Vorname</td>
+                                        <td th:text="${person.getReadName()}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Rang</td>
+                                        <td th:text="${person.getRank().getName()}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Gruppe</td>
+                                        <td th:text="${person.getGroup().getName()}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Adresse</td>
+                                        <td th:text="${person.getAdress()}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Geburtstag</td>
+                                        <td th:text="${person.getGermanDate()}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Festnetz</td>
+                                        <td th:text="${person.getPhone()}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Handy (Kind)</td>
+                                        <td th:text="${person.getMobile_child()}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Handy (Eltern)</td>
+                                        <td th:text="${person.getMobile_parents()}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Mail (Kind)</td>
+                                        <td th:text="${person.getMail_child()}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Mail (Eltern)</td>
+                                        <td th:text="${person.getMail_parents()}"></td>
+                                    </tr>
+
+                                    <tr class="d-none">
+                                        <td>UUID</td>
+                                        <td th:text="${person.getUUID()}" id="uuid"></td>
+                                    </tr>
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+        <footer th:insert="fragments_new :: footer"></footer>
+    </div>
+</div>
+<div th:insert="fragments_new :: script"></div>
+</body>
+
+<!-- The Modal -->
+<div class="modal" id="verfügbarkeiten">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Modal Heading</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <table id="table_id" class="display" style="min-width: 100%">
+                    <thead>
+                    <tr>
+                        <th>SORT</th>
+                        <th>Datum</th>
+                        <th>Eingeteilte Messdiener</th>
+                        <td>UUID</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="pair:${person.getAvailability()}">
+                        <td th:text="${pair.getFirst().getDate()}"></td>
+                        <td th:text="${pair.getFirst().getGermanDate()}"></td>
+                        <td>12</td>
+                        <td th:text="${pair.getFirst().getUUID()}"></td>
+                    </tr>
+
+
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal" onclick="save()">Speichern
+                </button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<table id="table_data" class="d-none">
+    <thead>
+    <tr>
+        <th>Datum</th>
+        <th>Select</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="pair:${person.getAvailability()}">
+        <td th:text="${pair.getFirst().getGermanDate()}"></td>
+        <td th:text="${pair.getSecond()}"></td>
+    </tr>
+
+
+    </tbody>
+</table>
+
+<script th:src="@{/script/imports/jquery.min.js}"></script>
+<script th:src="@{/script/imports/jquery.dataTables.min.js}"></script>
+<script>
+    let table;
+    $(document).ready(function () {
+        table = $('#table_id').DataTable({
+
+            "dom": 'Blfrtip',
+            "buttons": ['selectAll', 'selectNone'],
+            "language": {
+                "decimal": ",",
+                "thousands": ".",
+                "infoPostFix": "",
+                "infoFiltered": "(gefiltert aus insgesamt _MAX_ Einträgen)",
+                "loadingRecords": "Bitte warten Sie - Daten werden geladen ...",
+                "lengthMenu": "Anzeigen von _MENU_ Einträgen",
+                "paginate": {
+                    "first": "Erste",
+                    "last": "Letzte",
+                    "next": "Nächste",
+                    "previous": "Zurück"
+                },
+                "processing": "Verarbeitung läuft ...",
+                "search": "Suche:",
+                "searchPlaceholder": "Suchbegriff",
+                "zeroRecords": "Keine Daten! Bitte ändern Sie Ihren Suchbegriff.",
+                "emptyTable": "Keine Einträge zum Anzeigen vorhanden",
+                "aria": {
+                    "sortAscending": ": aktivieren, um Spalte aufsteigend zu sortieren",
+                    "sortDescending": ": aktivieren, um Spalte absteigend zu sortieren"
+                },
+                "info": "Zeigt _START_ bis _END_  von _TOTAL_ Einträgen",
+                "infoEmpty": "Keine Einträge zum Anzeigen vorhanden",
+                buttons: {
+                    selectAll: "Alles auswählen",
+                    selectNone: "Keine auswählen"
+                },
+                "select": {
+                    "rows": {
+                        _: '%d Zeilen ausgewählt',
+                        0: 'Zeile anklicken um auszuwählen',
+                        1: 'Eine Zeile ausgewählt'
+                    }
+                }
+            },
+            "select": {
+                "style": 'multi'
+            },
+            "columnDefs": [
+                {
+                    "targets": [0],
+                    visible: false,
+                },
+                {
+                    "targets": [3],
+                    visible: false,
+                }
+            ], searching: false, paging: false
+        });
+
+        loadData();
+
+    });
+
+    function loadData() {
+        let activeTable = document.getElementById('table_data');
+        for (let r = 1, n = activeTable.rows.length; r < n; r++) {
+            table.rows().eq(0).each(function (index) {
+                let row = table.row(index);
+                let data = row.data();
+
+                let date = activeTable.rows[r].cells[0].innerHTML;
+
+                let b = activeTable.rows[r].cells[1].innerHTML === "true";
+                //console.log(data.toString() + "[" + date + " | " + b + "| " + activeTable.rows[r].cells[1].innerHTML + "]");
+                if (data.toString().includes(date) && b) {
+                    row.select();
+                }
+            });
+        }
+    }
+
+    function save() {
+        let data = table.rows({
+
+            selected: true
+
+        }).data();
+
+        let el = [];
+        for (let i = 0; i < data.length; i++) {
+            el.push(data[i][3]);
+        }
+
+
+        let uuid = document.getElementById("uuid").innerText;
+        window.location = "/messdiener/save/mapping?uuid=" + uuid + "&date=" + el;
+    }
+
+</script>
+
+<div class="modal fade" id="edit">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+
+            <form method="post" action="/messdiener/save" class="was-validated">
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="text-center">
+
+                        <script src="https://cdn.lordicon.com/pzdvqjsp.js"></script>
+                        <lord-icon
+                                src="https://cdn.lordicon.com/xzksbhzh.json"
+                                trigger="loop"
+                                delay="2000"
+                                style="width:100px;height:100px">
+                        </lord-icon>
+                        <h4>Messdiener bearbeiten</h4>
+                        <h6>Hier kannst du die Daten bearbeiten. </h6>
+
+                    </div>
+
+                    <div class="m-2">
+                        <div class="row mb-1">
+
+                            <div class="col">
+
+                                <div class="form-floating ">
+                                    <input type="text" class="form-control" id="firstname"
+                                           name="firstname" required th:value="${person.getFirstname()}">
+                                    <label for="firstname">Vorname</label>
+                                </div>
+
+                            </div>
+                            <div class="col">
+                                <div class="form-floating mb-1">
+                                    <input type="text" class="form-control" id="lastname"
+                                           name="lastname" required th:value="${person.getLastname()}">
+                                    <label for="lastname">Nachname</label>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <hr>
+                        <div class="form-floating mb-1">
+                            <input type="text" class="form-control" id="adress" name="adress" required
+                                   th:value="${person.getAdress()}">
+                            <label for="adress">Adresse</label>
+                        </div>
+                        <div class="form-floating mb-1">
+                            <input type="date" class="form-control" id="birthday" required
+                                   name="birthday" th:value="${person.getEnglishDate()}">
+                            <label for="birthday">Geburtsdatum</label>
+                        </div>
+
+                        <div class="form-floating mb-1">
+                            <input type="text" class="form-control" id="phone" name="phone" required
+                                   th:value="${person.getPhone()}">
+                            <label for="phone">Festnetz</label>
+                        </div>
+                        <div class="form-floating mb-1">
+                            <input type="text" class="form-control" id="mobile-child" required
+                                   th:value="${person.getMobile_child()}"
+                                   name="mobile_child">
+                            <label for="mobile-child">Handy (Kind)</label>
+                        </div>
+                        <div class="form-floating mb-1">
+                            <input type="text" class="form-control" id="mobile-parents" required
+                                   th:value="${person.getMobile_parents()}"
+                                   name="mobile_parents">
+                            <label for="mobile-parents">Handy (Eltern)</label>
+                        </div>
+                        <div class="form-floating mb-1">
+                            <input type="text" class="form-control" id="mail-child" required
+                                   th:value="${person.getMail_child()}"
+                                   name="email_child">
+                            <label for="mail-child">E-Mail (Kind)</label>
+                        </div>
+                        <div class="form-floating mb-1">
+                            <input type="text" class="form-control" id="mail-parents" required
+                                   th:value="${person.getMail_parents()}"
+                                   name="email_parents">
+                            <label for="mail-parents">E-Mail (Eltern)</label>
+                        </div>
+
+                    </div>
+
+                    <input name="uuid" th:value="${person.getUUID()}" class="invisible">
+                    <input name="notes" th:value="${person.getNotes()}" class="invisible">
+
+                    <div class="d-flex">
+
+                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                            Abbrechen
+                        </button>
+                        <button type="submit" class="btn btn-success btn-block flex-fill m-1">Speichern</button>
+
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- The Modal -->
+<div class="modal fade" id="delete">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="text-center">
+
+                    <script src="https://cdn.lordicon.com/xdjxvujz.js"></script>
+                    <lord-icon
+                            src="https://cdn.lordicon.com/inrunzby.json"
+                            trigger="loop"
+                            delay="4000"
+                            colors="primary:#ffc738,secondary:#ffffff"
+                            style="width:100px;height:100px">
+                    </lord-icon>
+                    <h4><span th:text="${person.getFirstname()}"></span> löschen</h4>
+                    <h6>Bist du sicher, dass du dieses <span th:text="${person.getFirstname()}"></span> löschen
+                        möchtest?</h6>
+                    <div class="d-flex">
+
+                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                            Abbrechen
+                        </button>
+                        <a type="button"
+                           th:href="'/messdiener/delete?uuid=' + ${person.getUUID()}"
+                           class="btn btn-danger btn-block flex-fill m-1">Löschen</a>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<form th:method="post" th:action="@{/messdiener/save/file}" enctype="multipart/form-data">
+    <div class="modal fade" id="files">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="text-center">
+
+                        <script src="https://cdn.lordicon.com/qjzruarw.js"></script>
+                        <lord-icon
+                                src="https://cdn.lordicon.com/xzksbhzh.json"
+                                trigger="loop"
+                                delay="4000"
+                                style="width:100px;height:100px">
+                        </lord-icon>
+                        <h4>File Upload</h4>
+                        <h6>Lade eine Datei hoch</h6>
+                    </div>
+
+                    <div class="mb-3">
+
+                        <div class="list-group list-group-flush">
+                            <a th:each="file:${person.getFiles()}" th:href="'/messdiener/delete/file?person=' + ${person.getUUID()} + '&uuid=' + ${file.getUUID()}"
+                               class="list-group-item list-group-item-action">
+                                <span class="mdi mdi-delete"></span>
+                                <span th:text="${file.getName().split('_')[2]}"></span></a>
+                        </div>
+
+                    </div>
+
+                    <div class=" mb-3 mt-3">
+                        <input name="uuid" th:value="${person.getUUID()}" class="d-none">
+                        <input type="file" class="form-control" id="name" placeholder="Enter email" name="file">
+                    </div>
+
+                    <div class="d-flex">
+
+                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                            Schließen
+                        </button>
+
+                        <button type="submit" class="btn btn-success btn-block flex-fill m-1">
+                            Speichern
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</form>
+
+
+
+<form th:method="post" th:action="@{/messdiener/save/img}" enctype="multipart/form-data">
+    <div class="modal fade" id="img">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="text-center">
+
+                        <script src="https://cdn.lordicon.com/qjzruarw.js"></script>
+                        <lord-icon
+                                src="https://cdn.lordicon.com/xzksbhzh.json"
+                                trigger="loop"
+                                delay="4000"
+                                style="width:100px;height:100px">
+                        </lord-icon>
+                        <h4>Bild Upload</h4>
+                        <h6>Lade ein Bild hoch</h6>
+                    </div>
+
+
+                    <div class=" mb-3 mt-3">
+                        <input name="uuid" th:value="${person.getUUID()}" class="d-none">
+                        <input type="file" class="form-control" id="img_f" placeholder="Enter email" name="file">
+                    </div>
+
+                    <div class="d-flex">
+
+                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                            Schließen
+                        </button>
+
+                        <button type="submit" class="btn btn-success btn-block flex-fill m-1">
+                            Speichern
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</form>
+
+</html>

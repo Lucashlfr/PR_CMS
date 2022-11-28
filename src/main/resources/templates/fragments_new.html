@@ -12,12 +12,13 @@
     <!-- Tell the browser to be responsive to screen width -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex,nofollow">
-    <title>PR CMS</title>
-    <link th:href="@{/dist/css/styles.css}" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
+    <title>PR MS</title>
+    <link th:href="@{/dist/css/styles.css}" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet"/>
     <!--<script data-search-pseudo-elements defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/all.min.js" crossorigin="anonymous"></script>
     -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.28.0/feather.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.28.0/feather.min.js"
+            crossorigin="anonymous"></script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@6.5.95/css/materialdesignicons.min.css">
     <script th:src="@{/script/imports/jquery.min.js}"></script>
@@ -30,35 +31,80 @@
             background-color: lightgray;
         }
 
+        .sidenav-menu-heading {
+            margin-bottom: 0 !important;
+            padding-bottom: 0 !important;
+        }
+
     </style>
 </head>
 
-<nav th:fragment="topnav" class="topnav navbar navbar-expand shadow justify-content-between justify-content-sm-start navbar-light bg-white" id="sidenavAccordion">
+<nav th:fragment="topnav"
+     class="topnav navbar navbar-expand shadow justify-content-between justify-content-sm-start navbar-light bg-white"
+     id="sidenavAccordion">
     <!-- Sidenav Toggle Button-->
-    <button class="btn btn-icon btn-transparent-dark order-1 order-lg-0 me-2 ms-lg-2 me-lg-0" id="sidebarToggle"><i data-feather="menu"></i></button>
+    <button class="btn btn-icon btn-transparent-dark order-1 order-lg-0 me-2 ms-lg-2 me-lg-0" id="sidebarToggle"><i
+            data-feather="menu"></i></button>
     <!-- Navbar Brand-->
     <!-- * * Tip * * You can use text or an image for your navbar brand.-->
     <!-- * * * * * * When using an image, we recommend the SVG format.-->
     <!-- * * * * * * Dimensions: Maximum height: 32px, maximum width: 240px-->
-    <a class="navbar-brand pe-3 ps-4 ps-lg-2" href="/">CMS | Pfarei Bellheim</a>
+    <a class="navbar-brand pe-3 ps-4 ps-lg-2" href="/">MS | Pfarei Bellheim</a>
     <!-- Navbar Search Input-->
     <!-- * * Note: * * Visible only on and above the lg breakpoint-->
 
     <!-- Navbar Items-->
     <ul class="navbar-nav align-items-center ms-auto">
+        <!-- Documentation Dropdown-->
+        <li class="nav-item dropdown no-caret d-none d-md-block me-3">
+            <a class="nav-link dropdown-toggle" id="navbarDropdownDocs" href="javascript:void(0);" role="button"
+               data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <div class="fw-500">Dokumentation</div>
+                <i class="dropdown-arrow" data-feather="chevron-right"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end py-0 me-sm-n15 me-lg-0 o-hidden animated--fade-in-up"
+                 aria-labelledby="navbarDropdownDocs">
+                <a class="dropdown-item py-3" href="/public/documentation" target="_blank">
+                    <div class="icon-stack bg-primary-soft text-primary me-4"><i data-feather="book"></i></div>
+                    <div>
+                        <div class="small text-gray-500">Dokumentation</div>
+                        Gebrauchsanweisung und Hinweise
+                    </div>
+                </a>
+                <div class="dropdown-divider m-0"></div>
+                <a class="dropdown-item py-3" href="/public/changelog"
+                   target="_blank">
+                    <div class="icon-stack bg-primary-soft text-primary me-4"><i data-feather="file-text"></i></div>
+                    <div>
+                        <div class="small text-gray-500">Changelog</div>
+                        Aktualisierungen und Änderungen
+                    </div>
+                </a>
+            </div>
+        </li>
         <!-- Messages Dropdown-->
         <li class="nav-item dropdown no-caret d-none d-sm-block me-3 dropdown-notifications">
-            <a class="btn btn-icon btn-transparent-dark dropdown-toggle" id="navbarDropdownMessages" href="javascript:void(0);" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i data-feather="mail"></i></a>
-            <div class="dropdown-menu dropdown-menu-end border-0 shadow animated--fade-in-up" aria-labelledby="navbarDropdownMessages">
+            <a class="btn btn-icon btn-transparent-dark dropdown-toggle" id="navbarDropdownMessages"
+               href="javascript:void(0);" role="button" data-bs-toggle="dropdown" aria-haspopup="true"
+               aria-expanded="false"><i data-feather="mail"></i></a>
+            <div class="dropdown-menu dropdown-menu-end border-0 shadow animated--fade-in-up"
+                 aria-labelledby="navbarDropdownMessages">
                 <h6 class="dropdown-header dropdown-notifications-header">
                     <i class="me-2" data-feather="mail"></i>
                     Message Center
                 </h6>
                 <!-- Example Message 1  -->
                 <a class="dropdown-item dropdown-notifications-item" href="#!">
-                    <img class="dropdown-notifications-item-img" th:src="@{/dist/assets/img/illustrations/profiles/profile-1.png}" />
+                    <img class="dropdown-notifications-item-img"
+                         th:src="@{/dist/assets/img/illustrations/profiles/profile-1.png}"/>
                     <div class="dropdown-notifications-item-content">
-                        <div class="dropdown-notifications-item-content-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
+                        <div class="dropdown-notifications-item-content-text">Lorem ipsum dolor sit amet, consectetur
+                            adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+                            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
+                            fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
+                            officia deserunt mollit anim id est laborum.
+                        </div>
                         <div class="dropdown-notifications-item-content-details">Colby Newton · 3d</div>
                     </div>
                 </a>
@@ -68,13 +114,17 @@
         </li>
         <!-- User Dropdown-->
         <li class="nav-item dropdown no-caret dropdown-user me-3 me-lg-4">
-            <a class="btn btn-icon btn-transparent-dark dropdown-toggle" id="navbarDropdownUserImage" href="javascript:void(0);" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <img class="img-fluid" th:src="@{/dist/assets/img/illustrations/profiles/profile-1.png}" /></a>
-            <div class="dropdown-menu dropdown-menu-end border-0 shadow animated--fade-in-up" aria-labelledby="navbarDropdownUserImage">
+            <a class="btn btn-icon btn-transparent-dark dropdown-toggle" id="navbarDropdownUserImage"
+               href="javascript:void(0);" role="button" data-bs-toggle="dropdown" aria-haspopup="true"
+               aria-expanded="false">
+                <img class="img-fluid" th:src="${session.sessionUser.getImgAdress()}"/></a>
+            <div class="dropdown-menu dropdown-menu-end border-0 shadow animated--fade-in-up"
+                 aria-labelledby="navbarDropdownUserImage">
                 <h6 class="dropdown-header d-flex align-items-center">
-                    <img class="dropdown-user-img" th:src="@{/dist/assets/img/illustrations/profiles/profile-1.png}" />
+                    <img class="dropdown-user-img" th:src="${session.sessionUser.getImgAdress()}"/>
                     <div class="dropdown-user-details">
-                        <div class="dropdown-user-details-name" th:text="${session.sessionUser.getFirstname()} + ' ' + ${session.sessionUser.getLastname()}"></div>
+                        <div class="dropdown-user-details-name"
+                             th:text="${session.sessionUser.getFirstname()} + ' ' + ${session.sessionUser.getLastname()}"></div>
                         <div class="dropdown-user-details-email" th:text="${session.sessionUser.getEmail()}"></div>
                     </div>
                 </h6>
@@ -102,34 +152,132 @@
                     Home
                 </a>
                 <!-- Sidenav Heading (Custom)-->
-                <div class="sidenav-menu-heading">CMS</div>
-                <!-- Sidenav Accordion (Pages)-->
-                <a class="nav-link collapsed" href="/tickets">
-                    <div class="nav-link-icon"><i data-feather="grid"></i></div>
-                    Tickets
-                </a>
-                <!-- Sidenav Accordion (Applications)-->
-                <a class="nav-link collapsed" href="/calendar">
-                    <div class="nav-link-icon"><i data-feather="calendar"></i></div>
-                    Kalender
-                </a>
-                <!-- Sidenav Accordion (Flows)-->
-                <a class="nav-link collapsed" href="javascript:void(0);">
-                    <div class="nav-link-icon"><i data-feather="repeat"></i></div>
-                    Flows
-                </a>
+                <section th:if="${session.sessionUser.userHasPermission('CMS')}">
+                    <div class="sidenav-menu-heading">CMS</div>
+                    <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse"
+                       data-bs-target="#collapseCMS" aria-expanded="false" aria-controls="collapseCMS">
+                        <div class="nav-link-icon"><i data-feather="file-text"></i></div>
+                        CMS
+                        <div class="sidenav-collapse-arrow"><i data-feather="chevron-down"></i></div>
+                    </a>
+                    <div class="collapse" id="collapseCMS" data-bs-parent="#accordionSidenav">
+                        <nav class="sidenav-menu-nested nav accordion" id="accordionSidenavLayout1">
+                            <!-- Sidenav Accordion (Pages)-->
+                            <a class="nav-link" href="/taskCenter">
+                                <div class="nav-link-icon"><i data-feather="aperture"></i></div>
+                                Task Center
+                            </a>
+                            <a class="nav-link" href="/tickets">
+                                <div class="nav-link-icon"><i data-feather="grid"></i></div>
+                                Tickets
+                            </a>
+                            <!-- Sidenav Accordion (Applications)-->
+                            <a class="nav-link" href="/calendar">
+                                <div class="nav-link-icon"><i data-feather="calendar"></i></div>
+                                Kalender
+                            </a>
+                        </nav>
+                    </div>
+                </section>
+                <!-- Gottesdienste -->
+                <section th:if="${session.sessionUser.userHasPermission('WS')}">
+                    <div class="sidenav-menu-heading">Gottesdienste</div>
+                    <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse"
+                       data-bs-target="#collapseWS" aria-expanded="false" aria-controls="collapseFlows">
+                        <div class="nav-link-icon"><i data-feather="map"></i></div>
+                        Gottesdienste
+                        <div class="sidenav-collapse-arrow"><i data-feather="chevron-down"></i></div>
+                    </a>
+                    <div class="collapse" id="collapseWS" data-bs-parent="#accordionSidenav">
+                        <nav class="sidenav-menu-nested nav accordion" id="collapseWSLayout">
+                            <!-- Sidenav Accordion (Pages)-->
+                            <a class="nav-link" href="/worship">
+                                <div class="nav-link-icon"><i data-feather="grid"></i></div>
+                                Übersicht
+                            </a>
+                        </nav>
+                    </div>
+                </section>
+
+                <!-- FLOWS -->
+                <section th:if="${session.sessionUser.userHasPermission('FLOWS')}">
+                    <div class="sidenav-menu-heading">Flows</div>
+                    <a class="nav-link" href="/flows">
+                        <div class="nav-link-icon"><i data-feather="repeat"></i></div>
+                        Flows
+                    </a>
+                </section>
+
+                <!-- MMS -->
+                <section th:if="${session.sessionUser.userHasPermission('MMS')}">
+                    <div class="sidenav-menu-heading">MMS</div>
+                    <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse"
+                       data-bs-target="#collapseMMS" aria-expanded="false" aria-controls="collapseMMS">
+                        <div class="nav-link-icon"><i data-feather="users"></i></div>
+                        Messdiener Management
+                        <div class="sidenav-collapse-arrow"><i data-feather="chevron-down"></i></div>
+                    </a>
+                    <div class="collapse" id="collapseMMS" data-bs-parent="#accordionSidenav">
+                        <nav class="sidenav-menu-nested nav accordion" id="collapseMMSLayout">
+                            <!-- Sidenav Accordion (Pages)-->
+                            <a class="nav-link" href="/messdiener">
+                                <div class="nav-link-icon"><i data-feather="user"></i></div>
+                                Personen
+                            </a>
+                            <a class="nav-link" href="/messdiener/group" th:if="${session.sessionUser.userHasPermission('mms_admin')}">
+                                <div class="nav-link-icon"><i data-feather="grid"></i></div>
+                                Gruppen
+                            </a>
+                            <a class="nav-link" href="/finance">
+                                <div class="nav-link-icon"><i data-feather="dollar-sign"></i></div>
+                                Finanzen
+                            </a>
+                            <a class="nav-link" href="/group/session">
+                                <div class="nav-link-icon"><i data-feather="clock"></i></div>
+                                Gruppenstunden
+                            </a>
+                        </nav>
+                    </div>
+                </section>
+
+                <!-- MMS -->
+                <section th:if="${session.sessionUser.userHasPermission('CS')}">
+                    <div class="sidenav-menu-heading">Doc-Center</div>
+                    <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse"
+                       data-bs-target="#collapseDC" aria-expanded="false" aria-controls="collapseDC">
+                        <div class="nav-link-icon"><i data-feather="folder"></i></div>
+                        Document Center
+                        <div class="sidenav-collapse-arrow"><i data-feather="chevron-down"></i></div>
+                    </a>
+                    <div class="collapse" id="collapseDC" data-bs-parent="#accordionSidenav">
+                        <nav class="sidenav-menu-nested nav accordion" id="collapseDCLayout">
+                            <!-- Sidenav Accordion (Pages)-->
+                            <a class="nav-link" href="/dc/cloud">
+                                <div class="nav-link-icon"><i data-feather="cloud"></i></div>
+                                Cloud
+                            </a>
+                            <a class="nav-link" href="/dc/protocol">
+                                <div class="nav-link-icon"><i data-feather="bookmark"></i></div>
+                                Protokolle
+                            </a>
+                        </nav>
+                    </div>
+                </section>
+
+                <!-- ADMIN -->
                 <section th:if="${session.sessionUser.getGroup().toString()} == 'ADMIN'">
                     <!-- Sidenav Heading (UI Toolkit)-->
                     <div class="sidenav-menu-heading">Settings</div>
                     <!-- Sidenav Accordion (Layout)-->
-                    <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                    <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse"
+                       data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                         <div class="nav-link-icon"><i data-feather="settings"></i></div>
                         Admin
-                        <div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        <div class="sidenav-collapse-arrow"><i data-feather="chevron-down"></i></div>
                     </a>
                     <div class="collapse" id="collapseLayouts" data-bs-parent="#accordionSidenav">
                         <nav class="sidenav-menu-nested nav accordion" id="accordionSidenavLayout">
-                            <a class="nav-link" href="/admin/user">Benutzer</a>
+                            <a class="nav-link" href="/admin">Übersicht</a>
                             <a class="nav-link" href="/admin/perm">Berechtigungen</a>
                         </nav>
                     </div>
@@ -158,11 +306,12 @@
     </div>
 </footer>
 <body>
-    <div th:fragment="script">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-        <script th:src="@{/dist/js/scripts.js}"></script>
-        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
-        <script th:src="@{/script/imports/jquery.dataTables.min.js}"></script>
-    </div>
+<div th:fragment="script">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            crossorigin="anonymous"></script>
+    <script th:src="@{/dist/js/scripts.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
+    <script th:src="@{/script/imports/jquery.dataTables.min.js}"></script>
+</div>
 </body>
 </html>

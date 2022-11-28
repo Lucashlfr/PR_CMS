@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head th:insert="fragments_new :: html_head"></head>
+<body class="nav-fixed">
+<nav th:insert="fragments_new :: topnav"></nav>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav" th:insert="fragments_new :: sidbar"></div>
+    <div id="layoutSidenav_content">
+        <main>
+            <header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
+                <div class="container-xl px-4">
+                    <div class="page-header-content pt-4">
+                        <div class="row align-items-center justify-content-between">
+                            <div class="col-auto mt-4">
+                                <h1 class="page-header-title">
+                                    <div class="page-header-icon"><i data-feather="activity"></i></div>
+                                    Dashboard
+                                </h1>
+                                <div class="page-header-subtitle">Example dashboard overview and content summary</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- Main page content-->
+            <div class="container-xl px-4 mt-n10">
+                <div class="row">
+                    <div class="col-xxl-7">
+                        <!-- Tabbed dashboard card example-->
+                        <div class="card h-100 mb-4">
+                            <div class="card-body">
+                                <!-- Dashboard Tab Pane 2-->
+                                <table id="table_id" class="display" style="max-width: 100%">
+                                    <thead>
+                                    <tr>
+                                        <th>.</th>
+                                        <th>Date</th>
+                                        <th>Event</th>
+                                        <th>Time</th>
+                                    </tr>
+                                    </thead>
+                                    <tr>
+                                        <td>0</td>
+                                        <td>01/10/20</td>
+                                        <td>
+                                            <i class="me-2 text-blue" data-feather="user"></i>
+                                            Diane Chambers submitted
+                                            <a href="#!">quarter four report</a>
+                                        </td>
+                                        <td>10:56 AM</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-5">
+                        <div class="card card-header-actions h-100 mb-4">
+                            <div class="card-header">People
+                                <form>
+                                    <input class="form-control" placeholder="Search" onkeyup="myFunction()" id="search-input">
+                                </form>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush" id="myUL">
+                                    <!-- Item 1-->
+                                    <li class="list-group-item" th:each="user:${users}">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="d-flex align-items-center flex-shrink-0 me-3">
+                                                <div class="avatar avatar-xl me-3 bg-gray-200"><img
+                                                        class="avatar-img img-fluid"
+                                                        th:src="${user.getImgAdress()}"
+                                                        alt=""/></div>
+                                                <div class="d-flex flex-column fw-bold">
+                                                    <a class="text-dark line-height-normal mb-1"
+                                                       th:href="'/admin/user?user=' + ${user.getUser_UUID()}"
+                                                       th:text="${user.getName()}"></a>
+                                                    <div class="small text-muted line-height-normal"
+                                                         th:text="${user.getGroup().getName()}"></div>
+                                                </div>
+                                            </div>
+                                            <div class="dropdown no-caret">
+                                                <button class="btn btn-transparent-dark btn-icon dropdown-toggle"
+                                                        id="dropdownPeople1"
+                                                        type="button" data-bs-toggle="dropdown" aria-haspopup="true"
+                                                        aria-expanded="false"><i data-feather="more-vertical"></i>
+                                                </button>
+                                                <div class="dropdown-menu dropdown-menu-end animated--fade-in-up"
+                                                     aria-labelledby="dropdownPeople1">
+                                                    <a class="dropdown-item"
+                                                       th:href="'/admin/user?user=' + ${user.getUser_UUID()}">Bearbeiten</a>
+                                                    <a class="dropdown-item"
+                                                       th:href="'/admin/permUser?uuid=' + ${user.getUser_UUID()}">Rechte
+                                                        verwalten</a>
+                                                    <a class="dropdown-item" href="#!">Deaktivieren</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer th:insert="fragments_new :: footer"></footer>
+    </div>
+</div>
+<div th:insert="fragments_new :: script"></div>
+<script>
+    $(document).ready(function () {
+        $('#table_id').DataTable({
+            language: {
+                "decimal": ",",
+                "thousands": ".",
+                "infoPostFix": "",
+                "infoFiltered": "(gefiltert aus insgesamt _MAX_ Einträgen)",
+                "loadingRecords": "Bitte warten Sie - Daten werden geladen ...",
+                "lengthMenu": "Anzeigen von _MENU_ Einträgen",
+                "paginate": {
+                    "first": "Erste",
+                    "last": "Letzte",
+                    "next": "Nächste",
+                    "previous": "Zurück"
+                },
+                "processing": "Verarbeitung läuft ...",
+                "search": "Suche:",
+                "searchPlaceholder": "Suchbegriff",
+                "zeroRecords": "Keine Daten! Bitte ändern Sie Ihren Suchbegriff.",
+                "emptyTable": "Keine Einträge zum Anzeigen vorhanden",
+                "aria": {
+                    "sortAscending": ": aktivieren, um Spalte aufsteigend zu sortieren",
+                    "sortDescending": ": aktivieren, um Spalte absteigend zu sortieren"
+                },
+                "info": "Zeigt _START_ bis _END_  von _TOTAL_ Einträgen",
+                "infoEmpty": "Keine Einträge zum Anzeigen vorhanden",
+                "select": {
+                    "rows": {
+                        _: '%d Zeilen ausgewählt',
+                        0: 'Zeile anklicken um auszuwählen',
+                        1: 'Eine Zeile ausgewählt'
+                    }
+                }
+            },
+            "columnDefs": [
+                {
+                    "targets": [0],
+                    className: 'd-none'
+                }]
+        });
+
+        setTimeout(function () {
+            document.getElementById("content").classList.remove("d-none");
+            document.getElementById("load").classList.add("d-none");
+        }, 10);
+    });
+
+    function myFunction() {
+        // Declare variables
+        var input, filter, ul, li, a, i, txtValue;
+        input = document.getElementById('search-input');
+        filter = input.value.toUpperCase();
+        ul = document.getElementById("myUL");
+        li = ul.getElementsByTagName('li');
+
+        // Loop through all list items, and hide those who don't match the search query
+        for (i = 0; i < li.length; i++) {
+            a = li[i].getElementsByTagName("a")[0];
+            txtValue = a.textContent || a.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                li[i].style.display = "";
+            } else {
+                li[i].style.display = "none";
+            }
+        }
+    }
+
+</script>
+</body>
+</html>

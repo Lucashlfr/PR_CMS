@@ -1,18 +1,12 @@
 package de.messdiener.cms.app.services;
 
-import de.messdiener.cms.app.entities.ticket.Ticket;
-import de.messdiener.cms.app.entities.ticket.cache.TicketLink;
-import de.messdiener.cms.app.entities.ticket.cache.TicketLog;
-import de.messdiener.cms.app.entities.ticket.cache.TicketPerson;
-import de.messdiener.cms.app.entities.user.RegisterRequest;
+import de.messdiener.cms.app.entities.user.RegisterRequestEntity;
 import de.messdiener.cms.app.services.sql.DatabaseService;
 import de.messdiener.cms.cache.Cache;
-import de.messdiener.cms.cache.enums.TicketState;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -38,7 +32,7 @@ public class RegisterService {
         }
     }
 
-    public void save(RegisterRequest registerRequest) throws SQLException {
+    public void save(RegisterRequestEntity registerRequest) throws SQLException {
         databaseService.delete("module_register_requests", "uuid", registerRequest.getUUID().toString());
 
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
@@ -57,9 +51,9 @@ public class RegisterService {
         preparedStatement.executeUpdate();
     }
 
-    public Set<RegisterRequest> getRequests() throws SQLException {
+    public Set<RegisterRequestEntity> getRequests() throws SQLException {
 
-        Set<RegisterRequest> requests = new HashSet<>();
+        Set<RegisterRequestEntity> requests = new HashSet<>();
 
         ResultSet resultSet = databaseService.getConnection().prepareStatement(
                 "SELECT * FROM module_register_requests"
@@ -78,7 +72,7 @@ public class RegisterService {
 
             long requestDate = resultSet.getLong("requestDate");
 
-            RegisterRequest registerRequest = RegisterRequest.of(uuid, requestCode, username, firstname, lastname, password, email, requestDate);
+            RegisterRequestEntity registerRequest = RegisterRequestEntity.of(uuid, requestCode, username, firstname, lastname, password, email, requestDate);
 
             requests.add(registerRequest);
         }

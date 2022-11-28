@@ -41,6 +41,8 @@ public class DefaultController {
         model.addAttribute("tasks", Cache.TICKET_SERVICE.getTicketsByUser(user.getUser_UUID()));
         model.addAttribute("summery", new TicketSummery(user.getUser_UUID()));
 
+        model.addAttribute("team", Cache.USER_SERVICE.getTeam());
+
         SecurityHelper.addSessionUser(httpSession);
         return "index";
     }
@@ -52,7 +54,7 @@ public class DefaultController {
         model.addAttribute("tasks", Cache.TICKET_SERVICE.getTicketsByUser(user.getUser_UUID()));
         model.addAttribute("summery", new TicketSummery(user.getUser_UUID()));
 
-        return "taskCenter";
+        return "tickets/taskCenter";
     }
 
     @PostMapping("/search")
@@ -65,28 +67,13 @@ public class DefaultController {
         return new RedirectView("/");
     }
 
-    @GetMapping("/public/tickets")
-    @ResponseBody
-    public String getOverview(Model model) {
-        return "<h1>TEST";
+    @GetMapping("/public/documentation")
+    public String documentation(){
+        return "public/documentation";
     }
 
-    @GetMapping("/public/tickets/search")
-    public String getOverview(Model model, @RequestParam("uuid")UUID uuid) throws SQLException {
-        model.addAttribute("ticketsPerPerson", Cache.TICKET_SERVICE.getTicket(uuid).orElseThrow());
-        return "public/ticketPublicView";
-    }
-
-
-    private static String html1 = "";
-
-
-    @PostMapping("/editor/save")
-    public RedirectView editorSave(@RequestParam("html") String html) {
-
-        EmailEntity.generateNew("info@messdiener-knittelsheim.de", "[LOG] Service wurde gestertet! (ID: " + UUID.randomUUID() + ")", html, "https://cms.kath-pfarrei-bellheim.de");
-
-        html1 = html;
-        return new RedirectView("/editor");
+    @GetMapping("/public/changelog")
+    public String changeLog(){
+        return "public/changelog";
     }
 }

@@ -1,81 +1,177 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="de">
-<head>
-    <title>PR BEL CMS</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link th:href="@{/css/import/bootstrap.min.css}" rel="stylesheet">
-    <script th:src="@{/script/imports/jquery.min.js}"></script>
-    <script th:src="@{/script/imports/bootstrap.min.js}"></script>
+<head th:insert="fragments_new :: html_head"></head>
 
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@6.5.95/css/materialdesignicons.min.css">
-
-    <style>
-        .bg {
-            background-color: #EEF6FB;
-        }
-
-        .bg-g {
-            //background: #7aa141;
-            background-color: #0066B3;
-        }
-    </style>
-</head>
-<body class="bg-g">
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark sticky-top">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/templates/public">
-            <img th:src="@{/img/Logo_White.png}" style="max-width: 150px">
-        </a>
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark sticky-top" style="z-index: 5;">
+    <div class="container-fluid ">
+        <!-- <img src="https://messdiener-knittelsheim.de/wp-content/uploads/2022/08/Logo_White.png" style="max-width: 120px"> -->
+        <h1></h1>
+        <img src="https://messdiener-knittelsheim.de/wp-content/uploads/2022/08/Logo_White_Vollton.png"
+             style="max-width: 180px; margin-bottom: 5px!important;">
+        <h1></h1>
     </div>
 </nav>
-<br>
+<div id="container-fluid">
+    <main>
+        <header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
+            <div class="container-xl px-4">
+                <div class="page-header-content pt-4">
+                    <div class="row align-items-center justify-content-between">
+                        <div class="col-auto mt-4">
+                            <h1 class="page-header-title">
+                                <div class="page-header-icon"><h1 class="mdi mdi-book-plus text-white"></h1></div>
+                                Ticket-Auskunft
+                            </h1>
+                            <div class="page-header-subtitle text-white">Der Aktuelle Stand zu deinem Ticket!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Main page content-->
+        <div class="container-xl px-4 mt-n10">
 
-<div class="container">
+            <div class="card" th:if="${uuid.isEmpty()}">
 
-    <section th:each="ticket:${ticketsPerPerson}">
-        <div class="card border border-0" style="max-width: 1148px; max-height: 510px">
-            <div class="card-body bg">
+                <div class="card-header text-center">
+                    <h1 class="" style="margin-bottom: 0!important;"><span
+                            class="mdi mdi-search-web"></span> Ticket suchen</h1>
+                </div>
 
-                <h2><span class="mdi mdi-newspaper-variant-outline"></span> Antrag: <span
-                        th:text="${ticket.getTicketPerson().getAssociation()}"></span>
-                </h2>
+                <div class="card-body">
+                    <form th:action="@{/public/tickets}" th:method="get" class="was-validated">
+                        <div class="form-floating mb-3 mt-3">
+                            <input type="text" class="form-control" id="uuid" placeholder="Enter email" name="uuid">
+                            <label for="uuid">Ticket-UUID</label>
+                        </div>
+                        <div class="d-flex">
 
-                <div class="bg-g" style="height: 5px; margin-top: 5px; margin-bottom: 5px;"></div>
 
-                <h3><span th:class="${ticket.getTicketState().getIcon()}"></span> <span
-                        th:text="${ticket.getTicketState().getName()}"></span></h3>
+                            <button type="submit" class="btn btn-success btn-block flex-fill m-1">
+                                Suchen
+                            </button>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div th:if="${uuid.isPresent()}">
+                <div class="card mb-4">
+                    <div class="card-header">Stammdaten</div>
+                    <div class="card-body">
+                        <table class="table">
+                            <tbody>
+                            <tr>
+                                <td style="width: 200px"><span class="mdi mdi-access-point"/> Status:</td>
+                                <td><span th:class="${ticket.getTicketState().getIcon()}"></span> <span
+                                        th:text="${ticket.getTicketState().getName()}"></span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="mdi mdi-account"/> Bearbeiter:</td>
+                                <td th:text="${ticket.getEditor().getNameString()}"></td>
+                            </tr>
+                            <tr>
+                                <td><span class="mdi mdi-clock-plus"/> Erstellt am:</td>
+                                <td th:text="${ticket.getDates().getGermanDate_CREATED()}"></td>
+                            </tr>
+                            <tr>
+                                <td><span class="mdi mdi-calendar"></span> Deadline:</td>
+                                <td th:text="${ticket.getDates().getGermanDate_DEADLINE()}"></td>
+                            </tr>
+                            <tr>
+                                <td><span class="mdi mdi-update"></span> Letztes Update:</td>
+                                <td th:text="${ticket.getDates().getGermanDate_LASTUPDATE()}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card card-header-actions mb-4">
+                    <div class="card-header">
+                        Post Preview
+                        <i class="text-muted" data-feather="info" data-bs-toggle="tooltip" data-bs-placement="left"
+                           title="The post preview text shows below the post title, and is the post summary on blog pages."></i>
+                    </div>
+                    <div class="card-body text-center" id="load">
+                        <span class="spinner-border card-img" style="min-height: 200px; min-width: 200px;"></span>
+                    </div>
+
+                    <div class="card-body d-none" id="content">
+                        <div id="text" th:text="${ticket.getHTML()}"
+                             style="overflow-y: scroll; height:400px; overflow-x: scroll"></div>
+                    </div>
+                    <button onclick="update()" id="update" class="invisible">edit</button>
+                </div>
+                <div class="card card-header-actions mb-4 mb-lg-0">
+                    <div class="card-header">
+                        Workflow
+                        <i class="text-muted" data-feather="info" data-bs-toggle="tooltip" data-bs-placement="left"
+                           title="Markdown is supported within the post content editor."></i>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <tbody>
+                            <tr th:each="log:${ticket.getTicketLogs()}">
+                                <td style="width: 150px" th:text="${log.getGermandate()}"></td>
+                                <td th:text="${log.getText()}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
                 <br>
-
-                <table class="table">
-                    <tbody>
-                    <tr th:unless="${ticket.getTicketState().toString()} == 'REJECTED'">
-                        <td>Erstellt am:</td>
-                        <td th:text="${ticket.getDates().getGermanDateWithDay_CREATED()}"></td>
-                    </tr>
-                    <tr th:unless="${ticket.getTicketState().toString()} == 'REJECTED'">
-                        <td>Deadline:</td>
-                        <td th:text="${ticket.getDates().getGermanDateWithDay_DEADLINE()}"></td>
-                    </tr>
-                    <tr>
-                        <td style="width: 100px">Bearbeiter:</td>
-                        <td th:text="${ticket.getEditor().getUsername()}"></td>
-                    </tr>
-                    <tr th:if="${ticket.getTicketState().toString()} == 'REJECTED'">
-                        <td>Grund:</td>
-                        <td th:text="${ticket.getReason()}"></td>
-                    </tr>
-                    </tbody>
-                </table>
-
-                <button type="button" class="btn btn-outline-success ">Dokumente herunterladen</button>
-                <button type="button" class="btn btn-outline-primary mdi mdi-email"></button>
+                <div class="card card-header-actions mb-4 mb-lg-0" th:if="${ticket.getTicketLinks().size() > 0}">
+                    <div class="card-header">
+                        Angehängte Dateien
+                        <i class="text-muted" data-feather="info" data-bs-toggle="tooltip" data-bs-placement="left"
+                           title="Markdown is supported within the post content editor."></i>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush">
+                            <a th:each="link:${ticket.getTicketLinks()}" th:href="${link.getLink()}" target="_blank"
+                               class="list-group-item list-group-item-action"><span class="mdi mdi-download"
+                                                                                    style="margin-right: 5px"></span><span
+                                    th:text="${link.getName()}"></span> </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <br/>
-    </section>
+    </main>
+    <footer class="footer-admin mt-auto footer-light">
+        <div class="container-xl px-4">
+            <div class="row">
+                <div class="col-md-6 small">Copyright &copy; Lucas Helfer 2021</div>
+                <div class="col-md-6 text-md-end small">
+                    <a href="#!">Privacy Policy</a>
+                    &middot;
+                    <a href="#!">Terms &amp; Conditions</a>
+                </div>
+            </div>
+        </div>
+    </footer>
 </div>
-<br>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 </body>
+
+<script>
+
+    function update() {
+        document.getElementById("text").innerHTML = document.getElementById("text").innerText;
+    }
+
+    $(document).ready(function () {
+        setTimeout(function () {
+            document.getElementById("update").click();
+            document.getElementById("content").classList.remove("d-none");
+            document.getElementById("load").classList.add("d-none");
+        }, 250);
+    });
+
+</script>
+
 </html>

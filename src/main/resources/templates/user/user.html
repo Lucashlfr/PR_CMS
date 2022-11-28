@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head th:insert="fragments_new :: html_head"></head>
+<body class="nav-fixed">
+<nav th:insert="fragments_new :: topnav"></nav>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav" th:insert="fragments_new :: sidbar"></div>
+    <div id="layoutSidenav_content">
+        <main>
+            <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+                <div class="container-xl px-4">
+                    <div class="page-header-content">
+                        <div class="row align-items-center justify-content-between pt-3">
+                            <div class="col-auto mb-3">
+                                <h1 class="page-header-title">
+                                    <div class="page-header-icon"><i data-feather="user"></i></div>
+                                    Profil bearbeiten
+                                </h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- Main page content-->
+            <div class="container-xl px-4 mt-4">
+                <!-- Account page navigation-->
+                <div class="row">
+                    <div class="col-xl-4">
+                        <!-- Profile picture card-->
+                        <div class="card mb-4 mb-xl-0">
+                            <div class="card-header">Profilbild</div>
+                            <div class="card-body text-center">
+                                <!-- Profile picture image-->
+                                <img class="img-account-profile rounded-circle mb-4"
+                                     th:src="${user.getImgAdress()}" alt=""/>
+                                <!-- Profile picture help block-->
+                                <br>
+                                <button class="btn btn-primary" type="button" data-bs-toggle="modal"
+                                        data-bs-target="#profileImg">Bild ändern
+                                </button>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="card mb-4 mb-xl-0">
+                            <div class="card-header">Passwort ändern</div>
+                            <div class="card-body ">
+                                <!-- Profile picture upload button-->
+                                <div class="text-center">
+                                    <button class="btn btn-primary" type="button"><span class="mdi mdi-security"
+                                                                                        style="margin-right: 5px"></span>
+                                        Passwort ändern
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-8">
+                        <!-- Account details card-->
+                        <form th:action="@{/settings/save/user}" th:method="post" class="was-validated">
+                            <div class="card mb-4" style="height: 100%">
+
+                                <div class="card-header">Account Details</div>
+                                <div class="card-body">
+                                    <!-- Form Group (username)-->
+                                    <div class="mb-3">
+                                        <label class="small mb-1" for="inputUsername">Benutzername</label>
+                                        <input class="form-control" id="inputUsername" type="text" name="username"
+                                               placeholder="Benutzername eingeben" th:value="${user.getUsername()}"
+                                               required/>
+                                    </div>
+                                    <!-- Form Row-->
+                                    <div class="row gx-3 mb-3">
+                                        <!-- Form Group (first name)-->
+                                        <div class="col-md-6">
+                                            <label class="small mb-1" for="inputFirstName">Vorname</label>
+                                            <input class="form-control" id="inputFirstName" type="text" name="firstname"
+                                                   th:value="${user.getFirstname()}" required/>
+                                        </div>
+                                        <!-- Form Group (last name)-->
+                                        <div class="col-md-6">
+                                            <label class="small mb-1" for="inputLastName">Nachname</label>
+                                            <input class="form-control" id="inputLastName" type="text" name="lastname"
+                                                   th:value="${user.getLastname()}" required>
+                                        </div>
+                                    </div>
+                                    <!-- Form Group (email address)-->
+                                    <div class="mb-3">
+                                        <label class="small mb-1" for="inputEmailAddress">Email Adresse</label>
+                                        <input class="form-control" id="inputEmailAddress" type="email" name="email"
+                                               th:value="${user.getEmail()}" required>
+                                    </div>
+                                </div>
+                                <!-- Save changes button-->
+                                <div class="card-footer">
+                                    <button class="btn btn-primary" type="submit">Speichern</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer th:insert="fragments_new :: footer"></footer>
+    </div>
+</div>
+<div th:insert="fragments_new :: script"></div>
+</body>
+
+<form th:action="@{/settings/save/img}" th:method="post" class="was-validated" enctype="multipart/form-data">
+    <div class="modal fade" id="profileImg">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="text-center">
+
+                        <script src="https://cdn.lordicon.com/xdjxvujz.js"></script>
+                        <lord-icon
+                                src="https://cdn.lordicon.com/zthozvfn.json"
+                                trigger="loop"
+                                delay="4000"
+                                style="width:100px;height:100px">
+                        </lord-icon>
+                        <h4>Profilbild</h4>
+                        <h6>Ändere dein Profilbild - Bitte beachte, die Datei darf maximal 5 MB groß sein</h6>
+                    </div>
+                    <!--
+                    <div class="row">
+
+                        <div class="col-xl-2"></div>
+                        <div class="col-xl-4">
+                            <div class="form-check mb-3 ">
+                                <input type="radio" class="form-check-input" id="radio1" name="optradio" value="1">
+                                Avatar 1<br>
+                                <img class="avatar avatar-xxl avatar-img img-fluid"
+                                     th:src="@{/dist/assets/img/illustrations/profiles/profile-1.png}">
+                                <label class="form-check-label" for="radio1"></label>
+                            </div>
+                        </div>
+                        <div class="col-xl-4">
+                            <div class="form-check mb-3">
+                                <input type="radio" class="form-check-input" id="radio2" name="optradio" value="2">
+                                Avatar 2<br>
+                                <img class="avatar avatar-xxl avatar-img img-fluid"
+                                     th:src="@{/dist/assets/img/illustrations/profiles/profile-2.png}">
+                                <label class="form-check-label" for="radio1"></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+
+                        <div class="col-xl-2"></div>
+                        <div class="col-xl-4">
+                            <div class="form-check mb-3">
+                                <input type="radio" class="form-check-input" id="radio3" name="optradio" value="3">
+                                Avatar 3<br>
+                                <img class="avatar avatar-xxl avatar-img img-fluid"
+                                     th:src="@{/dist/assets/img/illustrations/profiles/profile-3.png}">
+                                <label class="form-check-label" for="radio1"></label>
+                            </div>
+                        </div>
+                        <div class="col-xl-4">
+                            <div class="form-check mb-3">
+                                <input type="radio" class="form-check-input" id="radio4" name="optradio" value="5">
+                                Avatar 4<br>
+                                <img class="avatar avatar-xxl avatar-img img-fluid"
+                                     th:src="@{/dist/assets/img/illustrations/profiles/profile-5.png}">
+                                <label class="form-check-label" for="radio1"></label>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+
+                            <button type="button" class="btn btn-dark btn-block flex-fill m-1" data-bs-dismiss="modal">
+                                Schließen
+                            </button>
+                            <button type="submit" class="btn btn-success btn-block flex-fill m-1">
+                                Speichern
+                            </button>
+                        </div>
+                    </div>
+                    -->
+
+
+                    <div class=" mb-3 mt-3">
+                        <input type="file" class="form-control" id="name" placeholder="Enter email" name="file" accept="image/png, image/jpeg" required>
+                    </div>
+                    <div class="d-flex">
+
+                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                            Schließen
+                        </button>
+
+                        <button type="submit" class="btn btn-success btn-block flex-fill m-1">
+                            Speichern
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+</form>
+
+</html>

@@ -33,7 +33,7 @@
                                         th:text="${summery.getAllocatedTickets()}"></span> Aufgaben!</h2>
                             </div>
                             <div class="col d-none d-lg-block mt-xxl-n4"><img class="img-fluid px-xl-4 mt-xxl-n5"
-                                                                              src="http://portal.messdiener-knittelsheim.de/css-files/assets/img/illustrations/statistics.svg"/>
+                                                                              th:src="@{/dist/assets/img/illustrations/statistics.svg}"/>
                             </div>
                         </div>
                     </div>
@@ -102,7 +102,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card mb-4 mt-5">
+                <div class="card mb-4">
                     <div class="card-header">Deine Aufgaben</div>
                     <div class="card-body p-5">
                         <div class="list-group">

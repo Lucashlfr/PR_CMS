@@ -1,7 +1,7 @@
 package de.messdiener.cms.app.services.mail.utils;
 
 import de.messdiener.cms.app.entities.ticket.Ticket;
-import de.messdiener.cms.app.entities.user.RegisterRequest;
+import de.messdiener.cms.app.entities.user.RegisterRequestEntity;
 import de.messdiener.cms.app.entities.user.User;
 
 public class MailTemplates {
@@ -34,12 +34,4 @@ public class MailTemplates {
         return "1";
     }
 
-    public static String createTemplate_Verification(RegisterRequest registerRequest){
-
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Hallo ").append(registerRequest.getFirstname()).append(", <br><br>dein Code lautet: <br>").append(registerRequest.getRequestCode())
-                .append("<br><br>").append(createAdoption());
-
-        return stringBuilder.toString();
-    }
 }

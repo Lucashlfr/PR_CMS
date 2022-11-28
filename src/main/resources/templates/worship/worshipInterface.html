@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head th:insert="fragments_new :: html_head"></head>
+<body class="nav-fixed">
+<nav th:insert="fragments_new :: topnav"></nav>
+<script src="https://cdn.lordicon.com/pzdvqjsp.js"></script>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav" th:insert="fragments_new :: sidbar"></div>
+    <div id="layoutSidenav_content">
+        <main>
+            <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+                <div class="container px-4">
+                    <div class="page-header-content">
+                        <div class="row align-items-center justify-content-between pt-3">
+                            <div class="col-auto mb-3">
+                                <h1 class="page-header-title">
+                                    <div class="page-header-icon"><i data-feather="map"></i></div>
+                                    Gottesdienste
+                                </h1>
+                            </div>
+                            <div class="col-12 col-xl-auto mb-3">
+                                <a class="btn btn-sm btn-light text-primary" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#duties">
+                                    <i class="me-1 mdi mdi-church"></i>
+                                    Einteilen
+                                </a>
+                                <a class="btn btn-sm btn-light text-primary" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#edit">
+                                    <i class="me-1 mdi mdi-home-edit"></i>
+                                    Bearbeiten
+                                </a>
+                                <a class="btn btn-sm btn-light text-primary" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#reject">
+                                    <i class="me-1 mdi mdi-delete"></i>
+                                    Löschen
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- Main page content-->
+            <div class="container px-4">
+                <div class="row">
+
+                    <div class="col-xl-2">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <lord-icon
+                                        src="https://cdn.lordicon.com/drvsrrac.json"
+                                        trigger="loop"
+                                        delay="8000"
+                                        style="width:170px;height:170px">
+                                </lord-icon>
+                                <h3 style="margin-bottom: 0px !important;" th:text="${event.getEventType().getName()}"></h3>
+                                <h6 style="margin-bottom: 0px !important;" class="text-primary"
+                                    th:text="${event.getGermanDate()}"></h6>
+                                <h6 class="text-primary" th:text="${event.getoGroup().getName()}"></h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card h-100">
+                            <div class="card-body">
+
+                                <table class="table table-bordered">
+
+                                    <tbody>
+                                    <tr>
+                                        <td>UUID</td>
+                                        <td id="uuid" th:text="${event.getUUID()}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 250px!important;">Obermessdiener</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Eingeteilt</td>
+                                        <td th:text="${event.getPersons()}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Verfügbar</td>
+                                        <td th:text="${event.getAvailablePersonsString()}"></td>
+                                    </tr>
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+        <footer th:insert="fragments_new :: footer"></footer>
+    </div>
+</div>
+<div th:insert="fragments_new :: script"></div>
+</body>
+
+<!-- The Modal -->
+<div class="modal fade" id="duties">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="text-center">
+
+                    <lord-icon
+                            src="https://cdn.lordicon.com/ckatldkn.json"
+                            trigger="loop"
+                            delay="2000"
+                            style="width:100px;height:100px">
+                    </lord-icon>
+                    <h4>Messdiener einteilen</h4>
+                    <h6>Teile die Messdiener ein. </h6>
+
+                </div>
+
+                <div class="m-2 card card-body">
+                    <table id="table_id_select" class="display" style="min-width: 100%">
+                        <thead>
+                        <tr>
+                            <th>Name, Vorname</th>
+                            <th>Dienste</th>
+                            <th>UUID</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="messdiener:${event.getAvailablePersons()}">
+                            <td th:text="${messdiener.getReadName()}"></td>
+                            <td th:text="${messdiener.getServices()}"></td>
+                            <td th:text="${messdiener.getUUID()}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="d-flex">
+
+                    <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                        Abbrechen
+                    </button>
+                    <button type="button" class="btn btn-success btn-block flex-fill m-1" onclick="save()">Speichern
+                    </button>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<table id="table_data" style="display: none;">
+    <thead>
+    <tr>
+        <th>UUID</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="messdiener:${event.getDutyPersons()}">
+        <td th:text="${messdiener.getUUID()}"></td>
+    </tr>
+
+
+    </tbody>
+</table>
+<script>
+    let table;
+    $(document).ready(function () {
+        table = $('#table_id_select').DataTable({
+
+            "dom": 'Blfrtip',
+            "buttons": ['selectAll', 'selectNone'],
+            "language": {
+                "decimal": ",",
+                "thousands": ".",
+                "infoPostFix": "",
+                "infoFiltered": "(gefiltert aus insgesamt _MAX_ Einträgen)",
+                "loadingRecords": "Bitte warten Sie - Daten werden geladen ...",
+                "lengthMenu": "Anzeigen von _MENU_ Einträgen",
+                "paginate": {
+                    "first": "Erste",
+                    "last": "Letzte",
+                    "next": "Nächste",
+                    "previous": "Zurück"
+                },
+                "processing": "Verarbeitung läuft ...",
+                "search": "Suche:",
+                "searchPlaceholder": "Suchbegriff",
+                "zeroRecords": "Keine Daten! Bitte ändern Sie Ihren Suchbegriff.",
+                "emptyTable": "Keine Einträge zum Anzeigen vorhanden",
+                "aria": {
+                    "sortAscending": ": aktivieren, um Spalte aufsteigend zu sortieren",
+                    "sortDescending": ": aktivieren, um Spalte absteigend zu sortieren"
+                },
+                "info": "Zeigt _START_ bis _END_  von _TOTAL_ Einträgen",
+                "infoEmpty": "Keine Einträge zum Anzeigen vorhanden",
+                buttons: {
+                    selectAll: "Alles auswählen",
+                    selectNone: "Keine auswählen"
+                },
+                "select": {
+                    "rows": {
+                        _: '%d Zeilen ausgewählt',
+                        0: 'Zeile anklicken um auszuwählen',
+                        1: 'Eine Zeile ausgewählt'
+                    }
+                }
+            },
+            "select": {
+                "style": 'multi'
+            },
+            "columnDefs": [
+                {
+                    "targets": [2],
+                    visible: false,
+                }
+            ]
+        });
+        setTimeout(function () {
+            document.getElementById("content").classList.remove("d-none");
+            document.getElementById("load").classList.add("d-none");
+        }, 50);
+
+        loadData();
+
+    });
+
+    function loadData() {
+        let activeTable = document.getElementById('table_data');
+        for (let r = 1, n = activeTable.rows.length; r < n; r++) {
+            table.rows().eq(0).each(function (index) {
+                let row = table.row(index);
+                let data = row.data();
+
+                let date = activeTable.rows[r].cells[0].innerHTML;
+
+                if (data.toString().includes(date)) {
+                    row.select();
+                }
+            });
+        }
+    }
+
+    function save() {
+        let data = table.rows({
+            selected: true
+        }).data();
+
+        let el = [];
+        for (let i = 0; i < data.length; i++) {
+            el.push(data[i][2]);
+        }
+
+        let uuid = document.getElementById("uuid").textContent;
+        window.location = "/worship/save/mapping?uuid=" + uuid + "&persons=" + el;
+
+    }
+
+</script>
+
+<!-- The Modal -->
+<div class="modal fade" id="edit">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <form method="post" action="/worship/save">
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="text-center">
+
+                        <lord-icon
+                                src="https://cdn.lordicon.com/xzksbhzh.json"
+                                trigger="loop"
+                                delay="2000"
+                                style="width:100px;height:100px">
+                        </lord-icon>
+                        <h4>Gottesdienst bearbeiten</h4>
+                        <h6>Hier kannst du diesen Gottesdienst bearbeiten. </h6>
+
+                    </div>
+
+                    <div class="m-2">
+
+                        <input class="invisible" name="uuid" th:value="${event.getUUID()}">
+
+                        <div class="form-floating mb-1">
+                            <input type="date" class="form-control" id="adress" placeholder="Enter email" name="date"
+                                   th:value="${event.getEnglishDate()}">
+                            <label for="adress">Datum</label>
+                        </div>
+                        <div class="form-floating mb-1">
+                            <input type="text" class="form-control" id="birthday" placeholder="Enter email" name="oGroup"
+                                   th:value="${event.getoGroup().getName()}">
+                            <label for="birthday">Ort</label>
+                        </div>
+                        <div class="form-floating mb-1">
+                            <select type="text" class="form-select" id="bz" placeholder="Enter email" name="eventType">
+
+                                <optgroup label="Gottesdienste">
+                                    <option value="WERKTAGSMESSE">Werktagsmesse</option>
+                                    <option value="VORABENDMESSE">Vorabendmesse</option>
+                                    <option value="GOTTESDIENST">Gottesdienst</option>
+                                    <option value="HOCHAMT">Hochamt (Weihrauch, etc.)</option>
+                                </optgroup>
+                                <optgroup label="Sonstiges">
+                                    <option value="THB">Taufe, Hochzeit, Beerdigung, etc.</option>
+                                    <option value="WORTGOTTSDIENST">Wortgottesdienst</option>
+                                </optgroup>
+                                <optgroup label="Ohne Messdiener">
+                                    <option value="OHNE">Ohne Messdiener</option>
+                                </optgroup>
+                            </select>
+                            <label for="bz">Bezeichnung</label>
+                        </div>
+
+                    </div>
+                    <div class="d-flex">
+
+                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                            Abbrechen
+                        </button>
+                        <button type="submit" class="btn btn-success btn-block flex-fill m-1">Speichern</button>
+
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+</html>

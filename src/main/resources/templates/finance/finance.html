@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head th:insert="fragments_new :: html_head"></head>
+<body class="nav-fixed">
+<nav th:insert="fragments_new :: topnav"></nav>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav" th:insert="fragments_new :: sidbar"></div>
+    <div id="layoutSidenav_content">
+        <main>
+            <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+                <div class="container-xl px-4">
+                    <div class="page-header-content">
+                        <div class="row align-items-center justify-content-between pt-3">
+                            <div class="col-auto mb-3">
+                                <h1 class="page-header-title">
+                                    <div class="page-header-icon"><i class="mdi mdi-cash-check"></i></div>
+                                    <span style="margin-right: 5px;">Kassenbuch von </span> <span
+                                        th:text="${group.getName()}"></span>
+                                </h1>
+                            </div>
+                            <div class="col-12 col-xl-auto mb-3">
+                                <a class="btn btn-sm btn-light text-primary" data-bs-toggle="modal"
+                                   data-bs-target="#cash"
+                                   th:if="${session.sessionUser.userHasPermission('MMS_FINANCE_DIRECT')}">
+                                    <i class="me-1" data-feather="plus"></i>
+                                    Buchung erfassen
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- Main page content-->
+            <div class="container-xl px-4 mt-5">
+                <!-- Custom page header alternative example-->
+                <!-- Illustration dashboard card example-->
+                <div class="row">
+                    <div class="col-xl-4 col-md-6 mb-4">
+                        <!-- Dashboard info widget 1-->
+                        <div class="card border-start-lg border-start-success h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <div class="small fw-bold text-success mb-1">Einahmen</div>
+                                        <div class="h5"><span th:text="${revenue}"></span><span>€</span></div>
+                                    </div>
+                                    <div class="ms-2"><span style="font-size: 50px"
+                                                            class="fa-2x text-gray-200">€</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-md-6 mb-4">
+                        <!-- Dashboard info widget 2-->
+                        <div class="card border-start-lg border-start-danger h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <div class="small fw-bold text-danger mb-1">Ausgaben</div>
+                                        <div class="h5"><span th:text="${expenditures}"></span><span>€</span></div>
+                                    </div>
+                                    <div class="ms-2"><span style="font-size: 50px"
+                                                            class="fa-2x text-gray-200">-€</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-md-6 mb-4">
+                        <!-- Dashboard info widget 3-->
+                        <div class="card border-start-lg border-start-success h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <div class="small fw-bold text-success mb-1">Gesammt</div>
+                                        <div class="h5"><span th:text="${value}"></span><span>€</span></div>
+                                    </div>
+                                    <div class="ms-2"><span style="font-size: 50px"
+                                                            class="mdi mdi-cash-check fa-2x text-gray-200"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4 mb-4">
+                        <!-- Report summary card example-->
+                        <div class="card mb-4 h-100">
+                            <div class="card-header">Affiliate Reports</div>
+                            <div class="list-group list-group-flush small">
+                                <a class="list-group-item list-group-item-action" href="#!">
+                                    <i class="fa-fw text-blue me-2">€</i>
+                                    Einnahmen Reports
+                                </a>
+                                <a class="list-group-item list-group-item-action" href="#!">
+                                    <i class="mdi mdi-cash-minus fa-fw text-purple me-2"></i>
+                                    Ausgaben
+                                </a>
+                                <a class="list-group-item list-group-item-action" href="#!">
+                                    <i class="mdi mdi-clock fa-fw text-green me-2"></i>
+                                    Letztes Jahr
+                                </a>
+                                <a class="list-group-item list-group-item-action" href="#!">
+                                    <i class="mdi mdi-cash-check fa-fw text-yellow me-2"></i>
+                                    Gesamt
+                                </a>
+                                <a class="list-group-item list-group-item-action" href="#!">
+                                    <i class="mdi mdi-compare fa-fw text-pink me-2"></i>
+                                    Vergleich Pfarrei
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Progress card example-->
+                    </div>
+                    <div class="col-lg-8 mb-4">
+                        <!-- Area chart example-->
+                        <div class="card mb-4 h-100">
+                            <div class="card-header">Revenue Summary</div>
+                            <div class="card-body">
+                                <p id="xIndex" class="d-none" th:text="${dates}" th:value="${dates}"></p>
+                                <p id="yIndex" class="d-none" th:text="${cashData}" th:value="${cashData}"></p>
+                                <div class="chart-area">
+                                    <canvas id="myAreaChart" width="100%" height="30"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-header">Buchungen</div>
+                    <div class="card-body">
+                        <table id="table_id" class="display" style="min-width: 100%; max-width: 100%;">
+                            <thead>
+                            <tr>
+                                <td>SORT</td>
+                                <th>Datum</th>
+                                <th>Einnahme in €</th>
+                                <th>Ausgaben in €</th>
+                                <th>Art der Bewegung</th>
+                                <th>Bearbeiter</th>
+                                <th>Kostenstelle</th>
+                                <th>Notiz</th>
+                                <th th:if="${session.sessionUser.userHasPermission('MMS_FINANCE_DELETE')}"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="entry:${entries}">
+                                <td th:text="${entry.getDate()}"></td>
+                                <td th:text="${entry.getGermandate()}"></td>
+                                <td><span th:text="${entry.getRevenue()} + '€'" th:if="${entry.getRevenue()} > 0"
+                                          class="text-success"></span></td>
+                                <td><span th:text="'-'+${entry.getExpenditures()} + '€'"
+                                          th:if="${entry.getExpenditures()} >0" class="text-danger"></span></td>
+                                <td th:text="${entry.getType()}"></td>
+                                <td th:text="${entry.getEditor()}"></td>
+                                <td th:text="${entry.getCostCenter()}"></td>
+                                <td>
+                                    <a th:if="${entry.noteIsLink()}" th:href="${entry.getNote()}"
+                                       th:text="'Zur Datei'"></a>
+                                    <span th:unless="${entry.noteIsLink()}" th:text="${entry.getNote()}"></span>
+                                </td>
+                                <td th:if="${session.sessionUser.userHasPermission('MMS_FINANCE_DELETE')}">
+                                    <a type="button"
+                                       th:href="'/finance/delete?uuid=' + ${entry.getUUID()} + '&tenant=' + ${group.getUUID()}"
+                                       class="btn btn-danger mdi mdi-delete"></a>
+                                </td>
+                            </tr>
+
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+        <footer th:insert="fragments_new :: footer"></footer>
+    </div>
+</div>
+<div th:insert="fragments_new :: script"></div>
+<script th:src="@{/script/imports/jquery.min.js}"></script>
+<script th:src="@{/script/imports/jquery.dataTables.min.js}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" crossorigin="anonymous"></script>
+
+
+<!-- The Modal -->
+<div>
+    <form method="post" th:action="@{/finance/save}" class="was-validated">
+        <div class="modal fade" id="cash">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="text-center">
+
+                            <script src="https://cdn.lordicon.com/qjzruarw.js"></script>
+                            <lord-icon
+                                    src="https://cdn.lordicon.com/qmcsqnle.json"
+                                    trigger="loop"
+                                    delay="4000"
+                                    style="width:100px;height:100px">
+                            </lord-icon>
+                            <h4>Bewegung erfassen</h4>
+                            <h6>Einahmen oder Ausgaben?</h6>
+                        </div>
+
+                        <div class=" mb-3 mt-3">
+                            <div class="form-floating mb-3 mt-3">
+                                <input type="date" class="form-control" placeholder="Datum" name="date" id="dateII"
+                                       required>
+                                <label for="dateII">Datum</label>
+                            </div>
+                            <div class="form-floating mb-3 mt-3">
+                                <input type="number" class="form-control" placeholder="Einahme" name="revenue"
+                                       step="0.01"
+                                       id="revenue" value="0">
+                                <label for="revenue">Einnahmen in €</label>
+                            </div>
+                            <div class="form-floating mb-3 mt-3">
+                                <input type="number" class="form-control" placeholder="Ausgabe" name="expenditures"
+                                       id="expenditures" step="0.01" value="0">
+                                <label for="expenditures">Ausgaben in €</label>
+                            </div>
+                            <div class="form-floating mb-3 mt-3">
+                                <input type="text" class="form-control" placeholder="Art" id="type" name="type"
+                                       required>
+                                <label for="type">Art der Bewegung</label>
+                            </div>
+                            <div class="form-floating mb-3 mt-3">
+                                <input type="text" class="form-control bg-white" placeholder="Bearbeiter" id="editor"
+                                       name="editor" readonly
+                                       th:value="${user.getFirstname()} + ' ' + ${user.getLastname()}" required>
+                                <label for="editor">Bearbeiter</label>
+                            </div>
+                            <div class="form-floating mb-3 mt-3">
+                                <select type="text" class="form-control" placeholder="Kostenstelle" name="costCenter"
+                                        id="costCenter" required>
+                                    <option></option>
+                                    <option th:value="'000 - KEINE'" th:text="'000 - KEINE'"></option>
+                                    <option th:value="'001 - Leitungsteam'" th:text="'001 - Leitungsteam'"></option>
+                                    <option th:value="'002 - Pfarrei'" th:text="'002 - Pfarrei'"></option>
+                                    <option th:value="'003 - Aktionen'" th:text="'003 - Aktionen'"></option>
+                                    <option th:value="'004 - Spenden'" th:text="'004 - Spenden'"></option>
+                                    <option th:value="'005 - Teilnahme Gebüren'"
+                                            th:text="'005 - Teilnahme Gebüren'"></option>
+                                </select>
+                                <label for="costCenter">Kostenstelle</label>
+                            </div>
+                            <input type="text" th:value="${group.getUUID()}" name="group" class="d-none" id="group">
+                            <div class="form-floating mb-3 mt-3">
+                                <input type="text" class="form-control" placeholder="Notiz" name="note" id="note">
+                                <label for="note">Notiz</label>
+                            </div>
+                        </div>
+
+                        <div class="d-flex">
+
+                            <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                                Schließen
+                            </button>
+
+                            <button type="submit" class="btn btn-success btn-block flex-fill m-1">
+                                Speichern
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </form>
+    <script>
+
+        // Set new default font family and font color to mimic Bootstrap's default styling
+        (Chart.defaults.global.defaultFontFamily = "Metropolis"),
+            '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+        Chart.defaults.global.defaultFontColor = "#858796";
+
+        function number_format(number, decimals, dec_point, thousands_sep) {
+            // *     example: number_format(1234.56, 2, ',', ' ');
+            // *     return: '1 234,56'
+            number = (number + "").replace(",", "").replace(" ", "");
+            var n = !isFinite(+number) ? 0 : +number,
+                prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+                sep = typeof thousands_sep === "undefined" ? "," : thousands_sep,
+                dec = typeof dec_point === "undefined" ? "." : dec_point,
+                s = "",
+                toFixedFix = function (n, prec) {
+                    var k = Math.pow(10, prec);
+                    return "" + Math.round(n * k) / k;
+                };
+            // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+            s = (prec ? toFixedFix(n, prec) : "" + Math.round(n)).split(".");
+            if (s[0].length > 3) {
+                s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+            }
+            if ((s[1] || "").length < prec) {
+                s[1] = s[1] || "";
+                s[1] += new Array(prec - s[1].length + 1).join("0");
+            }
+            return s.join(dec);
+        }
+
+        // Area Chart Example
+        var ctx = document.getElementById("myAreaChart");
+        var myLineChart = new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: document.getElementById('xIndex').textContent.split(","),
+                datasets: [{
+                    label: "Betrag",
+                    lineTension: 0.3,
+                    backgroundColor: "rgba(0, 97, 242, 0.05)",
+                    borderColor: "rgba(0, 97, 242, 1)",
+                    pointRadius: 3,
+                    pointBackgroundColor: "rgba(0, 97, 242, 1)",
+                    pointBorderColor: "rgba(0, 97, 242, 1)",
+                    pointHoverRadius: 3,
+                    pointHoverBackgroundColor: "rgba(0, 97, 242, 1)",
+                    pointHoverBorderColor: "rgba(0, 97, 242, 1)",
+                    pointHitRadius: 10,
+                    pointBorderWidth: 2,
+                    data: document.getElementById('yIndex').textContent.split(",")
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        left: 10,
+                        right: 25,
+                        top: 25,
+                        bottom: 0
+                    }
+                },
+                scales: {
+                    xAxes: [{
+                        time: {
+                            unit: "Datum"
+                        },
+                        gridLines: {
+                            display: false,
+                            drawBorder: false
+                        },
+                        ticks: {
+                            maxTicksLimit: 7
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            maxTicksLimit: 5,
+                            padding: 10,
+                            // Include a dollar sign in the ticks
+                            callback: function (value, index, values) {
+                                return number_format(value) + "€";
+                            }
+                        },
+                        gridLines: {
+                            color: "rgb(234, 236, 244)",
+                            zeroLineColor: "rgb(234, 236, 244)",
+                            drawBorder: false,
+                            borderDash: [2],
+                            zeroLineBorderDash: [2]
+                        }
+                    }]
+                },
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    backgroundColor: "rgb(255,255,255)",
+                    bodyFontColor: "#858796",
+                    titleMarginBottom: 10,
+                    titleFontColor: "#6e707e",
+                    titleFontSize: 14,
+                    borderColor: "#dddfeb",
+                    borderWidth: 1,
+                    xPadding: 15,
+                    yPadding: 15,
+                    displayColors: false,
+                    intersect: false,
+                    mode: "index",
+                    caretPadding: 10,
+                    callbacks: {
+                        label: function (tooltipItem, chart) {
+                            var datasetLabel =
+                                chart.datasets[tooltipItem.datasetIndex].label || "";
+                            return datasetLabel + ": $" + number_format(tooltipItem.yLabel);
+                        }
+                    }
+                }
+            }
+        });
+
+
+        $(document).ready(function () {
+            let table = $('#table_id').DataTable({
+                language: {
+                    "decimal": ",",
+                    "thousands": ".",
+                    "infoPostFix": "",
+                    "infoFiltered": "(gefiltert aus insgesamt _MAX_ Einträgen)",
+                    "loadingRecords": "Bitte warten Sie - Daten werden geladen ...",
+                    "lengthMenu": "Anzeigen von _MENU_ Einträgen",
+                    "paginate": {
+                        "first": "Erste",
+                        "last": "Letzte",
+                        "next": "Nächste",
+                        "previous": "Zurück"
+                    },
+                    "processing": "Verarbeitung läuft ...",
+                    "search": "Suche:",
+                    "searchPlaceholder": "Suchbegriff",
+                    "zeroRecords": "Keine Daten! Bitte ändern Sie Ihren Suchbegriff.",
+                    "emptyTable": "Keine Einträge zum Anzeigen vorhanden",
+                    "aria": {
+                        "sortAscending": ": aktivieren, um Spalte aufsteigend zu sortieren",
+                        "sortDescending": ": aktivieren, um Spalte absteigend zu sortieren"
+                    },
+                    "info": "Zeigt _START_ bis _END_  von _TOTAL_ Einträgen",
+                    "infoEmpty": "Keine Einträge zum Anzeigen vorhanden",
+                    "select": {
+                        "rows": {
+                            _: '%d Zeilen ausgewählt',
+                            0: 'Zeile anklicken um auszuwählen',
+                            1: 'Eine Zeile ausgewählt'
+                        }
+                    }
+                },
+                "columnDefs": [
+                    {
+                        "targets": [0],
+                        visible: false
+                    }
+
+                ],
+                searching: false, paging: false, info: false,
+            });
+
+        });
+    </script>
+</div>
+</body>
+
+
+</html>

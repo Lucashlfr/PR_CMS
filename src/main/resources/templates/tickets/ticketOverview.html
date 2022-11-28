@@ -8,7 +8,7 @@
     <div id="layoutSidenav_content">
         <main>
             <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
-                <div class="container-fluid px-4">
+                <div class="container px-4">
                     <div class="page-header-content">
                         <div class="row align-items-center justify-content-between pt-3">
                             <div class="col-auto mb-3">
@@ -28,13 +28,14 @@
                 </div>
             </header>
             <!-- Main page content-->
-            <div class="container-fluid px-4">
+            <div class="container px-4">
                 <div class="card">
                     <div class="card-body text-center" id="load">
                         <span class="spinner-border card-img" style="min-height: 200px; min-width: 200px;"></span>
                     </div>
                     <div class="card-body d-none" id="content" style="overflow-y: scroll">
-                        <table id="table_id" class="display" style="min-width: 100%!important; max-width: 100%!important;">
+                        <table id="table_id" class="display"
+                               style="min-width: 100%!important; max-width: 100%!important;">
                             <thead>
                             <tr>
                                 <th>SORTDATE_DEADLINE</th>
@@ -54,10 +55,20 @@
                                 <td th:text="${ticket.getTicketPerson().getAssociation()}"></td>
                                 <td th:text="${ticket.getDates().getGermanDate_CREATED()}"></td>
                                 <td th:text="${ticket.getDates().getGermanDate_DEADLINE()}"></td>
-                                <td th:text="${ticket.getEditor().getFirstname()} + ' ' + ${ticket.getEditor().getLastname()}"></td>
-                                <td class="d-grid">
-                                    <div th:class="${ticket.getTicketState().getClassName()}"
-                                            th:text="${ticket.getTicketState().getName()}"></div>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar me-2">
+                                            <img class="avatar-img img-fluid"
+                                                 th:src="${ticket.getEditor().getImgAdress()}"/>
+                                        </div>
+                                        <span th:text="${ticket.getEditor().getFirstname()} + ' ' + ${ticket.getEditor().getLastname()}"></span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-grid align-items-center">
+                                        <div th:class="${ticket.getTicketState().getClassName()}"
+                                             th:text="${ticket.getTicketState().getName()}"></div>
+                                    </div>
                                 </td>
                                 <td>
                                     <a class="btn btn-datatable btn-icon btn-transparent-dark me-2"

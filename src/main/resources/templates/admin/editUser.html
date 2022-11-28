@@ -36,11 +36,50 @@
                             <div class="card-header">Profile Picture</div>
                             <div class="card-body text-center">
                                 <!-- Profile picture image-->
-                                <img class="img-account-profile rounded-circle mb-2" src="http://portal.messdiener-knittelsheim.de/css-files/assets//img/illustrations/profiles/profile-1.png" alt="" />
+                                <img class="mb-2 img-fluid card-img" th:src="${user.getImgAdress()}" alt=""/>
                                 <!-- Profile picture help block-->
                                 <div class="small font-italic text-muted mb-4">JPG or PNG no larger than 5 MB</div>
                             </div>
                         </div>
+
+                        <form th:action="@{/admin/saveUser/person}" th:method="post" class="">
+                            <div class="card card-header-actions mt-4 mb-4">
+                                <div class="card-header">
+                                    Messdiener-Person zuweisen
+                                    <div>
+                                        <a th:href="'/admin/removeUser/person?uuid=' +${user.getUser_UUID()}"
+                                           class="btn btn-danger btn-icon mdi mdi-delete" th:if="${user.getPerson().isPresent()}"></a>
+                                        <button class="btn btn-primary btn-icon mdi mdi-content-save" type="submit" th:unless="${user.getPerson().isPresent()}"></button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+
+                                        <table class="table table-bordered mb-4" th:if="${user.getPerson().isPresent()}">
+                                            <tbody>
+                                            <tr>
+                                                <td><span class="mdi mdi-link"></span> Verlinkt mit <a th:href="'/messdiener?uuid=' + ${user.getPerson().get().getUUID()}" th:text="${user.getPerson().get().getName()}"></a></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+
+                                        <input class="d-none" th:value="${user.getUser_UUID()}" name="uuid">
+                                        <label for="t_group" class="small mb-1" th:unless="${user.getPerson().isPresent()}">Personen-UUID</label>
+                                        <input class="form-control" list="t_Mgroup_l" id="t_Mgroup" required
+                                               th:value="${user.personUUID()}" name="person" th:unless="${user.getPerson().isPresent()}">
+                                        <datalist id="t_Mgroup_l">
+                                            <option th:each="person:${messdieners}"
+                                                    th:text="${person.getName()} + ' / ' + ${person.getGroup().getName()}"
+                                                    th:value="${person.getUUID()}" th:unless="${user.getPerson().isPresent()}"></option>
+                                        </datalist>
+                                    </div>
+                                    <!-- Submit button-->
+
+
+                                </div>
+
+                            </div>
+                        </form>
                     </div>
                     <div class="col-xl-8">
                         <!-- Account details card-->
@@ -48,7 +87,8 @@
                             <div class="card-header">Account Details</div>
                             <div class="card-body">
                                 <form th:action="@{/admin/saveUser}" th:method="post" class="was-validated">
-                                    <input type="text" class="form-control bg-white invisible" placeholder="UUID" readonly
+                                    <input type="text" class="form-control bg-white d-none" placeholder="UUID"
+                                           readonly
                                            id="t_uuid" th:value="${user.getUser_UUID()}"
                                            name="t_uuid">
                                     <!-- Form Row-->
@@ -90,9 +130,11 @@
                                     <!-- Form Group (Roles)-->
                                     <div class="mb-3">
                                         <label for="t_group" class="small mb-1">Role</label>
-                                        <input class="form-control" list="t_group_l" id="t_group" th:value="${user.getGroup()}" name="t_group">
+                                        <input class="form-control" list="t_group_l" id="t_group"
+                                               th:value="${user.getGroup()}" name="t_group">
                                         <datalist id="t_group_l">
-                                            <option th:each="group:${user.getGroup().values()}" th:text="${group}" th:value="${group}"></option>
+                                            <option th:each="group:${user.getGroup().values()}" th:text="${group}"
+                                                    th:value="${group}"></option>
                                         </datalist>
                                     </div>
                                     <!-- Submit button-->
@@ -104,7 +146,8 @@
                             <div class="card-header">
                                 Rechteverwaltung
                                 <div>
-                                    <a class="btn btn-blue btn-icon" th:href="'/admin/permUser?uuid=' + ${user.getUser_UUID()}">
+                                    <a class="btn btn-blue btn-icon"
+                                       th:href="'/admin/permUser?uuid=' + ${user.getUser_UUID()}">
                                         <span class="mdi mdi-security"></span>
                                     </a>
                                 </div>
@@ -119,11 +162,11 @@
                                     </tr>
                                     </thead>
                                     <tbody id="tbody">
-                                        <tr th:each="perm:${user.getPermissions()}">
-                                            <td class="text-green mdi mdi-check-circle"></td>
-                                            <td th:text="${perm.getName()}"></td>
-                                            <td th:text="${perm.getDescription()}"></td>
-                                        </tr>
+                                    <tr th:each="perm:${user.getPermissions()}">
+                                        <td class="text-green mdi mdi-check-circle"></td>
+                                        <td th:text="${perm.getName()}"></td>
+                                        <td th:text="${perm.getDescription()}"></td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>

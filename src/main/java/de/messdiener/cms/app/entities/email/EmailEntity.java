@@ -1,26 +1,25 @@
 package de.messdiener.cms.app.entities.email;
 
+import de.messdiener.cms.app.services.mail.utils.MailOverlay;
 import de.messdiener.cms.cache.Cache;
 
 public class EmailEntity {
 
     String reciver;
     private String topic;
-    private String text;
-    private String link;
+    private String html;
 
-    public EmailEntity(String reciver, String topic, String text, String link) {
+    public EmailEntity(String reciver, String topic, String html) {
         this.reciver = reciver;
         this.topic = topic;
-        this.text = text;
-        this.link = link;
+        this.html = html;
     }
 
-    public static EmailEntity generateNew(String reciver, String topic, String text, String link){
-        return new EmailEntity(reciver, topic, text, link);
+    public static EmailEntity generateNew(String reciver, String topic, MailOverlay mailOverlay){
+        return new EmailEntity(reciver, topic, mailOverlay.getHTML());
     }
 
-    public void send(){
+    public void send() throws Exception {
         Cache.EMAIL_SERVICE.sendMail(this);
     }
 
@@ -40,23 +39,11 @@ public class EmailEntity {
         this.topic = topic;
     }
 
-    public String getText() {
-        return text;
+    public void setHtml(String html) {
+        this.html = html;
     }
 
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
-    }
-
-    public String generateMail() {
-        return getText() + "\n" + getLink();
+    public String getHtml() {
+        return html;
     }
 }

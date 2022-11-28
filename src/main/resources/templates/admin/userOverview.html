@@ -8,7 +8,7 @@
     <div id="layoutSidenav_content">
         <main>
             <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
-                <div class="container-fluid px-4">
+                <div class="container px-4">
                     <div class="page-header-content">
                         <div class="row align-items-center justify-content-between pt-3">
                             <div class="col-auto mb-3">
@@ -18,7 +18,8 @@
                                 </h1>
                             </div>
                             <div class="col-12 col-xl-auto mb-3">
-                                <a class="btn btn-sm btn-light text-primary" href="user-management-add-user.html">
+                                <a class="btn btn-sm btn-light text-primary" href="#"
+                                   data-bs-toggle="modal" data-bs-target="#create">
                                     <i class="me-1" data-feather="user-plus"></i>
                                     Add New User
                                 </a>
@@ -29,7 +30,7 @@
             </header>
             <!-- Main page content-->
 
-            <div class="container-fluid px-4">
+            <div class="container px-4">
                 <div class="card">
                     <div class="card-body text-center" id="load">
                         <span class="spinner-border card-img" style="min-height: 200px; min-width: 200px;"></span>
@@ -51,20 +52,19 @@
                                     <div class="d-flex align-items-center">
                                         <div class="avatar me-2">
                                             <img class="avatar-img img-fluid"
-                                                 th:src="@{/dist/assets/img/illustrations/profiles/profile-1.png}"/>
+                                                 th:src="${user.getImgAdress()}"/>
                                         </div>
                                         <span th:text="${user.getSortName()}"></span>
                                     </div>
                                 </td>
                                 <td th:text="${user.getEmail()}"></td>
                                 <td th:text="${user.getGroup().getName()}"></td>
-                                <td>
-                                    <span class="badge bg-blue-soft text-blue m-1"
-                                          th:each="role:${user.getPermissions()}" th:text="${role.getName()}"></span>
+                                <td th:text="${user.getPermissions().size()}">
                                 </td>
                                 <td>
                                     <a class="btn btn-datatable btn-icon btn-transparent-dark me-2"
-                                       th:href="'/admin/user/edit?uuid=' + ${user.getUser_UUID()}"><i data-feather="edit"></i></a>
+                                       th:href="'/admin/user?user=' + ${user.getUser_UUID()}"><i
+                                            data-feather="edit"></i></a>
                                 </td>
                             </tr>
                             </tbody>
@@ -77,6 +77,85 @@
     </div>
 </div>
 <div th:insert="fragments_new :: script"></div>
+
+
+<!-- The Modal -->
+<div class="modal fade" id="create">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+
+            <form method="post" action="/admin/createUser" class="was-validated">
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="text-center">
+
+                        <script src="https://cdn.lordicon.com/pzdvqjsp.js"></script>
+                        <lord-icon
+                                src="https://cdn.lordicon.com/xzksbhzh.json"
+                                trigger="loop"
+                                delay="2000"
+                                style="width:100px;height:100px">
+                        </lord-icon>
+                        <h4>Messdiener anlegen</h4>
+                        <h6>Hier kannst du eine neue Person anlegen. </h6>
+
+                    </div>
+                    <div class="m-2">
+                        <div class="row mb-1">
+
+                            <div class="col">
+
+                                <div class="form-floating ">
+                                    <input type="text" class="form-control" id="firstname"
+                                           name="firstname" required>
+                                    <label for="firstname">Vorname</label>
+                                </div>
+
+                            </div>
+                            <div class="col">
+                                <div class="form-floating mb-1">
+                                    <input type="text" class="form-control" id="lastname"
+                                           name="lastname" required>
+                                    <label for="lastname">Nachname</label>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <hr>
+                        <div class="form-floating mb-1">
+                            <input type="email" class="form-control" id="mail" name="email" required>
+                            <label for="mail">E-Mail</label>
+                        </div>
+                        <div class="form-floating mb-1">
+                            <input type="text" class="form-control" id="username" required
+                                   name="username">
+                            <label for="username">Benutzername</label>
+                        </div>
+
+                        <div class="form-floating mb-1">
+                            <input type="password" class="form-control" id="passwort" required
+                                   name="passwort">
+                            <label for="passwort">Passwort</label>
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex">
+
+                        <button type="reset" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                            Abbrechen
+                        </button>
+                        <button type="submit" class="btn btn-success btn-block flex-fill m-1">Speichern</button>
+
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
 </body>
 <script>
     $(document).ready(function () {

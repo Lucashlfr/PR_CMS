@@ -29,7 +29,7 @@
             </div>
         </header>
         <!-- Main page content-->
-        <form class="was-validated">
+        <form class="was-validated" th:method="post" th:action="@{/public/createTicket/save}">
             <div class="container-xl px-4 mt-n10">
                 <!-- Wizard card example with navigation-->
                 <div class="card">
@@ -108,7 +108,7 @@
                                         </div>
                                         <div class="mb-3">
                                             <label class="small mb-1" for="inputPhone">Telefon-Nummer</label>
-                                            <input class="form-control" id="inputPhone" type="tel"
+                                            <input class="form-control" id="inputPhone" type="tel" name="phone"
                                                    placeholder="07272 / XXXXX"
                                                    required/>
                                         </div>
@@ -140,9 +140,16 @@
                             <!-- Wizard tab pane item 3-->
                             <div class="tab-pane py-5 py-xl-10 fade" id="wizard3" role="tabpanel"
                                  aria-labelledby="wizard3-tab">
-                                <h3 class="text-primary">Schritt 3</h3>
-                                <h5 class="card-title mb-4">Bearbeite deinen Text</h5>
-                                <textarea name="test" id="myTextarea">Erstelle deinen Artikel :)</textarea>
+                                <div class="d-flex justify-content-between">
+                                    <section>
+                                        <h3 class="text-primary">Schritt 3</h3>
+                                        <h5 class="card-title mb-4">Bearbeite deinen Text</h5>
+                                    </section>
+                                    <a href="/public/createTicket/uploadData" target="_blank">Bilder hochladen <span class="mdi mdi-upload"></span></a>
+
+
+                                </div>
+                                <textarea name="text" id="myTextarea">Erstelle deinen Artikel :)</textarea>
                             </div>
                             <!-- Wizard tab pane item 4-->
                             <div class="tab-pane py-5 py-xl-10 fade" id="wizard4" role="tabpanel"
@@ -238,6 +245,8 @@
 <script>
     tinymce.init({
         selector: 'textarea',
+        plugins: 'image table media',
+        toolbar: 'image table tableofcontents',
         toolbar_mode: 'floating',
         tinycomments_mode: 'embedded',
         tinycomments_author: 'Author name',
@@ -257,7 +266,7 @@
 
 
         if(b1 && b2 && b3 && b4 && b5 && b6 && b7){
-            document.getElementById("button").innerHTML = "<button class='btn btn-primary btn-block' type='button' id='submit'>Submit</button>";
+            document.getElementById("button").innerHTML = "<button class='btn btn-primary btn-block' type='submit' id='submit'>Speichern</button>";
         }else {
             document.getElementById("button").innerHTML = "<button class='btn btn-danger btn-block' type='button' id='submit' disabled>Speichern nicht möglich!</button>";
         }

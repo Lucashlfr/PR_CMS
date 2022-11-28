@@ -1,91 +1,295 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="de">
-<head>
-    <title>PR BEL CMS</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link th:href="@{/css/import/bootstrap.min.css}" rel="stylesheet">
-    <script th:src="@{/script/imports/jquery.min.js}"></script>
-    <script th:src="@{/script/imports/bootstrap.min.js}"></script>
-    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon-96x96.ico}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@6.5.95/css/materialdesignicons.min.css">
+<head th:insert="fragments_new :: html_head"></head>
 
-    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
-    <script src="https://cdn.tiny.cloud/1/44niyaud64mk77to8lx6omg5qw6wbnhn8kjue3tb4brqdps4/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
-
-    <style>
-        .h-custom {
-            height: calc(100% - 73px);
-        }
-
-        @media (max-width: 450px) {
-            .h-custom {
-                height: 100%;
-            }
-        }
-    </style>
-
-</head>
-<body>
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark sticky-top">
-    <div class="container-fluid">
-        <h1 class="text-white">CMS - Register</h1>
-        <img class="navbar-brand" th:src="@{/img/Logo_White.png}" style="max-width: 150px">
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark sticky-top" style="z-index: 5;">
+    <div class="container-fluid ">
+        <!-- <img src="https://messdiener-knittelsheim.de/wp-content/uploads/2022/08/Logo_White.png" style="max-width: 120px"> -->
+        <h1></h1>
+        <img src="https://messdiener-knittelsheim.de/wp-content/uploads/2022/08/Logo_White_Vollton.png"
+             style="max-width: 180px; margin-bottom: 5px!important;">
+        <h1></h1>
     </div>
 </nav>
-<br>
+<div id="container-fluid">
 
-<div class="container">
+    <main th:if="${step.equals('1')}">
+        <!-- Main page content-->
+        <div class="container ">
+            <div class="row">
+                <div class="col-lg-8 px-4 mt-4 ">
+                    <!-- Knowledge base home header option-->
+                    <header class="card card-waves">
+                        <div class="card-body px-5 pt-5 pb-0">
+                            <div class="row align-items-center justify-content-between">
+                                <div class="col-lg-6">
+                                    <h1 style="font-size: 50px" class="text-primary">PR CMS</h1>
+                                    <p class="lead mb-4">Werde Teil unseres Teams!</p>
+                                </div>
+                                <div class="col-lg-4"><img class="img-fluid"
+                                                           th:src="@{/dist/assets/img/illustrations/team-spirit.svg}"/></div>
+                            </div>
+                        </div>
+                    </header>
+                    <br>
+                    <div class="card">
+                        <div class="card-header">Account erstellen - Schritt 1</div>
+                        <div class="card-body">
 
-    <div class="row">
+                            <form th:action="@{/register/saveStep1}" th:method="post" class="was-validated">
+                                <div class="row">
 
-        <div class="col-12 col-md-3 text-center">
-            <script src="https://cdn.lordicon.com/xdjxvujz.js"></script>
-            <lord-icon
-                    src="https://cdn.lordicon.com/jefnhaqh.json"
-                    trigger="loop"
-                    style="width:250px;height:250px">
-            </lord-icon>
-        </div>
-        <div class="col-12 col-md-9" style="">
-            <br>
-            <h2 class="text-center">Step 1 - Allgemeine Daten</h2>
-            <form th:action="@{/register/saveStep1}" th:method="post">
-                <div class="row">
+                                    <div class="col-12 col-md-6">
+                                        <div class="mb-3">
+                                            <label for="firstname">Vorname</label>
+                                            <input type="text" class="form-control" id="firstname" placeholder="Enter email"
+                                                   name="firstname" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="mb-3">
+                                            <label for="lastname">Nachname</label>
+                                            <input type="text" class="form-control" id="lastname" placeholder="Enter email"
+                                                   name="lastname" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email">Email</label>
+                                    <input type="text" class="form-control" id="email" placeholder="Enter email" name="email"
+                                           required>
+                                </div>
 
-                    <div class="col-12 col-md-6">
-                        <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="firstname" placeholder="Enter email"
-                                   name="firstname" required>
-                            <label for="firstname">Vorname</label>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary btn-block align-text-bottom">Speichern</button>
+                                </div>
+
+                            </form>
+
                         </div>
                     </div>
-                    <div class="col-12 col-md-6">
-                        <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="lastname" placeholder="Enter email"
-                                   name="lastname" required>
-                            <label for="lastname">Nachname</label>
+                </div>
+                <div class="col-lg-4 px-4 mt-4 ">
+
+
+                    <div class="card card-icon lift lift-sm mb-4">
+                        <div class="row g-0">
+                            <div class="col-auto card-icon-aside bg-danger"><span class="mdi mdi-alert-circle text-white-50 "></span></div>
+                            <div class="col">
+                                <div class="card-body py-5">
+                                    <h5 class="card-title text-danger mb-2">Schritt 1</h5>
+                                    <p class="card-text mb-1">Allgemeine Daten</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-icon lift lift-sm mb-4">
+                        <div class="row g-0">
+                            <div class="col-auto card-icon-aside bg-warning"><span class="mdi mdi-alert-circle text-white-50 "></span></div>
+                            <div class="col">
+                                <div class="card-body py-5">
+                                    <h5 class="card-title text-warning mb-2">Schritt 2</h5>
+                                    <p class="card-text mb-1">E-Mail Verifikation</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-icon lift lift-sm mb-4">
+                        <div class="row g-0">
+                            <div class="col-auto card-icon-aside bg-warning"><span class="mdi mdi-alert-circle text-white-50 "></span></div>
+                            <div class="col">
+                                <div class="card-body py-5">
+                                    <h5 class="card-title text-warning mb-2">Schritt 3</h5>
+                                    <p class="card-text mb-1">Passwort festlegen</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+    <main th:if="${step.equals('2')}">
+        <!-- Main page content-->
+        <div class="container ">
+            <div class="row">
+                <div class="col-lg-8 px-4 mt-4 ">
+                    <!-- Knowledge base home header option-->
+                    <header class="card card-waves">
+                        <div class="card-body px-5 pt-5 pb-0">
+                            <div class="row align-items-center justify-content-between">
+                                <div class="col-lg-6">
+                                    <h1 style="font-size: 50px" class="text-primary">PR CMS</h1>
+                                    <p class="lead mb-4">Werde Teil unseres Teams!</p>
+                                </div>
+                                <div class="col-lg-4"><img class="img-fluid"
+                                                           th:src="@{/dist/assets/img/illustrations/team-spirit.svg}"/></div>
+                            </div>
+                        </div>
+                    </header>
+                    <br>
+                    <div class="card">
+                        <div class="card-header">Account erstellen - Schritt 2</div>
+                        <div class="card-body">
+
+                            <form th:action="@{/register/saveStep2/verify}" th:method="post" class="was-validated">
+                                <div class="mb-3">
+                                    <label for="code">Code</label>
+                                    <input type="text" class="form-control" id="code" placeholder="Enter email" name="code"
+                                           required>
+                                </div>
+
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary btn-block">Speichern</button>
+                                </div>
+
+                            </form>
+
                         </div>
                     </div>
                 </div>
-                <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="email" placeholder="Enter email" name="email"
-                           required>
-                    <label for="email">Email</label>
-                </div>
+                <div class="col-lg-4 px-4 mt-4 ">
 
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-primary btn-block align-text-bottom">Speichern</button>
-                </div>
 
-            </form>
+                    <div class="card card-icon lift lift-sm mb-4">
+                        <div class="row g-0">
+                            <div class="col-auto card-icon-aside bg-success"><span class="mdi mdi-check-circle text-white-50 "></span></div>
+                            <div class="col">
+                                <div class="card-body py-5">
+                                    <h5 class="card-title text-success mb-2">Schritt 1</h5>
+                                    <p class="card-text mb-1">Allgemeine Daten</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-icon lift lift-sm mb-4">
+                        <div class="row g-0">
+                            <div class="col-auto card-icon-aside bg-danger"><span class="mdi mdi-alert-circle text-white-50 "></span></div>
+                            <div class="col">
+                                <div class="card-body py-5">
+                                    <h5 class="card-title text-danger mb-2">Schritt 2</h5>
+                                    <p class="card-text mb-1">E-Mail Verifikation</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-icon lift lift-sm mb-4">
+                        <div class="row g-0">
+                            <div class="col-auto card-icon-aside bg-warning"><span class="mdi mdi-alert-circle text-white-50 "></span></div>
+                            <div class="col">
+                                <div class="card-body py-5">
+                                    <h5 class="card-title text-warning mb-2">Schritt 3</h5>
+                                    <p class="card-text mb-1">Passwort festlegen</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
         </div>
-    </div>
+    </main>
+    <main th:if="${step.equals('3')}">
+        <!-- Main page content-->
+        <div class="container ">
+            <div class="row">
+                <div class="col-lg-8 px-4 mt-4 ">
+                    <!-- Knowledge base home header option-->
+                    <header class="card card-waves">
+                        <div class="card-body px-5 pt-5 pb-0">
+                            <div class="row align-items-center justify-content-between">
+                                <div class="col-lg-6">
+                                    <h1 style="font-size: 50px" class="text-primary">PR CMS</h1>
+                                    <p class="lead mb-4">Werde Teil unseres Teams!</p>
+                                </div>
+                                <div class="col-lg-4"><img class="img-fluid"
+                                                           th:src="@{/dist/assets/img/illustrations/team-spirit.svg}"/></div>
+                            </div>
+                        </div>
+                    </header>
+                    <br>
+                    <div class="card">
+                        <div class="card-header">Account erstellen - Schritt 3</div>
+                        <div class="card-body">
 
+                            <form th:action="@{/register/saveStep3/save}" method="post" class="was-validated">
+
+                                <div class="mb-3">
+                                    <label for="user">Username</label>
+                                    <input type="text" class="form-control" id="user" placeholder="Enter email" name="username"
+                                           required th:value="${username}" readonly style="background: white!important;">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="pw1">Passwort</label>
+                                    <input type="password" class="form-control" id="pw1" placeholder="Enter email" name="password"
+                                           required>
+                                </div>
+
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary btn-block">Speichern</button>
+
+                                </div>
+                                <input th:value="${code}" style="max-width: 0; max-height: 0" name="code" class="invisible">
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 px-4 mt-4 ">
+
+
+                    <div class="card card-icon lift lift-sm mb-4">
+                        <div class="row g-0">
+                            <div class="col-auto card-icon-aside bg-success"><span class="mdi mdi-check-circle text-white-50 "></span></div>
+                            <div class="col">
+                                <div class="card-body py-5">
+                                    <h5 class="card-title text-success mb-2">Schritt 1</h5>
+                                    <p class="card-text mb-1">Allgemeine Daten</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-icon lift lift-sm mb-4">
+                        <div class="row g-0">
+                            <div class="col-auto card-icon-aside bg-success"><span class="mdi mdi-check-circle text-white-50 "></span></div>
+                            <div class="col">
+                                <div class="card-body py-5">
+                                    <h5 class="card-title text-success mb-2">Schritt 2</h5>
+                                    <p class="card-text mb-1">E-Mail Verifikation</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-icon lift lift-sm mb-4">
+                        <div class="row g-0">
+                            <div class="col-auto card-icon-aside bg-danger"><span class="mdi mdi-alert-circle text-white-50 "></span></div>
+                            <div class="col">
+                                <div class="card-body py-5">
+                                    <h5 class="card-title text-danger mb-2">Schritt 3</h5>
+                                    <p class="card-text mb-1">Passwort festlegen</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer-admin mt-auto footer-light">
+        <div class="container-xl px-4">
+            <div class="row">
+                <div class="col-md-6 small">Copyright &copy; Lucas Helfer 2021</div>
+                <div class="col-md-6 text-md-end small">
+                    <a href="#!">Privacy Policy</a>
+                    &middot;
+                    <a href="#!">Terms &amp; Conditions</a>
+                </div>
+            </div>
+        </div>
+    </footer>
 </div>
-
-
-</body>
-
 
 </html>

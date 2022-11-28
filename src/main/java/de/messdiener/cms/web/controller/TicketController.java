@@ -1,12 +1,14 @@
 package de.messdiener.cms.web.controller;
 
 import de.messdiener.cms.app.entities.email.EmailEntity;
+import de.messdiener.cms.app.entities.file.FileEntity;
 import de.messdiener.cms.app.entities.ticket.Ticket;
 import de.messdiener.cms.app.entities.ticket.cache.TicketLink;
 import de.messdiener.cms.app.entities.ticket.cache.TicketLog;
 import de.messdiener.cms.app.entities.ticket.cache.TicketMonths;
 import de.messdiener.cms.app.entities.ticket.cache.TicketPerson;
 import de.messdiener.cms.app.entities.user.User;
+import de.messdiener.cms.app.services.mail.utils.MailOverlay;
 import de.messdiener.cms.app.services.mail.utils.MailTemplates;
 import de.messdiener.cms.cache.Cache;
 import de.messdiener.cms.cache.ContextPaths;
@@ -14,22 +16,19 @@ import de.messdiener.cms.cache.enums.TicketState;
 import de.messdiener.cms.web.security.SecurityHelper;
 import de.messdiener.cms.web.utils.DateUtils;
 import de.messdiener.cms.web.utils.Utils;
-import org.springframework.context.annotation.Bean;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Set;
+import java.util.Optional;
 import java.util.UUID;
 
 @Controller
@@ -41,7 +40,7 @@ public class TicketController {
         SecurityHelper.addSessionUser(httpSession);
         model.addAttribute("tickets", Cache.TICKET_SERVICE.getTickets());
 
-        return "ticketOverview";
+        return "tickets/ticketOverview";
     }
 
     @GetMapping("/ticket/edit")
@@ -54,7 +53,7 @@ public class TicketController {
         Ticket ticket = Cache.TICKET_SERVICE.getTicket(uuid).orElseThrow();
         model.addAttribute("ticket", ticket);
 
-        return "articlePage";
+        return "tickets/articlePage";
     }
 
     @PostMapping("/ticket/save/link")
@@ -79,7 +78,7 @@ public class TicketController {
     }
 
     @PostMapping("/ticket/save/user")
-    public RedirectView saveUser(@RequestParam("uuid") UUID uuid, @RequestParam("useruuid") UUID useruuid) throws SQLException {
+    public RedirectView saveUser(@RequestParam("uuid") UUID uuid, @RequestParam("useruuid") UUID useruuid) throws Exception {
 
         Ticket ticket = Cache.TICKET_SERVICE.getTicket(uuid).orElseThrow();
         Cache.TICKET_SERVICE.delete(ticket);
@@ -96,12 +95,20 @@ public class TicketController {
         return new RedirectView("/ticket/edit?uuid=" + uuid);
     }
 
-    private void extracted(Ticket ticket, User user) throws SQLException {
+    private void extracted(Ticket ticket, User user) throws Exception {
         Cache.TICKET_SERVICE.addLog(ticket, TicketLog.create(UUID.randomUUID(), System.currentTimeMillis(), SecurityHelper.getUser().getUser_UUID(),
                 "Ticket wurde " + user.getNameString() + " von " + SecurityHelper.getNameString() + " zugewiesen."
         ));
 
-        EmailEntity email = new EmailEntity(user.getEmail(), "Neue Zuständigkeit", MailTemplates.createTemplate_newEditorToEditor(user, ticket, SecurityHelper.getNameString()), "https://localhost:8081/ticket/edit?uuid=" + ticket.getUUID().toString());
+        EmailEntity email = EmailEntity.generateNew(user.getEmail(), "Neue Zuständigkeit", MailOverlay.generate()
+                .addGreeting("Hallo " + user.getFirstname() + ",")
+                .addText("Dir wurde das " + "Ticket Nr. " + ticket.getUUID().toString()
+                        + " [" + ticket.getTicketPerson().getName()
+                        + " (" + ticket.getTicketPerson().getAssociation() + "), " + ticket.getDates().getGermanDate_CREATED() + "] zugewiesen. " +
+                        "<br>Bitte bearbeite es bis zum " + ticket.getDates().getGermanDate_DEADLINE())
+                        .addLink("Zum Ticket", "https://localhost:8081/ticket/edit?uuid=" + ticket.getUUID().toString())
+                .addAdoption_Lucas());
+
         Cache.EMAIL_SERVICE.sendMail(email);
     }
 
@@ -114,47 +121,46 @@ public class TicketController {
         model.addAttribute("persons", Cache.TICKET_SERVICE.getTicketPersons());
         System.out.println(Cache.TICKET_SERVICE.getTicketPersons().size());
 
-        return "createTicket";
+        return "tickets/createTicket";
     }
 
 
     @GetMapping("/ticket/lektoriat")
-    public String correction(Model model, @RequestParam("uuid")UUID uuid) throws SQLException {
+    public String correction(Model model, @RequestParam("uuid") UUID uuid) throws SQLException {
 
         Ticket ticket = Cache.TICKET_SERVICE.getTicket(uuid).orElseThrow();
         model.addAttribute("ticket", ticket);
 
 
-
-        if(!ticket.getUser_UUID().equals(SecurityHelper.getUser().getUser_UUID())){
+        if (!ticket.getUser_UUID().equals(SecurityHelper.getUser().getUser_UUID())) {
             ticket.setUser_UUID(SecurityHelper.getUser().getUser_UUID());
         }
 
-        if(ticket.getTicketState() == TicketState.OPEN){
+        if (ticket.getTicketState() == TicketState.OPEN) {
             ticket.setTicketState(TicketState.CORRECTOR_1);
         }
         Cache.TICKET_SERVICE.save(ticket);
 
         model.addAttribute("disabled", !ticket.isCorrection());
 
-        return "lektoriat";
+        return "tickets/lektoriat";
     }
 
     @GetMapping("/ticket/lektoriat/accept")
-    public RedirectView correctionAccept(Model model, @RequestParam("uuid")UUID uuid) throws SQLException {
+    public RedirectView correctionAccept(Model model, @RequestParam("uuid") UUID uuid) throws Exception {
 
         Ticket ticket = Cache.TICKET_SERVICE.getTicket(uuid).orElseThrow();
         TicketLog ticketLog = TicketLog.create(ticket.getTicketState().getName() + " genehmigt durch " + SecurityHelper.getNameString());
 
         model.addAttribute("ticket", ticket);
 
-        if(ticket.getTicketState() == TicketState.CORRECTOR_1){
+        if (ticket.getTicketState() == TicketState.CORRECTOR_1) {
             ticket.setTicketState(TicketState.CORRECTOR_2);
             ticket.setUser_UUID(Cache.ALFRED_USER.getUser_UUID());
 
             extracted(ticket, Cache.ALFRED_USER);
 
-        }else if(ticket.getTicketState() == TicketState.CORRECTOR_2){
+        } else if (ticket.getTicketState() == TicketState.CORRECTOR_2) {
             ticket.setTicketState(TicketState.AWAITING_PUBLICATION);
             ticket.setUser_UUID(Cache.SYSTEM_USER.getUser_UUID());
         }
@@ -165,39 +171,27 @@ public class TicketController {
     }
 
     @PostMapping("/ticket/lektoriat/proposeChanges")
-    public RedirectView proposeChanges(Model model, @RequestParam("uuid")UUID uuid, @RequestParam("text")String text,
-                                       @RequestParam("type")String type) throws SQLException {
+    public RedirectView proposeChanges(Model model, @RequestParam("uuid") UUID uuid, @RequestParam("text") String text,
+                                       @RequestParam("type") String type) throws Exception {
 
         Ticket ticket = Cache.TICKET_SERVICE.getTicket(uuid).orElseThrow();
 
-        if(type.equals("reject")){
+        if (type.equals("reject")) {
             ticket.setTicketState(TicketState.REJECTED);
             Cache.TICKET_SERVICE.save(ticket);
             Cache.TICKET_SERVICE.addLog(ticket, TicketLog.create("Ticket wurde von " + SecurityHelper.getNameString() + " abgelehnt: " + text));
 
-            EmailEntity email = new EmailEntity(ticket.getTicketPerson().getEmail(), "Abgelehnt",
-
-                    ticket.getTicketPerson().getGreeting() + "\n\nDein Ticket wurde abgelehnt: \n" + text + "\n\n" + Utils.getMailClose(), ""
-
-            );
-            Cache.EMAIL_SERVICE.sendMail(email);
 
             return new RedirectView("/ticket/edit?uuid=" + uuid);
         }
         Cache.TICKET_SERVICE.addLog(ticket, TicketLog.create("Folgender Verbesserungsvorschlag wurde von " + SecurityHelper.getNameString() + " geschickt: " + text));
 
-        EmailEntity email = new EmailEntity(ticket.getTicketPerson().getEmail(), "Verbersserungsvorschlag",
-
-                ticket.getTicketPerson().getGreeting() + "\n\n" + text + "\n\n" + Utils.getMailClose(), ""
-
-        );
-        Cache.EMAIL_SERVICE.sendMail(email);
 
         return new RedirectView("/ticket/edit?uuid=" + uuid);
     }
 
     @GetMapping("/ticket/delete")
-    public RedirectView delete(@RequestParam("uuid")UUID uuid) throws SQLException {
+    public RedirectView delete(@RequestParam("uuid") UUID uuid) throws SQLException {
 
         Ticket ticket = Cache.TICKET_SERVICE.getTicket(uuid).orElseThrow();
         Cache.TICKET_SERVICE.delete(ticket);
@@ -206,7 +200,7 @@ public class TicketController {
     }
 
     @GetMapping("/ticket/close")
-    public RedirectView closeTicket(@RequestParam("uuid")UUID uuid) throws SQLException{
+    public RedirectView closeTicket(@RequestParam("uuid") UUID uuid) throws Exception {
 
         Ticket ticket = Cache.TICKET_SERVICE.getTicket(uuid).orElseThrow();
 
@@ -215,27 +209,46 @@ public class TicketController {
         Cache.TICKET_SERVICE.save(ticket);
         Cache.TICKET_SERVICE.addLog(ticket, TicketLog.create("Ticket wurde von " + SecurityHelper.getNameString() + " geschlossen (Veröffentlicht)."));
 
-        EmailEntity email = new EmailEntity(ticket.getTicketPerson().getEmail(), "Abgelehnt",
-
-                ticket.getTicketPerson().getGreeting() + "\n\nDein Ticket wurde geschlossen! Vielen Dank für die Nutzung des Services"+ "\n\n" + Utils.getMailClose(), ""
-
-        );
-        Cache.EMAIL_SERVICE.sendMail(email);
 
         return new RedirectView("/ticket/edit?uuid=" + uuid);
     }
 
+
+    @GetMapping("/public/tickets")
+    public String getTicket(Model model, @RequestParam("uuid") Optional<UUID> uuid) throws SQLException {
+        model.addAttribute("ticket", Cache.TICKET_SERVICE.getTicket(uuid.orElse(UUID.randomUUID())).orElse(Ticket.empty()));
+
+        model.addAttribute("uuid", uuid);
+        return "public/ticketPublicView";
+    }
+
     @GetMapping("/public/createTicket")
-    public String create(){
+    public String create() {
         return "public/createTicketPublic";
     }
 
+    @GetMapping("/public/createTicket/uploadData")
+    public String uploadPublic(Model model, @RequestParam("uuid") Optional<String> uuid) {
+        model.addAttribute("uuid", uuid);
+        return "public/uploadImg";
+    }
+
+    @PostMapping("/public/createTicket/uploadData/save")
+    public RedirectView saveUploadPublic(@RequestParam("file") MultipartFile file) throws IOException, SQLException {
+
+        FileEntity fileEntity = FileEntity.convert(file, "GAST");
+        fileEntity.setName("GastUpload_" + file.getName());
+        fileEntity.save();
+
+        return new RedirectView("/public/createTicket/uploadData?uuid=" + fileEntity.getUUID());
+    }
+
     @PostMapping("/public/createTicket/save")
-    public RedirectView saveTicket(@RequestParam("lastname")String lastname, @RequestParam("firstname")String firstname,
-                                   @RequestParam("association")String association, @RequestParam("email")String email,
-                                   @RequestParam("phone")String phone, @RequestParam("deadline")String deadline,
-                                   @RequestParam("text")String text, @RequestParam("path")String path
-                                   ) throws SQLException {
+    public RedirectView saveTicket(@RequestParam("lastname") String lastname, @RequestParam("firstname") String firstname,
+                                   @RequestParam("association") String association, @RequestParam("email") String email,
+                                   @RequestParam("phone") String phone, @RequestParam("deadline") String deadline,
+                                   @RequestParam("text") String text, @RequestParam("path") Optional<String> path
+    ) throws SQLException {
 
         UUID ticketUUID = UUID.randomUUID();
 
@@ -247,18 +260,23 @@ public class TicketController {
 
 
         Cache.TICKET_SERVICE.save(ticket);
-        Cache.TICKET_SERVICE.addLog(ticket, new TicketLog(UUID.randomUUID(), System.currentTimeMillis(), SecurityHelper.getUser().getUser_UUID(),
-                "Ticket wurde von " + firstname + " " + lastname + " angelegt!"));
 
-        if(path.equals("ADMIN")){
+
+        if (path.isPresent() && path.get().equals("ADMIN")) {
+            Cache.TICKET_SERVICE.addLog(ticket, new TicketLog(UUID.randomUUID(), System.currentTimeMillis(), SecurityHelper.getUser().getUser_UUID(),
+                    "Ticket wurde von " + firstname + " " + lastname + " angelegt!"));
             return new RedirectView("/ticket/edit?uuid=" + ticketUUID);
         }
+
+        Cache.TICKET_SERVICE.addLog(ticket, new TicketLog(UUID.randomUUID(), System.currentTimeMillis(), Cache.SYSTEM_USER.getUser_UUID(),
+                "Ticket wurde von " + firstname + " " + lastname + " (via wizard) angelegt!"));
 
         return new RedirectView("/");
     }
 
+
     @GetMapping("/ticket/assignMe")
-    public RedirectView assignMe(@RequestParam("uuid")UUID uuid) throws SQLException {
+    public RedirectView assignMe(@RequestParam("uuid") UUID uuid) throws SQLException {
 
         Ticket ticket = Cache.TICKET_SERVICE.getTicket(uuid).orElseThrow();
         Cache.TICKET_SERVICE.delete(ticket);
@@ -274,13 +292,12 @@ public class TicketController {
     }
 
     @GetMapping("/calendar")
-    public String calendar(Model model) throws SQLException {
+    public String calendar(HttpSession session, Model model) throws SQLException {
+        SecurityHelper.addSessionUser(session);
 
 
-        ArrayList<TicketMonths> ticketMonths = TicketMonths.createDisplay();
-
-        model.addAttribute("tickets", ticketMonths);
-        return "calendar";
+        model.addAttribute("tickets", Cache.TICKET_SERVICE.getTickets());
+        return "tickets/calendar";
     }
 
 }

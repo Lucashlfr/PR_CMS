@@ -3,6 +3,8 @@ package de.messdiener.cms.web.utils;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -43,7 +45,8 @@ public class DateUtils {
         ENGLISH("yyyy-MM-dd"),
         GERMAN("dd.MM.yyyy"),
         GERMAN_WITH_TIME("dd.MM.yyyy HH:mm"),
-        GERMAN_WITH_DAY_NAME("EEEE, dd.MM.yyyy");
+        GERMAN_WITH_DAY_NAME("EEEE, dd.MM.yyyy"),
+        ENGLISH_DATETIME("yyyy-MM-dd'T'HH:mm");
 
         private final String pattern;
 
@@ -91,5 +94,23 @@ public class DateUtils {
 
         return cal.get(Calendar.MONTH)+1;
     }
+
+    public static int getAge(long birthday) {
+        LocalDate birthdayDate = createLocalDate(birthday);
+        LocalDate current = createLocalDate(System.currentTimeMillis());
+
+        return Period.between(birthdayDate, current).getYears();
+
+    }
+
+    private static LocalDate createLocalDate(long millis){
+        String[] bArray = convertLongToDate(millis, DateType.ENGLISH).split("-");
+        int[] iArray = new int[bArray.length];
+        for (int i = 0; i < bArray.length; i++) {
+            iArray[i] = Integer.parseInt(bArray[i]);
+        }
+        return LocalDate.of(iArray[0], iArray[1], iArray[2]);
+    }
+
 
 }

@@ -34,16 +34,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         LOGGER.setLevel(Level.ALL);
 
-        UUID uuid = UUID.randomUUID();
-
-        try {
-            Cache.USER_SERVICE.saveUser(new de.messdiener.cms.app.entities.user.User("oneUser", "oneUser", "lastname", "oneUser",
-                    UserGroup.ADMIN, Cache.MAIL));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        LOGGER.info("Einmal Passwort für oneUser: " + uuid);
-
         InMemoryUserDetailsManager userDetailsManager = new InMemoryUserDetailsManager();
         try {
             Cache.USER_SERVICE.getUsers().forEach(u -> {
@@ -71,19 +61,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 requiresChannel(channel ->
                 channel.anyRequest().requiresSecure())
                 .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/static/**", "/dist/**", "/img/**", "/css/**", "/script/**").permitAll() // "/index", "/", "/login"
+                .antMatchers(HttpMethod.GET, "/static/**", "/dist/**", "/img/**", "/css/**", "/script/**", "/download").permitAll() // "/index", "/", "/login"
                 .and()
                 .authorizeRequests()
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                .antMatchers("/dc/cloud/file").permitAll()
                 .antMatchers("/register/**").permitAll()
                 .antMatchers("/public/**").permitAll()
                 .antMatchers("/ticket/**").hasAnyRole(de.messdiener.cms.app.entities.user.User.empty().getGroups())
                 .antMatchers("/").hasAnyRole(de.messdiener.cms.app.entities.user.User.empty().getGroups())
                 .antMatchers("/admin/**").hasAnyRole(UserGroup.ADMIN.toString())
-                //.anyRequest().authenticated().and().formLogin().permitAll();
-
-
-
+                .antMatchers("/finance/**").hasAnyRole(de.messdiener.cms.app.entities.user.User.empty().getGroups())
                 .anyRequest().authenticated().and()
                 .formLogin()
                 .usernameParameter("username")

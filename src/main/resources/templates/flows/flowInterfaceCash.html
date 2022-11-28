@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head th:insert="fragments_new :: html_head"></head>
+<body class="nav-fixed">
+<nav th:insert="fragments_new :: topnav"></nav>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav" th:insert="fragments_new :: sidbar"></div>
+    <div id="layoutSidenav_content">
+        <main>
+            <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+                <div class="container px-4">
+                    <div class="page-header-content">
+                        <div class="row align-items-center justify-content-between pt-3">
+                            <div class="col-auto mb-3">
+                                <h1 class="page-header-title">
+                                    <div class="page-header-icon"><i data-feather="repeat"></i></div>
+                                    Flow
+                                </h1>
+                            </div>
+                            <div class="col-12 col-xl-auto mb-3">
+                                <a class="btn btn-sm btn-light text-primary" th:href="'/flows/resend?uuid=' + ${flow.getUUID()}">
+                                    <i class="me-1" data-feather="repeat"></i>
+                                    Pfarrbüro
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div class="container-xl px-4 mt-4">
+                <!-- Invoice-->
+                <div class="card">
+                    <div class="card-header p-4 p-md-5 border-bottom-0 bg-gradient-primary-to-secondary text-white-50">
+                        <div class="row justify-content-between align-items-center">
+                            <div class="col-12 col-lg-auto mb-5 mb-lg-0 text-center text-lg-start">
+                                <!-- Invoice branding-->
+                                <div class="h2 text-white mb-0">Flow: <span th:text="${flow.getState().getName()}"></span></div>
+                                Konto: <span th:text="${person.getGroup().getName()}"></span>
+                            </div>
+                            <div class="col-12 col-lg-auto text-center text-lg-end">
+                                <!-- Invoice details-->
+                                <div class="h2 text-white mb-0" th:text="${flow.getState().getName()}"></div>
+                                <span th:text="${flow.getDateString()}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body  ">
+                        <!-- Invoice table-->
+                        <table class="table table-bordered">
+                            <thead>
+
+                            <th></th>
+                            <th>Beschreibung</th>
+                            <th>Datum</th>
+                            <th>Wert</th>
+                            </thead>
+
+                            <tbody>
+
+                            <tr th:each="row:${cashflow.getDataAsArray()}">
+                                <td style="width: 20px" th:text="${row.getId()}"></td>
+                                <td th:text="${row.getBezeichnung()}"></td>
+                                <td th:text="${row.getGermanDate()}"></td>
+                                <td style="text-align: right; width: 200px" th:text="${row.getValue()} + '€'"></td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="3" style="text-align: right;">SUMME:</td>
+                                <td class="text-danger" style="text-align: right"><b><span th:text="${cashflow.getSumm()}"></span> €</b></td>
+                            </tr>
+
+                            </tbody>
+
+                        </table>
+                    </div>
+                    <div class="card-footer p-4 p-lg-5 border-top-0">
+                        <div class="row">
+                            <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+                                <!-- Invoice - sent to info-->
+                                <div class="small text-muted text-uppercase fw-700 mb-2">Kostenstelle</div>
+                                <div class="h6 mb-1" th:text="${person.getGroup().getName()}"></div>
+                                <div class="small"></div>
+                                <div class="small"></div>
+                            </div>
+                            <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+                                <!-- Invoice - sent from info-->
+                                <div class="small text-muted text-uppercase fw-700 mb-2">Empfängerkonto</div>
+                                <div class="h6 mb-0" th:text="${cashflow.getCard_owner()}"></div>
+                                <div class="small" th:text="${cashflow.getIban()}"></div>
+                                <div class="small" th:text="${cashflow.getBic()}"></div>
+                            </div>
+
+                            <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+                                <!-- Invoice - sent from info-->
+                                <div class="small text-muted text-uppercase fw-700 mb-2">Dateien</div>
+                                <a th:href="'/download?uuid=' + ${cashflow.getFile().getUUID()}" class="h6 mb-0"><span class="mdi mdi-download"></span> Beleg herunterladen</a>
+                                <br>
+                                <a href="#" class="h6 mb-0"><span class="mdi mdi-export"> Exportieren</span></a>
+                            </div>
+
+                            <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+                                <!-- Invoice - additional notes-->
+                                <div class="small text-muted text-uppercase fw-700 mb-2">Hinweis</div>
+                                <div class="h6 mb-0 text-danger">Bitte überweisen Sie den Betrag nur von der angegebenen Kostenstelle!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+        <footer th:insert="fragments_new :: footer"></footer>
+    </div>
+</div>
+<div th:insert="fragments_new :: script"></div>
+</body>
+
+
+</html>

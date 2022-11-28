@@ -153,7 +153,8 @@ public class Ticket {
 
 
     public String getHTML() {
-        return html;
+        System.out.println(html);
+        return html.replace("dc/cloud/file?uuid=", "/public/dc/cloud/file?uuid=");
     }
 
     public void setHtml(String html) {

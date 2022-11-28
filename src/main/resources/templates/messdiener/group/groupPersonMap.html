@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head th:insert="fragments_new :: html_head"></head>
+<body class="nav-fixed">
+<nav th:insert="fragments_new :: topnav"></nav>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav" th:insert="fragments_new :: sidbar"></div>
+    <div id="layoutSidenav_content">
+        <main>
+            <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+                <div class="container px-4">
+                    <div class="page-header-content">
+                        <div class="row align-items-center justify-content-between pt-3">
+                            <div class="col-auto mb-3">
+                                <h1 class="page-header-title">
+                                    <div class="page-header-icon"><i data-feather="users"></i></div>
+                                    Messdiener-Gruppen <span class="mdi mdi-arrow-right"></span> <span
+                                        th:text="${group.getName()}"></span>
+                                </h1>
+                            </div>
+                            <div class="col-12 col-xl-auto mb-3">
+                                <a class="btn btn-sm btn-light text-primary" href="/messdiener/group">
+                                    <i class="me-1 mdi mdi-arrow-left"></i>
+                                    Zurück
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- Main page content-->
+            <div class="container px-4">
+                <div class="row">
+
+                    <div class="col-xl-6">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <div class="d-flex  justify-content-between align-items-center">
+                                    <span>Verfügbare Personen</span>
+                                    <span class="badge bg-primary rounded-pill"
+                                          th:text="${availAblePersons.size()}"></span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="list-group list-group-flush">
+                                    <div
+                                       class="list-group-item d-flex justify-content-between align-items-center"
+                                       th:each="person:${availAblePersons}">
+                                        <span th:text="${person.getReadName()}"></span>
+                                        <a th:href="'/messdiener/group/map?group_uuid='  + ${group.getUUID()} + '&person_uuid=' + ${person.getUUID()}"
+                                           class="btn btn-sm btn-primary mdi mdi-arrow-right" ></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-6">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                Personen in Gruppe
+                            </div>
+                            <div class="card-body">
+                                <div class="list-group list-group-flush">
+                                    <div th:each="p2:${inGroup}"
+                                         class="list-group-item d-flex justify-content-between align-items-center">
+
+                                        <span th:if="${p2.getSecond().getPower()} == 10" class="text-success mdi mdi-crown">
+                                            <span th:text="${p2.getFirst().getReadName()}" ></span>
+                                        </span>
+
+                                        <span th:if="${p2.getSecond().getPower()} == 5" class="text-info mdi mdi-account-group">
+                                            <span th:text="${p2.getFirst().getReadName()}" ></span>
+                                        </span>
+
+                                        <span th:text="${p2.getFirst().getReadName()}" th:if="${p2.getSecond().getPower()} == 0"></span>
+
+                                        <div>
+                                            <a th:href="'/messdiener/group/promote?group_uuid=' + ${group.getUUID()} + '&person_uuid=' + ${p2.getFirst().getUUID()}"
+                                               class="btn btn-sm btn-success mdi mdi-arrow-up"></a>
+                                            <a th:href="'/messdiener/group/unmap?group_uuid=' + ${group.getUUID()} + '&person_uuid=' + ${p2.getFirst().getUUID()}"
+                                               class="btn btn-sm btn-danger mdi mdi-delete"></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+        <footer th:insert="fragments_new :: footer"></footer>
+    </div>
+</div>
+<div th:insert="fragments_new :: script"></div>
+</body>
+
+<!-- The Modal -->
+<div class="modal fade" id="create">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+
+            <form method="post" action="/messdiener/group/create">
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="text-center">
+
+                        <script src="https://cdn.lordicon.com/pzdvqjsp.js"></script>
+                        <lord-icon
+                                src="https://cdn.lordicon.com/xzksbhzh.json"
+                                trigger="loop"
+                                delay="2000"
+                                style="width:100px;height:100px">
+                        </lord-icon>
+                        <h4>Gruppe anlegen</h4>
+                        <h6>Hier kannst du eine neue Gruppe erstellen</h6>
+
+                    </div>
+
+                    <div class="m-2">
+                        <div class="form-floating mb-1">
+                            <input type="text" class="form-control" id="adress" name="name" required>
+                            <label for="adress">Name</label>
+                        </div>
+
+                    </div>
+                    <div class="d-flex">
+
+                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                            Abbrechen
+                        </button>
+                        <button type="submit" class="btn btn-success btn-block flex-fill m-1">Speichern</button>
+
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<form th:method="post" th:action="@{/messdiener/import}" enctype="multipart/form-data">
+    <div class="modal fade" id="files">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="text-center">
+
+                        <script src="https://cdn.lordicon.com/qjzruarw.js"></script>
+                        <lord-icon
+                                src="https://cdn.lordicon.com/xzksbhzh.json"
+                                trigger="loop"
+                                delay="4000"
+                                style="width:100px;height:100px">
+                        </lord-icon>
+                        <h4>Importieren</h4>
+                        <h6>Lade eine CSV-Datei hoch</h6>
+                    </div>
+
+                    <div class=" mb-3 mt-3">
+                        <input type="file" class="form-control" id="name" placeholder="Enter email" name="file">
+                    </div>
+
+                    <div class="d-flex">
+
+                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                            Schließen
+                        </button>
+
+                        <button type="submit" class="btn btn-success btn-block flex-fill m-1">
+                            Speichern
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</form>
+
+</html>
+<script>
+    $(document).ready(function () {
+        $('#table_id').DataTable({
+            language: {
+                "decimal": ",",
+                "thousands": ".",
+                "infoPostFix": "",
+                "infoFiltered": "(gefiltert aus insgesamt _MAX_ Einträgen)",
+                "loadingRecords": "Bitte warten Sie - Daten werden geladen ...",
+                "lengthMenu": "Anzeigen von _MENU_ Einträgen",
+                "paginate": {
+                    "first": "Erste",
+                    "last": "Letzte",
+                    "next": "Nächste",
+                    "previous": "Zurück"
+                },
+                "processing": "Verarbeitung läuft ...",
+                "search": "Suche:",
+                "searchPlaceholder": "Suchbegriff",
+                "zeroRecords": "Keine Daten! Bitte ändern Sie Ihren Suchbegriff.",
+                "emptyTable": "Keine Einträge zum Anzeigen vorhanden",
+                "aria": {
+                    "sortAscending": ": aktivieren, um Spalte aufsteigend zu sortieren",
+                    "sortDescending": ": aktivieren, um Spalte absteigend zu sortieren"
+                },
+                "info": "Zeigt _START_ bis _END_  von _TOTAL_ Einträgen",
+                "infoEmpty": "Keine Einträge zum Anzeigen vorhanden",
+                "select": {
+                    "rows": {
+                        _: '%d Zeilen ausgewählt',
+                        0: 'Zeile anklicken um auszuwählen',
+                        1: 'Eine Zeile ausgewählt'
+                    }
+                }
+            },
+            "columnDefs": [
+                {
+                    "targets": [4],
+                    className: 'dt-body-right'
+                }
+
+            ]
+        });
+
+        setTimeout(function () {
+            document.getElementById("content").classList.remove("d-none");
+            document.getElementById("load").classList.add("d-none");
+        }, 10);
+    });
+</script>

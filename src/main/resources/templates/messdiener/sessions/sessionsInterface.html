@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head th:insert="fragments_new :: html_head"></head>
+<body class="nav-fixed">
+<nav th:insert="fragments_new :: topnav"></nav>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav" th:insert="fragments_new :: sidbar"></div>
+    <div id="layoutSidenav_content">
+        <main>
+            <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+                <div class="container px-4">
+                    <div class="page-header-content">
+                        <div class="row align-items-center justify-content-between pt-3">
+                            <div class="col-auto mb-3">
+                                <h1 class="page-header-title">
+                                    <div class="page-header-icon"><i data-feather="users"></i></div>
+                                    Gruppenstunden
+                                </h1>
+                            </div>
+                            <div class="col-12 col-xl-auto mb-3">
+                                <a class="btn btn-sm btn-light text-primary" href="javascript:void(0);" th:if="${id.isPresent()}"
+                                   data-bs-toggle="modal" data-bs-target="#attendance">
+                                    <i class="me-1" data-feather="plus"></i>
+                                    Anwesenheit erfassen
+                                </a>
+                                <a class="btn btn-sm btn-light text-primary" href="javascript:void(0);"
+                                   data-bs-toggle="modal" data-bs-target="#create">
+                                    <i class="me-1" data-feather="plus"></i>
+                                    Termin erstellen
+                                </a>
+                                <a class="btn btn-sm btn-light text-primary" href="#" data-bs-toggle="modal"
+                                   th:if="${session.sessionUser.userHasPermission('MMS_CSV_IMPORT')}"
+                                   data-bs-target="#files">
+                                    <i class="me-1" data-feather="upload"></i>
+                                    CSV-Import
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- Main page content-->
+            <div class="container-xl px-4 mt-5">
+                <div class="row">
+
+                    <div class="col-xl-6">
+                        <div class="card h-100 mb-4">
+                            <div class="card-header">Kalender</div>
+                            <div class="card-body">
+                                <table id="data" class="d-none">
+                                    <tbody>
+                                    <tr th:each="avsession:${sessions}">
+                                        <td th:text="'/group/session?group=' + ${group.getUUID()} + '#id=' + ${avsession.getUUID()}"></td>
+                                        <td th:text="${avsession.getDate()}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div id="calendar"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table id="table_data" class="d-none" th:if="${id.isPresent()}">
+                        <thead>
+                        <tr>
+                            <th>Personen</th>
+                            <th>id</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="person:${event.getMessdieners()}">
+                            <td th:text="${person.getReadName()}" style="width: 50%"></td>
+                            <td>true</td>
+                        </tr>
+
+
+                        </tbody>
+                    </table>
+
+                    <div class="col-xl-6">
+                        <div class="card h-100 mb-4">
+                            <div class="card-header">Übersicht</div>
+                            <div class="card-body">
+
+
+
+                                <h1 th:unless="${id.isPresent()}">Keinen Termin ausgewählt</h1>
+                                <div th:if="${id.isPresent()}">
+
+                                    <table class="table table-bordered">
+                                        <tbody>
+
+                                        <tr>
+                                            <td colspan="2">Gruppenstunde</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 25%">Datum</td>
+                                            <td th:text="${event.getGerman()}"></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Anwesend</td>
+                                            <td th:text="${event.createList()}"></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Abwesend</td>
+                                            <td th:text="${event.createListMissing()}"></td>
+                                        </tr>
+
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+        <footer th:insert="fragments_new :: footer"></footer>
+    </div>
+</div>
+<div th:insert="fragments_new :: script"></div>
+</body>
+
+
+<!-- The Modal -->
+<div class="modal fade" id="create">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+
+            <form method="post" action="/messdiener/group/session/create">
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="text-center">
+
+                        <script src="https://cdn.lordicon.com/pzdvqjsp.js"></script>
+                        <lord-icon
+                                src="https://cdn.lordicon.com/xzksbhzh.json"
+                                trigger="loop"
+                                delay="2000"
+                                style="width:100px;height:100px">
+                        </lord-icon>
+                        <h4>Gruppe anlegen</h4>
+                        <h6>Hier kannst du eine neue Gruppe erstellen</h6>
+
+                    </div>
+
+                    <div class="m-2">
+                        <input th:value="${group.getUUID()}" name="uuid" class="d-none">
+                        <div class="form-floating mb-1">
+                            <input type="datetime-local" class="form-control" id="date" name="date" required>
+                            <label for="date">Name</label>
+                        </div>
+
+                    </div>
+                    <div class="d-flex">
+
+                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                            Abbrechen
+                        </button>
+                        <button type="submit" class="btn btn-success btn-block flex-fill m-1">Speichern</button>
+
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+<link th:href="@{/css/main.css}" rel="stylesheet"/>
+<script th:src="@{/script/main.js}"></script>
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        let calendarEl = document.getElementById('calendar');
+        let calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,basicWeek,basicDay'
+            },
+            navLinks: true, // can click day/week names to navigate views
+            editable: false,
+            eventLimit: true, // allow "more" link when too many events
+            firstDay: 1,
+
+            monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+            monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'November', 'Dic'],
+            dayNames: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+            dayNamesShort: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+        });
+
+        //gets rows of table
+        let table = document.getElementById('data');
+        let rowLength = table.rows.length;
+
+        for (let i = 0; i < rowLength; i++) {
+
+            let cells = table.rows.item(i).cells;
+
+            calendar.addEvent({
+                description: 'Gruppenstunde',
+                url: cells.item(0).innerHTML.replace('#', '&'),
+                start: cells.item(1).innerHTML,
+                color: 'blue',
+                title: 'Gruppenstunde'
+            });
+        }
+
+
+        calendar.render();
+    });
+
+</script>
+
+<form th:method="post" th:action="@{/group/session/import}" enctype="multipart/form-data">
+    <div class="modal fade" id="files">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="text-center">
+
+                        <script src="https://cdn.lordicon.com/qjzruarw.js"></script>
+                        <lord-icon
+                                src="https://cdn.lordicon.com/xzksbhzh.json"
+                                trigger="loop"
+                                delay="4000"
+                                style="width:100px;height:100px">
+                        </lord-icon>
+                        <h4>Importieren</h4>
+                        <h6>Lade eine CSV-Datei hoch</h6>
+                    </div>
+
+                    <div class=" mb-3 mt-3">
+                        <input type="file" class="form-control" id="name" placeholder="Enter email" name="file">
+                    </div>
+
+                    <div class="d-flex">
+
+                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                            Schließen
+                        </button>
+
+                        <button type="submit" class="btn btn-success btn-block flex-fill m-1">
+                            Speichern
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</form>
+
+<script th:src="@{/script/imports/jquery.min.js}"></script>
+<script th:src="@{/script/imports/jquery.dataTables.min.js}"></script>
+
+<!-- The Modal -->
+<div class="modal fade" id="attendance" th:if="${id.isPresent()}">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+
+            <form method="get" action="s.php">
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="text-center">
+
+                        <script src="https://cdn.lordicon.com/pzdvqjsp.js"></script>
+                        <lord-icon
+                                src="https://cdn.lordicon.com/hrqqslfe.json"
+                                trigger="loop"
+                                delay="2000"
+                                style="width:100px;height:100px">
+                        </lord-icon>
+                        <h4>Anwesenheit erfassen</h4>
+                        <h6>Wer war alles da?</h6>
+
+                    </div>
+
+                    <div class="m-2 border">
+                        <table id="table_id" class="display" style="min-width: 100%">
+
+                            <thead>
+                            <tr>
+                                <th>Personen</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            <tr th:each="person:${group.getMessdienerList()}">
+                                <td th:text="${person.getFirst().getReadName()}" style="width: 50%"></td>
+                                <td th:text="${person.getFirst().getUUID()}" style="width: 50%"></td>
+                            </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                    <div class="d-flex">
+
+                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                            Abbrechen
+                        </button>
+                        <button type="button" class="btn btn-success btn-block flex-fill m-1" onclick="save()">Speichern</button>
+
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<p th:text="${event.getUUID()}" id="uuid" class="d-none" th:if="${id.isPresent()}"></p>
+
+<script th:if="${id.isPresent()}">
+    let table;
+    $(document).ready(function () {
+        table = $('#table_id').DataTable({
+
+            "dom": 'Blfrtip',
+            "buttons": ['selectAll', 'selectNone'],
+            "language": {
+                "decimal": ",",
+                "thousands": ".",
+                "infoPostFix": "",
+                "infoFiltered": "(gefiltert aus insgesamt _MAX_ Einträgen)",
+                "loadingRecords": "Bitte warten Sie - Daten werden geladen ...",
+                "lengthMenu": "Anzeigen von _MENU_ Einträgen",
+                "paginate": {
+                    "first": "Erste",
+                    "last": "Letzte",
+                    "next": "Nächste",
+                    "previous": "Zurück"
+                },
+                "processing": "Verarbeitung läuft ...",
+                "search": "Suche:",
+                "searchPlaceholder": "Suchbegriff",
+                "zeroRecords": "Keine Daten! Bitte ändern Sie Ihren Suchbegriff.",
+                "emptyTable": "Keine Einträge zum Anzeigen vorhanden",
+                "aria": {
+                    "sortAscending": ": aktivieren, um Spalte aufsteigend zu sortieren",
+                    "sortDescending": ": aktivieren, um Spalte absteigend zu sortieren"
+                },
+                "info": "Zeigt _START_ bis _END_  von _TOTAL_ Einträgen",
+                "infoEmpty": "Keine Einträge zum Anzeigen vorhanden",
+                buttons: {
+                    selectAll: "Alles auswählen",
+                    selectNone: "Keine auswählen"
+                },
+                "select": {
+                    "rows": {
+                        _: '%d Zeilen ausgewählt',
+                        0: 'Zeile anklicken um auszuwählen',
+                        1: 'Eine Zeile ausgewählt'
+                    }
+                }
+            },
+            "select": {
+                "style": 'multi'
+            },
+            "columnDefs": [
+                {
+                    "targets": [1],
+                    visible: false,
+                },
+                ],
+            searching: false, paging: false
+        });
+
+        loadData();
+
+    });
+
+    function loadData() {
+        let activeTable = document.getElementById('table_data');
+        for (let r = 1, n = activeTable.rows.length; r < n; r++) {
+            table.rows().eq(0).each(function (index) {
+                let row = table.row(index);
+                let data = row.data();
+
+                let date = activeTable.rows[r].cells[0].innerHTML;
+
+                let b = activeTable.rows[r].cells[1].innerHTML === "true";
+                //console.log(data.toString() + "[" + date + " | " + b + "| " + activeTable.rows[r].cells[1].innerHTML + "]");
+                if (data.toString().includes(date) && b) {
+                    row.select();
+                }
+            });
+        }
+    }
+
+    function save() {
+        let data = table.rows({
+
+            selected: true
+
+        }).data();
+
+        let el = [];
+        for (let i = 0; i < data.length; i++) {
+            el.push(data[i][1]);
+        }
+
+
+        let uuid = document.getElementById("uuid").innerText;
+        window.location = "/group/session/save/mapping?uuid=" + uuid + "&date=" + el;
+    }
+
+</script>
+
+</html>

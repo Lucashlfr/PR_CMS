@@ -12,17 +12,17 @@ import java.util.UUID;
 public class ContentManagementSystem {
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         SpringApplication.run(ContentManagementSystem.class, args);
         enableMail(false);
 
     }
 
-    private static void enableMail(boolean b) {
+    private static void enableMail(boolean b) throws Exception {
         if (b)
-            EmailEntity.generateNew("info@messdiener-knittelsheim.de", "[LOG] Service wurde gestertet! (ID: "
-                                    + UUID.randomUUID() + ")", MailOverlay.generate("Text,", "LIN MK"),
-                            "https://cms.kath-pfarrei-bellheim.de")
-                    .send();
+            EmailEntity.generateNew("lucas.helfer@gmx.net", "Service wurde gestartet",
+                    MailOverlay.generate()
+                            .addGreeting("Hallo zusammen, ")
+                            .addText("Der Service wurde gestartet").addAdoption_Lucas()).send();
     }
 }

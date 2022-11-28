@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head th:insert="fragments_new :: html_head"></head>
+<body class="nav-fixed">
+<nav th:insert="fragments_new :: topnav"></nav>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav" th:insert="fragments_new :: sidbar"></div>
+    <div id="layoutSidenav_content">
+        <main>
+            <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+                <div class="container-xl px-4">
+                    <div class="page-header-content">
+                        <div class="row align-items-center justify-content-between pt-3">
+                            <div class="col-auto mb-3">
+                                <h1 class="page-header-title">
+                                    <div class="page-header-icon"><i class="mdi mdi-repeat"></i></div>
+                                    Flows
+                                </h1>
+                            </div>
+                            <div class="col-12 col-xl-auto mb-3">
+                                <a class="btn btn-sm btn-light text-primary" href="/flows?type=CASH">
+                                    <i class="me-1" data-feather="plus"></i>
+                                    Flow anlegen
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div class="container-xl px-4 mt-5">
+
+               <section th:if="${user.getPerson().isPresent()}">
+                   <div class="row" th:if="${flows.size() > 0}">
+                       <div class="col-xl-4" th:each="flow:${flows}">
+                           <a class="card lift lift-sm card-icon mb-4" th:href="'/flows?type=' + ${flow.getType()} + '&uuid=' + ${flow.getUUID()}">
+                               <div class="row no-gutters">
+                                   <div class="col-auto card-icon-aside bg-primary text-white">
+                                       <i data-feather="repeat"></i>
+                                   </div>
+                                   <div class="col">
+                                       <div class="card-body py-5">
+                                           <h5 class="card-title">Flow: <span th:text="${flow.getCashFlow().getZweck()}"></span></h5>
+                                           <p class="card-text">
+                                               <span class="badge badge-primary bg-primary"><span th:text="${flow.getType().getName()}"></span></span>
+                                               <span class="badge badge-primary bg-primary"><span th:text="${flow.getState().getName()}"></span></span>
+                                           </p>
+                                       </div>
+                                   </div>
+                               </div>
+                           </a>
+                       </div>
+                   </div>
+
+                   <div class="card card-icon" th:if="${flows.size() == 0}">
+                       <div class="row no-gutters">
+                           <div class="col-auto card-icon-aside bg-danger text-white text-center">
+                               <i data-feather="layers"></i>
+                           </div>
+                           <div class="col">
+                               <div class="card-body py-5">
+                                   <h5 class="card-title">Keine Flows!</h5>
+                                   <p class="card-text">Du hast noch keinen Flow erstellt :) </p>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+
+               </section>
+
+                <section th:unless="${user.getPerson().isPresent()}" class="text-center">
+                    <div class="card card-icon">
+                        <div class="row no-gutters">
+                            <div class="col-auto card-icon-aside bg-danger text-white text-center">
+                                <i data-feather="layers"></i>
+                            </div>
+                            <div class="col">
+                                <div class="card-body py-5">
+                                    <h5 class="card-title">Fehler!</h5>
+                                    <p class="card-text">Du wurdest noch keiner Gruppe zugewiesen. Bitte melde dich bei <a href="#">Lucas</a> </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+        <footer th:insert="fragments_new :: footer"></footer>
+    </div>
+</div>
+<div th:insert="fragments_new :: script"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" crossorigin="anonymous"></script>
+</body>
+
+
+</html>

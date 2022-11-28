@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head th:insert="fragments_new :: html_head"></head>
+<body class="nav-fixed">
+<nav th:insert="fragments_new :: topnav"></nav>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav" th:insert="fragments_new :: sidbar"></div>
+    <div id="layoutSidenav_content">
+        <main>
+            <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+                <div class="container-xl px-4">
+                    <div class="page-header-content">
+                        <div class="row align-items-center justify-content-between pt-3">
+                            <div class="col-auto mb-3">
+                                <h1 class="page-header-title">
+                                    <div class="page-header-icon"><i class="mdi mdi-cash-check"></i></div>
+                                    Kassenbuch auswählen
+                                </h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div class="container-xl px-4 mt-5">
+
+                <section th:if="${availAbleTenants.size() == 0}" class="text-center">
+                    <div class="card card-icon">
+                        <div class="row no-gutters">
+                            <div class="col-auto card-icon-aside bg-danger text-white text-center">
+                                <i data-feather="lock"></i>
+                            </div>
+                            <div class="col">
+                                <div class="card-body py-5">
+                                    <h5 class="card-title">Fehler!</h5>
+                                    <p class="card-text">Du wurdest noch keiner Gruppe zugewiesen. Bitte melde dich bei <a href="#">Lucas</a> </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="row mb-4" th:each="tenant:${availAbleTenants}">
+
+                    <div class="col-xl-2 d-sm-none d-xl-block">
+                        <div class="card h-100">
+
+                            <div class="card-body d-flex align-content-center">
+
+                                <img th:unless="${tenant.getLogo_svg().equals('KEINE')}" th:src="${tenant.getImgAdress()}" class="card-img">
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-xl-10">
+                        <div class="card h-100 card-header-actions mb-4" >
+                            <div class="card-header">
+                                <span th:text="${tenant.getName()}"></span>
+                                <div class="dropdown no-caret">
+                                    <a class="btn btn-transparent-dark btn-icon " th:href="'/finance?tenant=' + ${tenant.getUUID()}"
+                                            type="button">
+                                        <span class="mdi mdi-account-group"></span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                    <tr>
+                                        <td style="width: 50px">Kapital</td>
+                                        <td><span th:text="${tenant.getFinanceIndex().getValue()}"></span>€</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Buchungswert</td>
+                                        <td>/</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </main>
+        <footer th:insert="fragments_new :: footer"></footer>
+    </div>
+</div>
+<div th:insert="fragments_new :: script"></div>
+<script th:src="@{/script/imports/jquery.min.js}"></script>
+<script th:src="@{/script/imports/jquery.dataTables.min.js}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" crossorigin="anonymous"></script>
+</body>
+
+
+</html>

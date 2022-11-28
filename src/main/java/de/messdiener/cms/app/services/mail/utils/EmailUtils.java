@@ -3,6 +3,7 @@ package de.messdiener.cms.app.services.mail.utils;
 import de.messdiener.cms.app.entities.email.EmailEntity;
 import de.messdiener.cms.cache.Cache;
 import org.apache.commons.mail.DefaultAuthenticator;
+import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.MultiPartEmail;
 
 import javax.mail.*;
@@ -10,6 +11,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import java.io.File;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,7 +43,7 @@ public class EmailUtils {
         email.addTo(entity.getReciver());
         email.setCharset(textCharset);
         email.setSubject(entity.getTopic());
-        email.setMsg(entity.getText());
+        email.setMsg(entity.getHtml());
 
         // Multipart-Message ("Wrapper") erstellen
         Multipart multipart = new MimeMultipart();
@@ -50,7 +52,7 @@ public class EmailUtils {
         messageBodyPart.setHeader("Content-Type", "text/html");
 
         // Textteil des Body-Parts
-        messageBodyPart.setContent(MailOverlay.generate(entity.getText(), entity.getLink()), "text/html");
+        messageBodyPart.setContent(entity.getHtml(), "text/html");
         // Body-Part dem Multipart-Wrapper hinzufügen
         multipart.addBodyPart(messageBodyPart);
         // Message fertigstellen, indem sie mit dem Multipart-Content ausgestattet wird
@@ -59,15 +61,20 @@ public class EmailUtils {
         return email;
     }
 
-    public static void sendEmail(EmailEntity entity){
-        try {
+    public static MultiPartEmail addFile(EmailEntity entity, File file) throws Exception {
+        MultiPartEmail email = prepareMessage(entity);
+        email.attach(file);
+
+        return email;
+    }
+
+    public static void sendEmail(MultiPartEmail multiPartEmail) throws EmailException {
             LOGGER.info("E-Mail wird versand!");
-            MultiPartEmail message = prepareMessage(entity);
-            message.send();
+            multiPartEmail.send();
             LOGGER.info("E-Mail erfolgreich versendet!");
-        } catch (Exception e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
+    }
+
+    public static void sendEmail(EmailEntity entity) throws Exception {
+        sendEmail(prepareMessage(entity));
     }
 }

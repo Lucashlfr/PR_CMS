@@ -1,7 +1,14 @@
+import de.messdiener.cms.app.entities.email.EmailEntity;
+import de.messdiener.cms.app.services.mail.utils.EmailUtils;
+import de.messdiener.cms.app.services.mail.utils.MailOverlay;
+import de.messdiener.cms.web.utils.Utils;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.MultiPartEmail;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
+import java.util.UUID;
 
 
 public class MailTest {
@@ -16,7 +23,7 @@ public class MailTest {
         String empfaenger = "lucas.helfer@gmx.net";
         String textCharset = "UTF-8";
         String betreff = "Test";
-        String text = "Test";
+        String text = "Dieser Test wurde beim Bauen der JAR Automatisch gestartet";
 
         assert username != null && password != null;
         MultiPartEmail email = new MultiPartEmail();
@@ -30,11 +37,19 @@ public class MailTest {
         email.setSubject(betreff);
         email.setMsg(text);
 
-        // email.send();
+        email.send();
     }
 
     @Test
-    void name() {
-        //  EmailUtils.sendEmail(new EmailEntity("lucas.helfer@gmx.net", "Test", "Test", "x.de"));
+    void name() throws Exception {
+        EmailUtils.sendEmail(EmailEntity.generateNew("lucas.helfer@gmx.net", "Test", MailOverlay.generate()
+                .addGreeting("Hallo Owner")
+                .addText("Test")
+                .addAdoption_Lucas()));
+    }
+
+    @Test
+    void nam1e() {
+        System.out.println(Utils.isUUID("X"));
     }
 }

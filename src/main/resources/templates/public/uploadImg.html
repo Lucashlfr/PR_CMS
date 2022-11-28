@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head th:insert="fragments_new :: html_head"></head>
+
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark sticky-top" style="z-index: 5;">
+    <div class="container-fluid ">
+        <!-- <img src="https://messdiener-knittelsheim.de/wp-content/uploads/2022/08/Logo_White.png" style="max-width: 120px"> -->
+        <h1></h1>
+        <img src="https://messdiener-knittelsheim.de/wp-content/uploads/2022/08/Logo_White_Vollton.png"
+             style="max-width: 180px; margin-bottom: 5px!important;">
+        <h1></h1>
+    </div>
+</nav>
+<div id="container-fluid">
+    <main>
+        <header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
+            <div class="container-xl px-4">
+                <div class="page-header-content pt-4">
+                    <div class="row align-items-center justify-content-between">
+                        <div class="col-auto mt-4">
+                            <h1 class="page-header-title">
+                                <div class="page-header-icon"><h1 class="mdi mdi-book-plus text-white"></h1></div>
+                                Datei Uploader
+                            </h1>
+                            <div class="page-header-subtitle text-white">Lade hier deine Dateien hoch!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Main page content-->
+        <div class="container-xl px-4 mt-n10">
+
+            <div class="card" th:if="${uuid.isPresent()}">
+                <div class="card-header text-center">
+                    <h1 class="text-success" style="margin-bottom: 0!important;"><span
+                            class="mdi mdi-check-circle"></span> Bild erfolgreich hochgeladen</h1>
+                </div>
+                <div class="card-body">
+
+                    <div class="row">
+                        <div class="col-xl-4"></div>
+                        <div class="col-xl-4">
+
+                            <img th:src="'/public/dc/cloud/file?uuid=' + ${uuid.get()}"
+                                 class="img-fluid card-img">
+
+                        </div>
+                        <div class="col-xl-4"></div>
+
+                    </div>
+
+                </div>
+                <div class="card-footer">
+
+                    <input class="d-none" type="text" th:value="${uuid.get()}" id="myInput">
+
+                    <div class="d-grid">
+                        <button class="btn btn-primary bnt-block" onclick="copy()">Link
+                            kopieren
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="card">
+                <div class="card-body">
+
+                    <form th:action="@{/public/createTicket/uploadData/save}" th:method="post" class="was-validated" enctype="multipart/form-data">
+                        <div class=" mb-3 mt-3">
+                            <input type="file" class="form-control" id="name" placeholder="Enter email" name="file" accept="image/png, image/jpeg" required>
+                        </div>
+                        <div class="d-flex">
+
+                            <button type="reset" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                                Abbrechen
+                            </button>
+
+                            <button type="submit" class="btn btn-success btn-block flex-fill m-1">
+                                Speichern
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="footer-admin mt-auto footer-light">
+        <div class="container-xl px-4">
+            <div class="row">
+                <div class="col-md-6 small">Copyright &copy; Lucas Helfer 2021</div>
+                <div class="col-md-6 text-md-end small">
+                    <a href="#!">Privacy Policy</a>
+                    &middot;
+                    <a href="#!">Terms &amp; Conditions</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+</body>
+
+<script>
+
+    function copy(){
+        // Get the text field
+        let copyText = document.getElementById("myInput");
+
+        // Select the text field
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); // For mobile devices
+
+        // Copy the text inside the text field
+        navigator.clipboard.writeText('/download?uuid=' + copyText.value);
+    }
+
+</script>
+
+</html>
