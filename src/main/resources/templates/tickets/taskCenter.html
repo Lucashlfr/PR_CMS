@@ -61,7 +61,7 @@
                                 <div class="d-flex align-items-center">
                                     <div class="flex-grow-1">
                                         <h1 class="fw-bold text-warning mb-1">Tickets zum Korrigieren</h1>
-                                        <div class="h2" th:text="${summery.getLectore()} + ' Tickets'"></div>
+                                        <div class="h2" th:text="${summery.getLecture()} + ' Tickets'"></div>
                                     </div>
                                     <div class="ms-2"><span style="font-size: 50px"
                                                             class="mdi mdi-glasses fa-2x text-gray-200"></span></div>
@@ -77,7 +77,7 @@
                                     <div class="flex-grow-1">
                                         <h1 class="fw-bold text-primary mb-1">Tickets zum Veröffentlichen</h1>
                                         <div class="h2"
-                                             th:text="${summery.getWaiting_for_publication()} + ' Tickets'"></div>
+                                             th:text="${summery.getWaitingForPublication()} + ' Tickets'"></div>
                                     </div>
                                     <div class="ms-2"><span style="font-size: 50px"
                                                             class="mdi mdi-clock fa-2x text-gray-200"></span></div>
@@ -106,12 +106,12 @@
                     <div class="card-header">Deine Aufgaben</div>
                     <div class="card-body p-5">
                         <div class="list-group">
-                            <a th:href="'/ticket/edit?uuid=' + ${ticket.getUUID()}"
+                            <a th:href="'/ticket/edit?uuid=' + ${ticket.getId()}"
                                class="list-group-item list-group-item-action" aria-current="true"
                                th:each="ticket:${tasks}">
                                 <div class="d-flex w-100 justify-content-between">
                                     <h5 class="mb-1" th:text="${ticket.getName()}"></h5>
-                                    <small th:text="${ticket.getDates().getGermanDate_DEADLINE()}"></small>
+                                    <small th:text="${ticket.getDates().getGermanDateDeadline()}"></small>
                                 </div>
                                 <p class="mb-1">
 

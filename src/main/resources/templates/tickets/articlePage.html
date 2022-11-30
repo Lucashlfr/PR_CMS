@@ -50,15 +50,15 @@
                                     </tr>
                                     <tr>
                                         <td><span class="mdi mdi-clock-plus"/> Erstellt am:</td>
-                                        <td th:text="${ticket.getDates().getGermanDate_CREATED()}"></td>
+                                        <td th:text="${ticket.getDates().getGermanDateCreated()}"></td>
                                     </tr>
                                     <tr>
                                         <td><span class="mdi mdi-calendar"></span> Deadline:</td>
-                                        <td th:text="${ticket.getDates().getGermanDate_DEADLINE()}"></td>
+                                        <td th:text="${ticket.getDates().getGermanDateDeadline()}"></td>
                                     </tr>
                                     <tr>
                                         <td><span class="mdi mdi-update"></span> Letztes Update:</td>
-                                        <td th:text="${ticket.getDates().getGermanDate_LASTUPDATE()}"></td>
+                                        <td th:text="${ticket.getDates().getGermanDateLastUpdate()}"></td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -133,7 +133,7 @@
                                         Bearbeiter zuweisen
                                     </button>
 
-                                    <a th:href="'/ticket/lektoriat?uuid=' + ${ticket.getUUID()}"
+                                    <a th:href="'/ticket/lektoriat?uuid=' + ${ticket.getId()}"
                                        class=" fw-500 btn btn-primary  text-start" style="margin-bottom: 10px"
                                        th:if="${ticket.userCanLector()}">
                                         <span class="mdi mdi-glasses" style="margin-right: 5px"></span>
@@ -181,7 +181,7 @@
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item" th:each="link:${ticket.getTicketLinks()}">
                         <a class="btn btn-danger mdi mdi-delete"
-                           th:href="'/ticket/delete/link?uuid=' + ${ticket.getUUID()} + '&link=' + ${link.getLink_UUID()}"></a>
+                           th:href="'/ticket/delete/link?uuid=' + ${ticket.getId()} + '&link=' + ${link.getId()}"></a>
                         <span style="margin-left: 10px" th:text="${link.getName()}"></span></li>
 
                     <li class="list-group-item">
@@ -191,7 +191,7 @@
                                 <input type="text" class="form-control" placeholder="Name" name="name">
                                 <input type="text" class="form-control" placeholder="Link" name="link">
                                 <button type="submit" class="btn btn-success mdi mdi-send"></button>
-                                <input type="text" th:value="${ticket.getUUID()}"
+                                <input type="text" th:value="${ticket.getId()}"
                                        style="max-width: 0; max-height: 0; display: none" name="uuid">
                             </div>
                         </form>
@@ -234,11 +234,11 @@
                             <select class="form-select" id="sel1" name="useruuid">
                                 <option selected></option>
                                 <option th:each="user:${users}" th:text="${user.getUsername()}"
-                                        th:value="${user.getUser_UUID()}"></option>
+                                        th:value="${user.getUserID()}"></option>
                             </select>
                             <label for="sel1" class="form-label">Bearbeiter auswählen:</label>
                         </div>
-                        <input type="text" th:value="${ticket.getUUID()}"
+                        <input type="text" th:value="${ticket.getId()}"
                                style="max-width: 0; max-height: 0; display: none" name="uuid">
                         <div class="d-flex">
 
@@ -246,7 +246,7 @@
                                     data-bs-dismiss="modal">Abbrechen
                             </button>
                             <a type="button" class="btn btn-primary flex-fill m-1"
-                               th:href="'/ticket/assignMe?uuid=' + ${ticket.getUUID()}">Dir zuweisen</a>
+                               th:href="'/ticket/assignMe?uuid=' + ${ticket.getId()}">Dir zuweisen</a>
                             <button type="submit" class="btn btn-success  flex-fill m-1">Speichern</button>
 
                         </div>
@@ -333,7 +333,7 @@
                             Abbrechen
                         </button>
                         <a type="button" class="btn btn-danger  flex-fill m-1"
-                           th:href="'/ticket/delete?uuid=' + ${ticket.getUUID()}">Löschen</a>
+                           th:href="'/ticket/delete?uuid=' + ${ticket.getId()}">Löschen</a>
 
                     </div>
                 </div>
@@ -368,7 +368,7 @@
                         <button type="button" class="btn btn-dark  flex-fill m-1" data-bs-dismiss="modal">
                             Abbrechen
                         </button>
-                        <a th:href="'/ticket/close?uuid=' + ${ticket.getUUID()}"
+                        <a th:href="'/ticket/close?uuid=' + ${ticket.getId()}"
                            type="button" class="btn btn-success  flex-fill m-1">Freigeben</a>
 
                     </div>

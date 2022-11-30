@@ -6,27 +6,23 @@ import de.messdiener.cms.cache.Cache;
 import de.messdiener.cms.cache.enums.EventType;
 import de.messdiener.cms.cache.enums.OGroup;
 import de.messdiener.cms.web.utils.DateUtils;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+@Data
+@AllArgsConstructor
 public class WorshipEvent {
 
-    private UUID uuid;
+    private final UUID id;
     private long date;
     private OGroup oGroup;
     private EventType eventType;
-    private Set<Attendance> attendances;
-
-    public WorshipEvent(UUID uuid, long date, OGroup oGroup, EventType eventType, Set<Attendance> attendances) {
-        this.uuid = uuid;
-        this.date = date;
-        this.oGroup = oGroup;
-        this.eventType = eventType;
-        this.attendances = attendances;
-    }
+    private final Set<Attendance> attendances;
 
     public static WorshipEvent of(UUID uuid, long date, OGroup oGroup, EventType eventType, Set<Attendance> attendances){
         return new WorshipEvent(uuid, date, oGroup, eventType, attendances);
@@ -40,24 +36,8 @@ public class WorshipEvent {
         return of(UUID.randomUUID(), 0,OGroup.DEFAULT, EventType.DEFAULT, new HashSet<>());
     }
 
-    public UUID getUUID() {
-        return uuid;
-    }
-
-    public long getDate() {
-        return date;
-    }
-
-    public EventType getEventType() {
-        return eventType;
-    }
-
     public Set<Messdiener> getDutyPersons() throws SQLException {
         return Cache.WORSHIP_SERVICE.getPersonByDuty(this);
-    }
-
-    public Set<Attendance> getAttendances() {
-        return attendances;
     }
 
     public String getEnglishDate(){
@@ -94,7 +74,7 @@ public class WorshipEvent {
         StringBuilder stringBuilder = new StringBuilder();
         for (Messdiener availableMessdiener : getAvailablePersons()) {
 
-            if(getDutyPersons().stream().anyMatch(p -> p.getUUID().equals(availableMessdiener.getUUID())))continue;
+            if(getDutyPersons().stream().anyMatch(p -> p.getId().equals(availableMessdiener.getId())))continue;
 
             stringBuilder.append(availableMessdiener.getFirstname()).append(" ").append(availableMessdiener.getLastname()).append(", ");
         }
@@ -103,23 +83,8 @@ public class WorshipEvent {
         return stringBuilder.toString().equals("#") ? "Keine Messdiener verfügbar" : stringBuilder.toString().replace(", #", "");
     }
 
-    public OGroup getoGroup() {
-        return oGroup;
-    }
-
     public void save() throws SQLException {
         Cache.WORSHIP_SERVICE.saveEvent(this);
     }
 
-    public void setDate(long date) {
-        this.date = date;
-    }
-
-    public void setoGroup(OGroup oGroup) {
-        this.oGroup = oGroup;
-    }
-
-    public void setEventType(EventType eventType) {
-        this.eventType = eventType;
-    }
 }

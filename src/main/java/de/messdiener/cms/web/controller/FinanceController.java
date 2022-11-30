@@ -3,7 +3,6 @@ package de.messdiener.cms.web.controller;
 import de.messdiener.cms.app.entities.finance.FinanceEntry;
 import de.messdiener.cms.app.entities.messdiener.MessdienerGroup;
 import de.messdiener.cms.cache.Cache;
-import de.messdiener.cms.web.security.SecurityConfiguration;
 import de.messdiener.cms.web.security.SecurityHelper;
 import de.messdiener.cms.web.utils.DateUtils;
 import org.springframework.stereotype.Controller;
@@ -39,8 +38,8 @@ public class FinanceController {
         model.addAttribute("group", group);
         model.addAttribute("user", SecurityHelper.getUser());
         model.addAttribute("entries", Cache.FINANCE_SERVICE.getEntities(tenant));
-        model.addAttribute("initial", group.getFinanceIndex().getIntial().orElse(FinanceEntry.empty()));
-        model.addAttribute("intialValue", group.getFinanceIndex().getIntialvalue());
+        model.addAttribute("initial", group.getFinanceIndex().getInitial().orElse(FinanceEntry.empty()));
+        model.addAttribute("intialValue", group.getFinanceIndex().getInitialValue());
         model.addAttribute("value", group.getFinanceIndex().getValue());
 
         model.addAttribute("revenue", group.getFinanceIndex().getRevenues());

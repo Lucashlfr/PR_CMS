@@ -2,21 +2,18 @@ package de.messdiener.cms.web.controller;
 
 import de.messdiener.cms.app.entities.file.FileEntity;
 import de.messdiener.cms.app.entities.user.User;
-import de.messdiener.cms.web.security.SecurityConfiguration;
 import de.messdiener.cms.web.security.SecurityHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.UUID;
 
 @Controller
 public class SettingsController {
@@ -52,12 +49,12 @@ public class SettingsController {
     @PostMapping("/settings/save/img")
     public RedirectView saveImg(HttpSession httpSession, @RequestParam("file") MultipartFile file) throws SQLException, IOException {
 
-        FileEntity fileEntity = FileEntity.convert(file, SecurityHelper.getUser().getUser_UUID().toString());
+        FileEntity fileEntity = FileEntity.convert(file, SecurityHelper.getUser().getUserID().toString());
         fileEntity.setName("Profilbild_" + SecurityHelper.getUsername());
         fileEntity.save();
 
         User user = SecurityHelper.getUser();
-        user.setImg_path(fileEntity.getUUID().toString());
+        user.setImgPath(fileEntity.getId().toString());
 
         user.save();
 

@@ -19,7 +19,7 @@ public class TicketMonths {
 
         for(TicketMonths value : ticketMonths){
             for(Ticket ticket : Cache.TICKET_SERVICE.getTickets()){
-                if(ticket.getDates().getDeadline_MonthNumberName() == value.getMonthNumberName()){
+                if(ticket.getDates().getDeadlineMonthNumberName() == value.getMonthNumberName()){
                     value.getTickets().add(ticket);
                 }
             }

@@ -16,7 +16,7 @@
                                 <h1 class="page-header-title">
                                     <div class="page-header-icon"><i data-feather="bookmark"></i></div>
                                     Protokoll <span class="mdi mdi-arrow-right"></span> <span
-                                        th:text="${protocol.getRequest_name()}"></span>
+                                        th:text="${protocol.getRequestName()}"></span>
                                 </h1>
                             </div>
                             <div class="col-12 col-xl-auto mb-3">
@@ -61,7 +61,7 @@
                 <!-- Icon Card Example -->
                 <div class="card card-header-actions mb-4" th:each="element:${protocol.getElements()}">
 
-                    <div th:class="'card-header text-white ' + ${element.getColor_class()}">
+                    <div th:class="'card-header text-white ' + ${element.getColorClass()}">
                         <span th:text="${element.getHeadline()}"></span>
                         <div>
                             <a th:href="'/dc/protocol/remove?element=' +${element.getUUID()} + '&uuid=' + ${protocol.getUUID()}"
@@ -127,7 +127,7 @@
                                 <td colspan="2">
                                     <form th:action="@{/dc/protocol/comment/create}" method="post">
 
-                                        <input name="uuid" class="d-none" th:value="${protocol.getUUID()}">
+                                        <input name="uuid" class="d-none" th:value="${protocol.getId()}">
 
                                         <div class="input-group">
                                             <textarea class="form-control" rows="5" id="comment" name="text"></textarea>
@@ -157,7 +157,7 @@
 </body>
 
 <form th:method="post" th:action="@{/dc/protocol/element/create}" enctype="multipart/form-data" class="was-validated">
-    <input name="uuid" style="display: none" th:value="${protocol.getUUID()}">
+    <input name="uuid" style="display: none" th:value="${protocol.getId()}">
     <div class="modal fade" id="element">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content ">
@@ -201,7 +201,7 @@
 
                     <div class="d-flex">
 
-                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-secondary btn-block flex-fill m-1" data-bs-dismiss="modal">
                             Schließen
                         </button>
 
@@ -219,7 +219,7 @@
 </form>
 
 <form th:method="post" th:action="@{/dc/protocol/description/save}" enctype="multipart/form-data" class="was-validated">
-    <input name="uuid" style="display: none" th:value="${protocol.getUUID()}">
+    <input name="uuid" style="display: none" th:value="${protocol.getId()}">
     <div class="modal fade" id="description">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
@@ -239,13 +239,13 @@
                     </div>
 
                     <div class="mb-3">
-                        <input type="text" class="form-control mb-3" placeholder="Überschrift" name="title" required th:value="${protocol.getRequest_name()}">
+                        <input type="text" class="form-control mb-3" placeholder="Überschrift" name="title" required th:value="${protocol.getRequestName()}">
                         <textarea name="description" id="myTextarea" class="editor" th:text="${protocol.getDescription()}"></textarea>
                     </div>
 
                     <div class="d-flex">
 
-                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-secondary btn-block flex-fill m-1" data-bs-dismiss="modal">
                             Schließen
                         </button>
 
@@ -288,7 +288,7 @@
                             Abbrechen
                         </button>
                         <a type="button" class="btn btn-danger  flex-fill m-1"
-                           th:href="'/dc/protocol/delete?uuid=' + ${protocol.getUUID()}">Löschen</a>
+                           th:href="'/dc/protocol/delete?uuid=' + ${protocol.getId()}">Löschen</a>
 
                     </div>
                 </div>

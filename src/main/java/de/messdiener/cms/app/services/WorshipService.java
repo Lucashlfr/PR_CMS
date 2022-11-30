@@ -47,22 +47,22 @@ public class WorshipService {
 
 
     public void saveEvent(WorshipEvent event) throws SQLException {
-        databaseService.delete("module_worships", "uuid", event.getUUID().toString());
+        databaseService.delete("module_worships", "uuid", event.getId().toString());
 
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
                 "INSERT INTO module_worships (uuid, date, eventType, oGroup) VALUES (?,?,?,?)"
         );
 
-        preparedStatement.setString(1, event.getUUID().toString());
+        preparedStatement.setString(1, event.getId().toString());
         preparedStatement.setLong(2, event.getDate());
         preparedStatement.setString(3, event.getEventType().toString());
-        preparedStatement.setString(4, event.getoGroup().toString());
+        preparedStatement.setString(4, event.getOGroup().toString());
 
         preparedStatement.executeUpdate();
     }
 
-    public ArrayList<WorshipEvent> getEvents() throws SQLException {
-        ArrayList<WorshipEvent> eventSet = new ArrayList<>();
+    public List<WorshipEvent> getEvents() throws SQLException {
+        List<WorshipEvent> eventSet = new ArrayList<>();
         ResultSet resultSet = databaseService.getConnection().prepareStatement("SELECT * FROM module_worships").executeQuery();
 
         while (resultSet.next()) {
@@ -83,8 +83,8 @@ public class WorshipService {
                 "INSERT INTO module_worships_available (uuid_person, uuid_worship) VALUES (?,?)"
         );
 
-        preparedStatement.setString(1, messdiener.getUUID().toString());
-        preparedStatement.setString(2, event.getUUID().toString());
+        preparedStatement.setString(1, messdiener.getId().toString());
+        preparedStatement.setString(2, event.getId().toString());
 
         preparedStatement.executeUpdate();
 
@@ -95,7 +95,7 @@ public class WorshipService {
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
                 "DELETE FROM module_worships_available WHERE uuid_person = ?"
         );
-        preparedStatement.setString(1, messdiener.getUUID().toString());
+        preparedStatement.setString(1, messdiener.getId().toString());
 
         preparedStatement.executeUpdate();
     }
@@ -107,12 +107,12 @@ public class WorshipService {
         }
     }
 
-    public ArrayList<Pair<WorshipEvent, Boolean>> getAvailabilityByPerson(Messdiener messdiener) throws SQLException {
-        ArrayList<Pair<WorshipEvent, Boolean>> pairs = new ArrayList<>();
+    public List<Pair<WorshipEvent, Boolean>> getAvailabilityByPerson(Messdiener messdiener) throws SQLException {
+        List<Pair<WorshipEvent, Boolean>> pairs = new ArrayList<>();
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
                 "SELECT * FROM module_worships_available WHERE uuid_person = ?"
         );
-        preparedStatement.setString(1, messdiener.getUUID().toString());
+        preparedStatement.setString(1, messdiener.getId().toString());
 
         Set<UUID> uuids = new HashSet<>();
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -121,7 +121,7 @@ public class WorshipService {
         }
 
         for (WorshipEvent event : getEvents()) {
-            pairs.add(new Pair<>(event, uuids.contains(event.getUUID())));
+            pairs.add(new Pair<>(event, uuids.contains(event.getId())));
         }
         return pairs;
     }
@@ -131,7 +131,7 @@ public class WorshipService {
         for (Messdiener messdiener : Cache.MESSDIENER_SERVICE.getPersons()) {
             for (Pair<WorshipEvent, Boolean> pair : getAvailabilityByPerson(messdiener)) {
 
-               if(pair.getSecond() && event.getUUID().equals(pair.getFirst().getUUID())) availableMessdieners.add(messdiener);
+               if(Boolean.TRUE.equals(pair.getSecond()) && event.getId().equals(pair.getFirst().getId())) availableMessdieners.add(messdiener);
             }
         }
         return availableMessdieners;
@@ -142,8 +142,8 @@ public class WorshipService {
                 "INSERT INTO module_worships_duty (uuid_person, uuid_worship) VALUES (?,?)"
         );
 
-        preparedStatement.setString(1, messdiener.getUUID().toString());
-        preparedStatement.setString(2, event.getUUID().toString());
+        preparedStatement.setString(1, messdiener.getId().toString());
+        preparedStatement.setString(2, event.getId().toString());
 
         preparedStatement.executeUpdate();
     }
@@ -152,7 +152,7 @@ public class WorshipService {
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
                 "DELETE FROM module_worships_duty WHERE uuid_person = ?"
         );
-        preparedStatement.setString(1, messdiener.getUUID().toString());
+        preparedStatement.setString(1, messdiener.getId().toString());
 
         preparedStatement.executeUpdate();
     }
@@ -161,7 +161,7 @@ public class WorshipService {
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
                 "DELETE FROM module_worships_duty WHERE uuid_worship = ?"
         );
-        preparedStatement.setString(1, event.getUUID().toString());
+        preparedStatement.setString(1, event.getId().toString());
 
         preparedStatement.executeUpdate();
     }
@@ -171,12 +171,12 @@ public class WorshipService {
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
                 "SELECT * FROM module_worships_duty WHERE uuid_worship = ?"
         );
-        preparedStatement.setString(1, event.getUUID().toString());
+        preparedStatement.setString(1, event.getId().toString());
 
         ResultSet resultSet = preparedStatement.executeQuery();
         while (resultSet.next()) {
             UUID uuid = UUID.fromString(resultSet.getString("uuid_person"));
-            Messdiener messdiener = Cache.MESSDIENER_SERVICE.getPersons().stream().filter(p -> p.getUUID().equals(uuid)).findFirst().orElseThrow();
+            Messdiener messdiener = Cache.MESSDIENER_SERVICE.getPersons().stream().filter(p -> p.getId().equals(uuid)).findFirst().orElseThrow();
 
             messdienerSet.add(messdiener);
         }
@@ -189,12 +189,12 @@ public class WorshipService {
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
                 "SELECT * FROM module_worships_duty WHERE uuid_person = ?"
         );
-        preparedStatement.setString(1, messdiener.getUUID().toString());
+        preparedStatement.setString(1, messdiener.getId().toString());
 
         ResultSet resultSet = preparedStatement.executeQuery();
         while (resultSet.next()) {
             UUID uuid = UUID.fromString(resultSet.getString("uuid_worship"));
-            WorshipEvent event = getEvents().stream().filter(p -> p.getUUID().equals(uuid)).findFirst().orElseThrow();
+            WorshipEvent event = getEvents().stream().filter(p -> p.getId().equals(uuid)).findFirst().orElseThrow();
 
             eventSet.add(event);
         }
@@ -202,6 +202,6 @@ public class WorshipService {
     }
 
     public Optional<WorshipEvent> find(UUID uuid) throws SQLException {
-        return getEvents().stream().filter(event -> event.getUUID().equals(uuid)).findFirst();
+        return getEvents().stream().filter(event -> event.getId().equals(uuid)).findFirst();
     }
 }

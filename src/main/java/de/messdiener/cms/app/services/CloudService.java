@@ -7,21 +7,21 @@ import de.messdiener.cms.app.entities.protocol.cache.ProtocolElement;
 import de.messdiener.cms.app.services.sql.DatabaseService;
 import de.messdiener.cms.cache.Cache;
 import de.messdiener.cms.web.security.SecurityHelper;
-import org.springframework.security.core.parameters.P;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class CloudService {
 
     private static final Logger LOGGER = Logger.getLogger("Manager.Cloud");
+    private static final String MODULE_CLOUD = "module_cloud";
+    private static final String MODULE_PROTOCOLS = "module_protocols";
+    private static final String MODULE_COMMENTS = "module_protocols_comments";
+    private static final String MODULE_ELEMENTS = "module_protocols_elements";
     private final DatabaseService databaseService = Cache.getDatabaseService();
 
     public CloudService() {
@@ -53,12 +53,12 @@ public class CloudService {
 
 
     public void save(FileEntity file) throws SQLException {
-        databaseService.delete("module_cloud", "uuid", file.getUUID().toString());
+        databaseService.delete(MODULE_CLOUD, "uuid", file.getId().toString());
 
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
                 "INSERT INTO module_cloud (uuid, owner_uuid, filename, type, date, visible, data) VALUES (?,?,?,?,?,?,?)"
         );
-        preparedStatement.setString(1, file.getUUID().toString());
+        preparedStatement.setString(1, file.getId().toString());
         preparedStatement.setString(2, file.getOwner());
         preparedStatement.setString(3, file.getName());
         preparedStatement.setString(4, file.getType());
@@ -89,7 +89,7 @@ public class CloudService {
     }
 
     public FileEntity get(String uuid) throws SQLException {
-        return getFiles().stream().filter(files -> files.getUUID().toString().equals(uuid)).findFirst().orElseThrow();
+        return getFiles().stream().filter(files -> files.getId().toString().equals(uuid)).findFirst().orElseThrow();
     }
 
     public static String getPath(UUID uuid) {
@@ -100,7 +100,7 @@ public class CloudService {
 
         HashSet<FileEntity> fileEntities = new HashSet<>();
         for (FileEntity file : getFiles()) {
-            if (file.getOwner().equals(SecurityHelper.getUser().getUser_UUID().toString())) {
+            if (file.getOwner().equals(SecurityHelper.getUser().getUserID().toString())) {
                 fileEntities.add(file);
             }
         }
@@ -116,15 +116,15 @@ public class CloudService {
     }
 
     public void saveProtocol(Protocol protocol) throws SQLException {
-        databaseService.delete("module_protocols", "uuid", protocol.getUUID().toString());
+        databaseService.delete(MODULE_PROTOCOLS, "uuid", protocol.getId().toString());
 
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
                 "INSERT INTO module_protocols (uuid, owner_uuid, request_name, lastUpdate, editable, description) VALUES (?,?,?,?,?,?)"
         );
 
-        preparedStatement.setString(1, protocol.getUUID().toString());
-        preparedStatement.setString(2, protocol.getOwner_uuid().toString());
-        preparedStatement.setString(3, protocol.getRequest_name());
+        preparedStatement.setString(1, protocol.getId().toString());
+        preparedStatement.setString(2, protocol.getOwnerUUID().toString());
+        preparedStatement.setString(3, protocol.getRequestName());
         preparedStatement.setLong(4, protocol.getLastUpdate());
         preparedStatement.setBoolean(5, protocol.isEditable());
         preparedStatement.setString(6, protocol.getDescription());
@@ -132,20 +132,20 @@ public class CloudService {
         preparedStatement.executeUpdate();
     }
 
-    public HashSet<Protocol> getProtocols() throws SQLException {
-        HashSet<Protocol> protocols = new HashSet<>();
+    public Set<Protocol> getProtocols() throws SQLException {
+        Set<Protocol> protocols = new HashSet<>();
 
         ResultSet resultSet = databaseService.getConnection().prepareStatement("SELECT * FROM module_protocols").executeQuery();
 
         while (resultSet.next()) {
             UUID uuid = UUID.fromString(resultSet.getString("uuid"));
-            UUID owner_uuid = UUID.fromString(resultSet.getString("owner_uuid"));
-            String request_name = resultSet.getString("request_name");
+            UUID ownerUuid = UUID.fromString(resultSet.getString("owner_uuid"));
+            String requestName = resultSet.getString("request_name");
             long lastUpdate = resultSet.getLong("lastUpdate");
             boolean editable = resultSet.getBoolean("editable");
             String description = resultSet.getString("description");
 
-            Protocol protocol = new Protocol(uuid, owner_uuid, request_name, lastUpdate, editable, description);
+            Protocol protocol = new Protocol(uuid, ownerUuid, requestName, lastUpdate, editable, description);
             protocol.setComments(getComments(protocol));
             protocol.setElements(getElements(protocol));
 
@@ -155,13 +155,13 @@ public class CloudService {
     }
 
     public void addComment(ProtocolComment comment) throws SQLException {
-        databaseService.delete("module_protocols", "uuid", comment.getUUID().toString());
+        databaseService.delete(MODULE_COMMENTS, "uuid", comment.getId().toString());
 
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
                 "INSERT INTO module_protocols_comments (uuid, protocol_uuid, creator_uuid, date, text) VALUES (?,?,?,?,?)"
         );
 
-        preparedStatement.setString(1, comment.getUUID().toString());
+        preparedStatement.setString(1, comment.getId().toString());
         preparedStatement.setString(2, comment.getProtocol().toString());
         preparedStatement.setString(3, comment.getCreator().toString());
         preparedStatement.setLong(4, comment.getDate());
@@ -170,70 +170,70 @@ public class CloudService {
         preparedStatement.executeUpdate();
     }
 
-    public ArrayList<ProtocolComment> getComments(Protocol protocol) throws SQLException {
-        ArrayList<ProtocolComment> comments = new ArrayList<>();
+    public List<ProtocolComment> getComments(Protocol protocol) throws SQLException {
+        List<ProtocolComment> comments = new ArrayList<>();
 
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
                 "SELECT * FROM module_protocols_comments WHERE protocol_uuid = ? ORDER BY date");
-        preparedStatement.setString(1, protocol.getUUID().toString());
+        preparedStatement.setString(1, protocol.getId().toString());
 
         ResultSet resultSet = preparedStatement.executeQuery();
 
         while (resultSet.next()) {
             UUID uuid = UUID.fromString(resultSet.getString("uuid"));
-            UUID creator_uuid = UUID.fromString(resultSet.getString("creator_uuid"));
+            UUID creatorUuid = UUID.fromString(resultSet.getString("creator_uuid"));
             long date = resultSet.getLong("date");
             String text = resultSet.getString("text");
 
-            ProtocolComment protocolComment = new ProtocolComment(uuid, protocol.getUUID(), creator_uuid, date, text);
+            ProtocolComment protocolComment = new ProtocolComment(uuid, protocol.getId(), creatorUuid, date, text);
             comments.add(protocolComment);
         }
         return comments;
     }
 
     public void addElement(ProtocolElement element) throws SQLException {
-        databaseService.delete("module_protocols_elements", "uuid", element.getUUID().toString());
+        databaseService.delete(MODULE_ELEMENTS, "uuid", element.getId().toString());
 
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
                 "INSERT INTO module_protocols_elements (uuid, protocol_uuid, color_class, icon_class, headline, text) VALUES (?,?,?,?,?,?)"
         );
 
-        preparedStatement.setString(1, element.getUUID().toString());
-        preparedStatement.setString(2, element.getProtocol_uuid().toString());
-        preparedStatement.setString(3, element.getColor_class());
-        preparedStatement.setString(4, element.getIcon_class());
+        preparedStatement.setString(1, element.getId().toString());
+        preparedStatement.setString(2, element.getProtocolUUID().toString());
+        preparedStatement.setString(3, element.getColorClass());
+        preparedStatement.setString(4, element.getIconClass());
         preparedStatement.setString(5, element.getHeadline());
         preparedStatement.setString(6, element.getText());
 
         preparedStatement.executeUpdate();
     }
 
-    public ArrayList<ProtocolElement> getElements(Protocol protocol) throws SQLException {
-        ArrayList<ProtocolElement> elements = new ArrayList<>();
+    public List<ProtocolElement> getElements(Protocol protocol) throws SQLException {
+        List<ProtocolElement> elements = new ArrayList<>();
 
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
                 "SELECT * FROM module_protocols_elements WHERE protocol_uuid = ?");
-        preparedStatement.setString(1, protocol.getUUID().toString());
+        preparedStatement.setString(1, protocol.getId().toString());
 
         ResultSet resultSet = preparedStatement.executeQuery();
 
         while (resultSet.next()) {
             UUID uuid = UUID.fromString(resultSet.getString("uuid"));
-            String color_class = resultSet.getString("color_class");
-            String icon_class = resultSet.getString("icon_class");
+            String colorClass = resultSet.getString("color_class");
+            String iconClass = resultSet.getString("icon_class");
             String headline = resultSet.getString("headline");
             String text = resultSet.getString("text");
 
-            ProtocolElement protocolComment = new ProtocolElement(uuid, protocol.getUUID(), color_class, icon_class, headline, text);
+            ProtocolElement protocolComment = new ProtocolElement(uuid, protocol.getId(), colorClass, iconClass, headline, text);
             elements.add(protocolComment);
         }
         return elements;
     }
 
     public void deleteProtocol(Protocol protocol) {
-        databaseService.delete("module_protocols", "uuid", protocol.getUUID().toString());
-        databaseService.delete("module_protocols_comments", "protocol_uuid", protocol.getUUID().toString());
-        databaseService.delete("module_protocols_elements", "protocol_uuid", protocol.getUUID().toString());
+        databaseService.delete(MODULE_PROTOCOLS, "uuid", protocol.getId().toString());
+        databaseService.delete(MODULE_COMMENTS, "protocol_uuid", protocol.getId().toString());
+        databaseService.delete(MODULE_ELEMENTS, "protocol_uuid", protocol.getId().toString());
     }
 
     public void deleteElement(UUID protocol, UUID element) throws SQLException {

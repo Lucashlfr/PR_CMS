@@ -33,13 +33,13 @@ public class RegisterService {
     }
 
     public void save(RegisterRequestEntity registerRequest) throws SQLException {
-        databaseService.delete("module_register_requests", "uuid", registerRequest.getUUID().toString());
+        databaseService.delete("module_register_requests", "uuid", registerRequest.getId().toString());
 
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
                 "INSERT INTO module_register_requests (uuid, username, firstname, lastname, password, email, requestDate, requestCode) VALUES (?,?,?,?,?,?,?,?)"
         );
 
-        preparedStatement.setString(1, registerRequest.getUUID().toString());
+        preparedStatement.setString(1, registerRequest.getId().toString());
         preparedStatement.setString(2,registerRequest.getUsername());
         preparedStatement.setString(3,registerRequest.getFirstname());
         preparedStatement.setString(4,registerRequest.getLastname());

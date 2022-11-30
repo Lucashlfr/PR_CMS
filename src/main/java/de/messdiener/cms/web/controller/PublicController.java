@@ -4,7 +4,6 @@ import de.messdiener.cms.app.entities.email.EmailEntity;
 import de.messdiener.cms.app.entities.user.RegisterRequestEntity;
 import de.messdiener.cms.app.entities.user.User;
 import de.messdiener.cms.app.services.mail.utils.MailOverlay;
-import de.messdiener.cms.app.services.mail.utils.MailTemplates;
 import de.messdiener.cms.cache.Cache;
 import de.messdiener.cms.cache.enums.UserGroup;
 import org.springframework.stereotype.Controller;

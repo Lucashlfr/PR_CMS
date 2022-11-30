@@ -18,7 +18,7 @@
                                 </h1>
                             </div>
                             <div class="col-12 col-xl-auto mb-3">
-                                <a class="btn btn-sm btn-light text-primary" th:href="'/admin/user?user=' + ${user.getUser_UUID()}">
+                                <a class="btn btn-sm btn-light text-primary" th:href="'/admin/user?user=' + ${user.getUserID()}">
                                 <i class="me-1" data-feather="arrow-left"></i>
                                 Zurück
                             </a></div>
@@ -36,7 +36,7 @@
                                 <tbody>
                                 <tr>
                                     <td style="width: 70px;">UUID</td>
-                                    <td th:text="${user.getUser_UUID()}"></td>
+                                    <td th:text="${user.getUserID()}"></td>
                                 </tr>
                                 <tr>
                                     <td>Benutzername</td>
@@ -71,7 +71,7 @@
                                 <td th:text="${perm.getName()}"></td>
                                 <td th:text="${perm.getDescription()}"></td>
                                 <td>
-                                    <a th:href="'/admin/permRemove?uuid=' + ${user.getUser_UUID()} + '&permName=' + ${perm.getName()}"
+                                    <a th:href="'/admin/permRemove?uuid=' + ${user.getUserID()} + '&permName=' + ${perm.getName()}"
                                        class="btn btn-datatable btn-danger mdi mdi-delete"></a>
                                 </td>
                             </tr>
@@ -121,7 +121,7 @@
                             <td th:text="${perm.getName()}"></td>
                             <td th:text="${perm.getDescription()}"></td>
                             <td>
-                                <a th:href="'/admin/permAdd?uuid=' + ${user.getUser_UUID()} + '&permName=' + ${perm.getName()}"
+                                <a th:href="'/admin/permAdd?uuid=' + ${user.getUserID()} + '&permName=' + ${perm.getName()}"
                                    class="btn btn-success mdi mdi-plus"></a>
                             </td>
                         </tr>
@@ -131,7 +131,7 @@
 
 
                 <div class="d-flex">
-                    <button type="button" class="btn btn-black btn-block flex-fill m-1"
+                    <button type="button" class="btn btn-secondary btn-block flex-fill m-1"
                             data-bs-dismiss="modal">Zurück
                     </button>
                 </div>

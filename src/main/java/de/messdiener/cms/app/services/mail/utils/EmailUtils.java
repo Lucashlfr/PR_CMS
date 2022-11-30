@@ -1,18 +1,14 @@
 package de.messdiener.cms.app.services.mail.utils;
 
 import de.messdiener.cms.app.entities.email.EmailEntity;
-import de.messdiener.cms.cache.Cache;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.MultiPartEmail;
 
 import javax.mail.*;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.io.File;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,7 +36,7 @@ public class EmailUtils {
 
         email.setFrom(absender, "CMS Portal Pfarrei Bellheim");
         email.setHostName(mailserver);
-        email.addTo(entity.getReciver());
+        email.addTo(entity.getReceiver());
         email.setCharset(textCharset);
         email.setSubject(entity.getTopic());
         email.setMsg(entity.getHtml());

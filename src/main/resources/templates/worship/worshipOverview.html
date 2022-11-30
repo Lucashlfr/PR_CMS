@@ -56,7 +56,7 @@
                             <td th:text="${event.getEventType().getName()}"></td>
                             <td th:text="${event.getPersons()} + ' (' + ${event.getDutyCounter()} + ')'"></td>
                             <td>
-                                <a class="btn btn-datatable btn-icon btn-transparent-dark me-2" th:href="'/worship?uuid=' + ${event.getUUID()}"><span
+                                <a class="btn btn-datatable btn-icon btn-transparent-dark me-2" th:href="'/worship?uuid=' + ${event.getId()}"><span
                                         class="mdi mdi-book-arrow-right"></span></a>
                             </td>
                         </tr>
@@ -132,7 +132,7 @@
                     </div>
                     <div class="d-flex">
 
-                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-secondary btn-block flex-fill m-1" data-bs-dismiss="modal">
                             Abbrechen
                         </button>
                         <button type="submit" class="btn btn-success btn-block flex-fill m-1">Speichern</button>

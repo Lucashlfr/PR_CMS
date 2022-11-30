@@ -32,7 +32,7 @@ public class WorshipController {
         model.addAttribute("oGroups", OGroup.values());
 
         if(uuid.isPresent()){
-            model.addAttribute("event", Cache.WORSHIP_SERVICE.getEvents().stream().filter(event -> event.getUUID().equals(uuid.get())).findFirst().orElseThrow());
+            model.addAttribute("event", Cache.WORSHIP_SERVICE.getEvents().stream().filter(event -> event.getId().equals(uuid.get())).findFirst().orElseThrow());
 
             return "worship/worshipInterface";
         }
@@ -57,7 +57,7 @@ public class WorshipController {
 
         WorshipEvent event = Cache.WORSHIP_SERVICE.find(uuid).orElseThrow();
         event.setDate(DateUtils.convertDateToLong(date, DateUtils.DateType.ENGLISH));
-        event.setoGroup(OGroup.valueOf(oGroup.toUpperCase()));
+        event.setOGroup(OGroup.valueOf(oGroup.toUpperCase()));
         event.setEventType(EventType.valueOf(eventType));
 
         event.save();

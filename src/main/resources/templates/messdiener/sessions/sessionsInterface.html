@@ -50,7 +50,7 @@
                                 <table id="data" class="d-none">
                                     <tbody>
                                     <tr th:each="avsession:${sessions}">
-                                        <td th:text="'/group/session?group=' + ${group.getUUID()} + '#id=' + ${avsession.getUUID()}"></td>
+                                        <td th:text="'/group/session?group=' + ${group.getId()} + '#id=' + ${avsession.getId()}"></td>
                                         <td th:text="${avsession.getDate()}"></td>
                                     </tr>
                                     </tbody>
@@ -149,7 +149,7 @@
                     </div>
 
                     <div class="m-2">
-                        <input th:value="${group.getUUID()}" name="uuid" class="d-none">
+                        <input th:value="${group.getId()}" name="uuid" class="d-none">
                         <div class="form-floating mb-1">
                             <input type="datetime-local" class="form-control" id="date" name="date" required>
                             <label for="date">Name</label>
@@ -158,7 +158,7 @@
                     </div>
                     <div class="d-flex">
 
-                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-secondary btn-block flex-fill m-1" data-bs-dismiss="modal">
                             Abbrechen
                         </button>
                         <button type="submit" class="btn btn-success btn-block flex-fill m-1">Speichern</button>
@@ -245,7 +245,7 @@
 
                     <div class="d-flex">
 
-                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-secondary btn-block flex-fill m-1" data-bs-dismiss="modal">
                             Schließen
                         </button>
 
@@ -299,7 +299,7 @@
 
                             <tr th:each="person:${group.getMessdienerList()}">
                                 <td th:text="${person.getFirst().getReadName()}" style="width: 50%"></td>
-                                <td th:text="${person.getFirst().getUUID()}" style="width: 50%"></td>
+                                <td th:text="${person.getFirst().getId()}" style="width: 50%"></td>
                             </tr>
 
                             </tbody>
@@ -309,7 +309,7 @@
                     </div>
                     <div class="d-flex">
 
-                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-secondary btn-block flex-fill m-1" data-bs-dismiss="modal">
                             Abbrechen
                         </button>
                         <button type="button" class="btn btn-success btn-block flex-fill m-1" onclick="save()">Speichern</button>
@@ -323,7 +323,7 @@
 </div>
 
 
-<p th:text="${event.getUUID()}" id="uuid" class="d-none" th:if="${id.isPresent()}"></p>
+<p th:text="${event.getId()}" id="uuid" class="d-none" th:if="${id.isPresent()}"></p>
 
 <script th:if="${id.isPresent()}">
     let table;

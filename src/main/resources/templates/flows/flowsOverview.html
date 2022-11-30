@@ -32,7 +32,7 @@
                <section th:if="${user.getPerson().isPresent()}">
                    <div class="row" th:if="${flows.size() > 0}">
                        <div class="col-xl-4" th:each="flow:${flows}">
-                           <a class="card lift lift-sm card-icon mb-4" th:href="'/flows?type=' + ${flow.getType()} + '&uuid=' + ${flow.getUUID()}">
+                           <a class="card lift lift-sm card-icon mb-4" th:href="'/flows?type=' + ${flow.getType()} + '&uuid=' + ${flow.getId()}">
                                <div class="row no-gutters">
                                    <div class="col-auto card-icon-aside bg-primary text-white">
                                        <i data-feather="repeat"></i>

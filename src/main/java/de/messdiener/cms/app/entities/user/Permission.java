@@ -1,37 +1,24 @@
 package de.messdiener.cms.app.entities.user;
 
-import de.messdiener.cms.cache.Cache;
-import org.springframework.security.core.parameters.P;
+import lombok.Data;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
+@Data
 public class Permission {
 
     private final String name;
     private final String description;
 
-    public Permission(String name, String description) {
-        this.name = name;
-        this.description = description;
-    }
+    public static List<Permission> generateByCache(String input){
 
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public static ArrayList<Permission> generateByCache(String input){
-
-        ArrayList<Permission> permissions = new ArrayList<>();
+        List<Permission> permissions = new ArrayList<>();
         permissions.add(new Permission(input, input));
         return permissions;
     }
 
-    public static String generatePermString(ArrayList<Permission> input) {
+    public static String generatePermString(List<Permission> input) {
 
         StringBuilder stringBuilder = new StringBuilder();
         input.forEach(i -> stringBuilder.append(i.getName()).append(";"));

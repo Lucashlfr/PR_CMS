@@ -12,7 +12,7 @@ public class LoginController {
     @GetMapping("/login")
     public String getDefault(){
 
-        if(System.currentTimeMillis() > Cache.REFLESH){
+        if(System.currentTimeMillis() > Cache.getRefresh()){
             Cache.getDatabaseService().reconnect();
         }
 

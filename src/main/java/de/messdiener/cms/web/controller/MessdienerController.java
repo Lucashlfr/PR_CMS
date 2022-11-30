@@ -3,7 +3,6 @@ package de.messdiener.cms.web.controller;
 import de.messdiener.cms.app.entities.event.WorshipEvent;
 import de.messdiener.cms.app.entities.file.FileEntity;
 import de.messdiener.cms.app.entities.messdiener.Messdiener;
-import de.messdiener.cms.app.entities.messdiener.MessdienerGroup;
 import de.messdiener.cms.cache.Cache;
 import de.messdiener.cms.cache.enums.OGroup;
 import de.messdiener.cms.cache.enums.PersonRank;
@@ -37,7 +36,7 @@ public class MessdienerController {
 
         if (uuid.isPresent()) {
             model.addAttribute("person",
-                    Cache.MESSDIENER_SERVICE.getPersons().stream().filter(p -> p.getUUID().equals(uuid.get())).findFirst().orElseThrow());
+                    Cache.MESSDIENER_SERVICE.getPersons().stream().filter(p -> p.getId().equals(uuid.get())).findFirst().orElseThrow());
             return "messdiener/messdienerInterface";
         }
 
@@ -87,7 +86,7 @@ public class MessdienerController {
         Messdiener messdiener = Cache.MESSDIENER_SERVICE.find(uuid).orElseThrow();
 
         if (file.getSize() < 1048576) {
-            FileEntity fileEntity = FileEntity.convert(file, SecurityHelper.getUser().getUser_UUID().toString());
+            FileEntity fileEntity = FileEntity.convert(file, SecurityHelper.getUser().getUserID().toString());
             messdiener.addFile(fileEntity);
         }
 
@@ -96,15 +95,11 @@ public class MessdienerController {
 
     @PostMapping("/messdiener/save/img")
     public RedirectView saveImg(@RequestParam("uuid") UUID uuid, @RequestParam("file") MultipartFile file) throws SQLException, IOException {
-        System.out.println("save");
-        System.out.println(file.getSize());
         Messdiener messdiener = Cache.MESSDIENER_SERVICE.find(uuid).orElseThrow();
 
         if (file.getSize() < 1048576) {
-            FileEntity fileEntity = FileEntity.convert(file, SecurityHelper.getUser().getUser_UUID().toString());
+            FileEntity fileEntity = FileEntity.convert(file, SecurityHelper.getUser().getUserID().toString());
             messdiener.setImg(fileEntity);
-
-            System.out.println("save");
         }
 
         return new RedirectView("/messdiener?uuid=" + uuid);
@@ -113,20 +108,20 @@ public class MessdienerController {
     @GetMapping("/messdiener/delete/file")
     public RedirectView deleteFile(@RequestParam("person")UUID person, @RequestParam("uuid")UUID file) throws SQLException {
         FileEntity fileEntity = Cache.CLOUD_SERVICE.get(file.toString());
-        Cache.CLOUD_SERVICE.delete(fileEntity.getUUID());
+        Cache.CLOUD_SERVICE.delete(fileEntity.getId());
         return new RedirectView("/messdiener?uuid=" + person);
     }
 
     @GetMapping("/messdiener/save/mapping")
     public RedirectView map(@RequestParam("uuid") UUID uuid, @RequestParam("date") UUID[] dateUUIDS) throws SQLException {
 
-        Messdiener messdiener = Cache.MESSDIENER_SERVICE.getPersons().stream().filter(messdiener1 -> messdiener1.getUUID().equals(uuid)).findFirst().orElseThrow();
+        Messdiener messdiener = Cache.MESSDIENER_SERVICE.getPersons().stream().filter(messdiener1 -> messdiener1.getId().equals(uuid)).findFirst().orElseThrow();
 
         Cache.WORSHIP_SERVICE.clearAvailability(messdiener);
 
         for (int i = 0; i < dateUUIDS.length; i++) {
             UUID dateUUID = dateUUIDS[i];
-            WorshipEvent event = Cache.WORSHIP_SERVICE.getEvents().stream().filter(event1 -> event1.getUUID().equals(dateUUID)).findFirst().orElseThrow();
+            WorshipEvent event = Cache.WORSHIP_SERVICE.getEvents().stream().filter(event1 -> event1.getId().equals(dateUUID)).findFirst().orElseThrow();
 
             Cache.WORSHIP_SERVICE.addAvailability(messdiener, event);
         }
@@ -136,7 +131,7 @@ public class MessdienerController {
     @GetMapping("/messdiener/delete")
     public RedirectView delete(@RequestParam("uuid") String uuid) throws SQLException {
         Messdiener messdiener = Cache.MESSDIENER_SERVICE.find(UUID.fromString(uuid)).orElseThrow();
-        Cache.MESSDIENER_SERVICE.delte(messdiener);
+        Cache.MESSDIENER_SERVICE.delete(messdiener);
 
         return new RedirectView("/messdiener");
     }

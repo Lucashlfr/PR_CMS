@@ -35,8 +35,8 @@
                             <tbody>
                             <tr th:each="ticket:${tickets}">
                                 <td th:text="${ticket.getTicketPerson().getName()}"></td>
-                                <td th:text="'/ticket/edit?uuid=' + ${ticket.getUUID()}"></td>
-                                <td th:text="${ticket.getDates().getEnglishDate_DEADLINE()}"></td>
+                                <td th:text="'/ticket/edit?uuid=' + ${ticket.getId()}"></td>
+                                <td th:text="${ticket.getDates().getEnglishDateDeadline()}"></td>
                                 <td th:text="${ticket.getTicketState().getColor()}"></td>
                                 <td th:text="${ticket.getTicketPerson().getAssociation()}"></td>
                             </tr>

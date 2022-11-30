@@ -4,29 +4,25 @@ import de.messdiener.cms.app.entities.finance.FinanceIndex;
 import de.messdiener.cms.app.services.CloudService;
 import de.messdiener.cms.cache.Cache;
 import de.messdiener.cms.web.utils.Pair;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@AllArgsConstructor
+@Data
 public class MessdienerGroup {
 
-    private UUID uuid;
+    private UUID id;
     private String name;
-    private String logo_svg;
-
+    private String logoSvg;
     private List<Pair<Messdiener, MessdienerRank>> messdienerList;
 
-    public MessdienerGroup(UUID uuid, String name, String logo_svg, List<Pair<Messdiener, MessdienerRank>> messdienerList) {
-        this.uuid = uuid;
-        this.logo_svg = logo_svg;
-        this.name = name;
-        this.messdienerList = messdienerList;
-    }
-
-    public static MessdienerGroup of(UUID uuid, String name, String logo_svg, List<Pair<Messdiener, MessdienerRank>> messdienerList) {
-        return new MessdienerGroup(uuid, name, logo_svg, messdienerList);
+    public static MessdienerGroup of(UUID uuid, String name, String logoSvg, List<Pair<Messdiener, MessdienerRank>> messdienerList) {
+        return new MessdienerGroup(uuid, name, logoSvg, messdienerList);
     }
 
     public static MessdienerGroup empty(){
@@ -37,15 +33,15 @@ public class MessdienerGroup {
         Cache.GROUP_SERVICE.saveGroup(this);
     }
 
-    public ArrayList<Messdiener> inGroup() {
-        ArrayList<Messdiener> list = new ArrayList<>();
+    public List<Messdiener> inGroup() {
+        List<Messdiener> list = new ArrayList<>();
         getMessdienerList().forEach(p -> list.add(p.getFirst()));
 
         return list;
     }
 
-    public ArrayList<Messdiener> defaultMessdiener() {
-        ArrayList<Messdiener> list = new ArrayList<>();
+    public List<Messdiener> defaultMessdiener() {
+        List<Messdiener> list = new ArrayList<>();
 
         getMessdienerList()
                 .stream()
@@ -62,8 +58,8 @@ public class MessdienerGroup {
         return stringBuilder.toString();
     }
 
-    public ArrayList<Messdiener> oberMessdiener() {
-        ArrayList<Messdiener> list = new ArrayList<>();
+    public List<Messdiener> oberMessdiener() {
+        List<Messdiener> list = new ArrayList<>();
 
         getMessdienerList()
                 .stream()
@@ -80,8 +76,8 @@ public class MessdienerGroup {
         return stringBuilder.toString();
     }
 
-    public ArrayList<Messdiener> ltMessdiener() {
-        ArrayList<Messdiener> list = new ArrayList<>();
+    public List<Messdiener> ltMessdiener() {
+        List<Messdiener> list = new ArrayList<>();
 
         getMessdienerList()
                 .stream()
@@ -103,54 +99,21 @@ public class MessdienerGroup {
         ArrayList<Messdiener> list = new ArrayList<>();
 
         for (Messdiener messdiener : Cache.MESSDIENER_SERVICE.getPersons()){
-            if(!Cache.GROUP_SERVICE.personIsInGroup(messdiener.getUUID()))
+            if(!Cache.GROUP_SERVICE.personIsInGroup(messdiener.getId()))
                 list.add(messdiener);
         }
         return list;
     }
 
-    public UUID getUUID() {
-        return uuid;
-    }
-
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<Pair<Messdiener, MessdienerRank>> getMessdienerList() {
-        return messdienerList;
-    }
-
-    public void setMessdienerList(List<Pair<Messdiener, MessdienerRank>> messdienerList) {
-        this.messdienerList = messdienerList;
-    }
-
-    public String getLogo_svg() {
-        return logo_svg;
-    }
-
-    public void setLogo_svg(String logo_svg) {
-        this.logo_svg = logo_svg;
-    }
-
-    public String getImgAdress() throws IllegalAccessException {
-        if (logo_svg.isEmpty() || logo_svg.equals("KEINE")) {
+    public String getImgAdress() {
+        if (logoSvg.isEmpty() || logoSvg.equals("KEINE")) {
             return "";
         } else {
-            return CloudService.getPath(UUID.fromString(logo_svg));
+            return CloudService.getPath(UUID.fromString(logoSvg));
         }
-        //throw new IllegalAccessException("");
     }
 
     public FinanceIndex getFinanceIndex() throws SQLException {
-        return new FinanceIndex(uuid);
+        return new FinanceIndex(id);
     }
 }

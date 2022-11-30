@@ -53,8 +53,8 @@
                                 <td th:text="${ticket.getDeadline()}"></td>
                                 <td th:text="${ticket.getTicketPerson().getName()}"></td>
                                 <td th:text="${ticket.getTicketPerson().getAssociation()}"></td>
-                                <td th:text="${ticket.getDates().getGermanDate_CREATED()}"></td>
-                                <td th:text="${ticket.getDates().getGermanDate_DEADLINE()}"></td>
+                                <td th:text="${ticket.getDates().getGermanDateCreated()}"></td>
+                                <td th:text="${ticket.getDates().getGermanDateDeadline()}"></td>
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <div class="avatar me-2">
@@ -72,7 +72,7 @@
                                 </td>
                                 <td>
                                     <a class="btn btn-datatable btn-icon btn-transparent-dark me-2"
-                                       th:href="'/ticket/edit?uuid=' + ${ticket.getUUID()}"><i data-feather="edit"></i></a>
+                                       th:href="'/ticket/edit?uuid=' + ${ticket.getId()}"><i data-feather="edit"></i></a>
                                 </td>
                             </tr>
 

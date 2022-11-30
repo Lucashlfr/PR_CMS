@@ -71,7 +71,7 @@
                                                    th:value="${person.getGroup().getName()}" readonly/>
                                         </div>
 
-                                        <input th:value="${person.getUUID()}" name="uuid" class="d-none" readonly>
+                                        <input th:value="${person.getId()}" name="uuid" class="d-none" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -193,7 +193,7 @@
 
                     <div class="d-flex">
 
-                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-secondary btn-block flex-fill m-1" data-bs-dismiss="modal">
                             Schließen
                         </button>
 

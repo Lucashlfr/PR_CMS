@@ -11,77 +11,49 @@ public class TicketDate {
     private final long lastUpdate;
     private final long deadline;
 
-    private final Date date_created;
-    private final Date date_lastUpdate;
-    private final Date date_deadline;
+    private final Date dateDeadline;
 
     public TicketDate(Ticket ticket) {
         this.created = ticket.getCreated();
         this.lastUpdate = ticket.getLastUpdate();
         this.deadline = ticket.getDeadline();
 
-        this.date_created = new Date(created);
-        this.date_lastUpdate = new Date(lastUpdate);
-        this.date_deadline = new Date(deadline);
+        this.dateDeadline = new Date(deadline);
     }
 
-    public String getGermanDate_CREATED() {
+    public String getGermanDateCreated() {
         return DateUtils.convertLongToDate(created, DateUtils.DateType.GERMAN);
     }
 
-    public String getEnglishDate_CREATED() {
+    public String getEnglishDateCreated() {
         return DateUtils.convertLongToDate(created, DateUtils.DateType.ENGLISH);
     }
 
-    public String getGermanDateWithDay_CREATED() {
+    public String getGermanDateWithDayCreated() {
         return DateUtils.convertLongToDate(created, DateUtils.DateType.GERMAN_WITH_DAY_NAME);
     }
 
-    public String getGermanDate_LASTUPDATE() {
+    public String getGermanDateLastUpdate() {
         return DateUtils.convertLongToDate(lastUpdate, DateUtils.DateType.GERMAN);
     }
 
-    public String getEnglishDate_LASTUPDATE() {
+    public String getEnglishDateLastUpdate() {
         return DateUtils.convertLongToDate(lastUpdate, DateUtils.DateType.ENGLISH);
     }
 
-    public String getGermanDate_DEADLINE() {
+    public String getGermanDateDeadline() {
         return DateUtils.convertLongToDate(deadline, DateUtils.DateType.GERMAN);
     }
 
-    public String getEnglishDate_DEADLINE() {
+    public String getEnglishDateDeadline() {
         return DateUtils.convertLongToDate(deadline, DateUtils.DateType.ENGLISH);
     }
 
-    public String getGermanDateWithDay_DEADLINE() {
+    public String getGermanDateWithDayDeadline() {
         return DateUtils.convertLongToDate(deadline, DateUtils.DateType.GERMAN_WITH_DAY_NAME);
     }
 
-    public long getCreated() {
-        return created;
-    }
-
-    public long getLastUpdate() {
-        return lastUpdate;
-    }
-
-    public long getDeadline() {
-        return deadline;
-    }
-
-    public Date getDate_created() {
-        return date_created;
-    }
-
-    public Date getDate_lastUpdate() {
-        return date_lastUpdate;
-    }
-
-    public Date getDate_deadline() {
-        return date_deadline;
-    }
-
-    public DateUtils.MonthNumberName getDeadline_MonthNumberName(){
-        return DateUtils.getMonthNumberName(getDate_deadline());
+    public DateUtils.MonthNumberName getDeadlineMonthNumberName(){
+        return DateUtils.getMonthNumberName(dateDeadline);
     }
 }

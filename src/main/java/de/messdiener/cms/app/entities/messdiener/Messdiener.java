@@ -6,40 +6,30 @@ import de.messdiener.cms.app.services.CloudService;
 import de.messdiener.cms.cache.Cache;
 import de.messdiener.cms.web.utils.DateUtils;
 import de.messdiener.cms.web.utils.Pair;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Optional;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+@AllArgsConstructor
+@Data
 public class Messdiener {
 
-    private UUID uuid;
+    private UUID id;
     private String firstname;
     private String lastname;
     private String adress;
     private long birthday;
     private String phone;
-    private String mobile_child;
-    private String mobile_parents;
-    private String mail_child;
-    private String mail_parents;
+    private String mobilePhoneChild;
+    private String mobilePhoneParents;
+    private String mailAdressChild;
+    private String mailAdressParents;
     private String notes;
-
-    public Messdiener(UUID uuid, String firstname, String lastname, String adress, long birthday, String phone, String mobile_child, String mobile_parents, String mail_child, String mail_parents, String notes) {
-        this.uuid = uuid;
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.adress = adress;
-        this.birthday = birthday;
-        this.phone = phone;
-        this.mobile_child = mobile_child;
-        this.mobile_parents = mobile_parents;
-        this.mail_child = mail_child;
-        this.mail_parents = mail_parents;
-        this.notes = notes;
-    }
 
     public static Messdiener of(UUID uuid, String firstname, String lastname, String adress, long birthday, String phone, String mobile_child, String mobile_parents, String mail_child, String mail_parents, String notes) {
         return new Messdiener(uuid, firstname, lastname, adress, birthday, phone, mobile_child, mobile_parents, mail_child, mail_parents, notes);
@@ -49,93 +39,6 @@ public class Messdiener {
         return Messdiener.of(UUID.randomUUID(), "", "", "", -1, "", "", "", "", "", "");
     }
 
-    public UUID getUUID() {
-        return uuid;
-    }
-
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
-    }
-
-    public String getFirstname() {
-        return firstname;
-    }
-
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
-    }
-
-    public String getLastname() {
-        return lastname;
-    }
-
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-
-    public String getAdress() {
-        return adress;
-    }
-
-    public void setAdress(String adress) {
-        this.adress = adress;
-    }
-
-    public long getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(long birthday) {
-        this.birthday = birthday;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getMobile_child() {
-        return mobile_child;
-    }
-
-    public void setMobile_child(String mobile_child) {
-        this.mobile_child = mobile_child;
-    }
-
-    public String getMobile_parents() {
-        return mobile_parents;
-    }
-
-    public void setMobile_parents(String mobile_parents) {
-        this.mobile_parents = mobile_parents;
-    }
-
-    public String getMail_child() {
-        return mail_child;
-    }
-
-    public void setMail_child(String mail_child) {
-        this.mail_child = mail_child;
-    }
-
-    public String getMail_parents() {
-        return mail_parents;
-    }
-
-    public void setMail_parents(String mail_parents) {
-        this.mail_parents = mail_parents;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
 
     public String getReadName() {
         return lastname + ", " + firstname;
@@ -152,7 +55,7 @@ public class Messdiener {
     public int getAvailableServices() throws SQLException {
         int i = 0;
         for (Pair<WorshipEvent, Boolean> pair : getAvailability()) {
-            if (pair.getSecond()) i++;
+            if (Boolean.TRUE.equals(pair.getSecond())) i++;
         }
         return i;
     }
@@ -165,7 +68,7 @@ public class Messdiener {
         return getDuties().size();
     }
 
-    public ArrayList<Pair<WorshipEvent, Boolean>> getAvailability() throws SQLException {
+    public List<Pair<WorshipEvent, Boolean>> getAvailability() throws SQLException {
         return Cache.WORSHIP_SERVICE.getAvailabilityByPerson(this);
     }
 
@@ -178,11 +81,11 @@ public class Messdiener {
     }
 
     public MessdienerGroup getGroup() throws SQLException {
-        return Cache.GROUP_SERVICE.getGroupByPerson(uuid).orElse(MessdienerGroup.empty());
+        return Cache.GROUP_SERVICE.getGroupByPerson(id).orElse(MessdienerGroup.empty());
     }
 
     public MessdienerRank getRank() throws SQLException {
-        return Cache.GROUP_SERVICE.getRankByPerson(uuid).orElse(MessdienerRank.empty());
+        return Cache.GROUP_SERVICE.getRankByPerson(id).orElse(MessdienerRank.empty());
     }
 
     public String getName() {
@@ -192,15 +95,15 @@ public class Messdiener {
     public ArrayList<FileEntity> getFiles() throws SQLException {
         ArrayList<FileEntity> files = new ArrayList<>();
         for (FileEntity fileEntity : Cache.CLOUD_SERVICE.getFiles()) {
-            if (fileEntity.getName().startsWith("p_" + uuid + "_"))
+            if (fileEntity.getName().startsWith("p_" + id + "_"))
                 files.add(fileEntity);
         }
         return files;
     }
 
     public void addFile(FileEntity file) throws SQLException {
-        file.setOwner(Cache.SYSTEM_USER.getUser_UUID().toString());
-        file.setName("p_" + uuid + "_" + file.getName());
+        file.setOwner(Cache.SYSTEM_USER.getUserID().toString());
+        file.setName("p_" + id + "_" + file.getName());
 
         file.save();
     }
@@ -209,12 +112,12 @@ public class Messdiener {
     public void setImg(FileEntity file) throws SQLException {
         for (FileEntity fileEntity : getFiles()) {
             if (fileEntity.getName().contains("profile_img")) {
-                Cache.CLOUD_SERVICE.delete(fileEntity.getUUID());
+                Cache.CLOUD_SERVICE.delete(fileEntity.getId());
             }
         }
 
-        file.setOwner(Cache.SYSTEM_USER.getUser_UUID().toString());
-        file.setName("p_" + uuid + "_profile_img");
+        file.setOwner(Cache.SYSTEM_USER.getUserID().toString());
+        file.setName("p_" + id + "_profile_img");
 
 
         file.save();
@@ -225,7 +128,7 @@ public class Messdiener {
 
         for (FileEntity fileEntity : getFiles()) {
             if (fileEntity.getName().contains("profile_img")) {
-                return CloudService.getPath(UUID.fromString(fileEntity.getUUID().toString()));
+                return CloudService.getPath(UUID.fromString(fileEntity.getId().toString()));
             }
         }
 

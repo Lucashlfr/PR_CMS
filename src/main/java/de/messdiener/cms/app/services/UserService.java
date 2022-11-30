@@ -1,21 +1,19 @@
 package de.messdiener.cms.app.services;
 
-import de.messdiener.cms.app.entities.messdiener.Messdiener;
-import de.messdiener.cms.app.entities.ticket.cache.TicketPerson;
 import de.messdiener.cms.app.entities.user.Permission;
 import de.messdiener.cms.app.entities.user.User;
 import de.messdiener.cms.app.services.sql.DatabaseService;
 import de.messdiener.cms.cache.Cache;
 import de.messdiener.cms.cache.enums.UserGroup;
-import de.messdiener.cms.web.security.SecurityConfiguration;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -79,7 +77,7 @@ public class UserService {
             getUsers().stream()
                     .filter(u -> u.getUsername().equals(user.getUsername()))
                     .findFirst()
-                    .ifPresent(value -> user.setUser_uuid(value.getUser_UUID()));
+                    .ifPresent(value -> user.setUserID(value.getUserID()));
         }
 
 
@@ -89,7 +87,7 @@ public class UserService {
                 "INSERT INTO module_user (user_uuid, username, firstname, lastname, password, permGroup, email, permissions, profile_img) VALUES (?,?,?,?,?,?,?,?,?)"
         );
 
-        preparedStatement.setString(1, user.getUser_UUID().toString());
+        preparedStatement.setString(1, user.getUserID().toString());
         preparedStatement.setString(2, user.getUsername());
         preparedStatement.setString(3, user.getFirstname());
         preparedStatement.setString(4, user.getLastname());
@@ -97,7 +95,7 @@ public class UserService {
         preparedStatement.setString(6, user.getGroup().toString());
         preparedStatement.setString(7, user.getEmail());
         preparedStatement.setString(8, user.getPermissionString());
-        preparedStatement.setString(9, user.getImg_path());
+        preparedStatement.setString(9, user.getImgPath());
 
 
         preparedStatement.executeUpdate();
@@ -112,17 +110,17 @@ public class UserService {
     }
 
     public void deleteUser(User user) {
-        databaseService.delete("module_user", "user_uuid", user.getUser_UUID().toString());
+        databaseService.delete("module_user", "user_uuid", user.getUserID().toString());
         LOGGER.finest("User [" + user.getUsername() + "] erfolgreich gelöscht.");
     }
 
     public Optional<User> getUser(User user) throws SQLException {
-        return getUsers().stream().filter(u -> u.getUser_UUID().equals(user.getUser_UUID())).findFirst();
+        return getUsers().stream().filter(u -> u.getUserID().equals(user.getUserID())).findFirst();
 
     }
 
     public Optional<User> getUser(UUID uuid) throws SQLException {
-        return getUsers().stream().filter(u -> u.getUser_UUID().equals(uuid)).findFirst();
+        return getUsers().stream().filter(u -> u.getUserID().equals(uuid)).findFirst();
 
     }
 
@@ -197,13 +195,13 @@ public class UserService {
     public void createUserInSecurity(User user){
         UserDetails systemUser = org.springframework.security.core.userdetails.User.withUsername(user.getUsername())
                 .password(user.getPassword())
-                .passwordEncoder(Cache.passwordEncoder::encode)
+                .passwordEncoder(Cache.getPasswordEncoder()::encode)
                 .roles(user.getGroup().toString()).build();
 
-        if(Cache.userDetailsManager.userExists(user.getUsername())){
-            Cache.userDetailsManager.deleteUser(user.getUsername());
+        if(Cache.getUserDetailsManager().userExists(user.getUsername())){
+            Cache.getUserDetailsManager().deleteUser(user.getUsername());
         }
-        Cache.userDetailsManager.createUser(systemUser);
+        Cache.getUserDetailsManager().createUser(systemUser);
     }
 
     public Permission getPermission(String permName) throws SQLException {

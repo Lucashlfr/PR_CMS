@@ -68,7 +68,7 @@
                                 <td th:text="${person.getGermanDate()} + ' (' + ${person.getAge()} + ')'"></td>
                                 <td>
                                     <a class="btn btn-datatable btn-icon btn-transparent-dark me-2"
-                                       th:href="'/messdiener?uuid=' + ${person.getUUID()}"><span
+                                       th:href="'/messdiener?uuid=' + ${person.getId()}"><span
                                             class="mdi mdi-book-arrow-right"></span></a>
                                 </td>
                             </tr>
@@ -169,7 +169,7 @@
                     </div>
                     <div class="d-flex">
 
-                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-secondary btn-block flex-fill m-1" data-bs-dismiss="modal">
                             Abbrechen
                         </button>
                         <button type="submit" class="btn btn-success btn-block flex-fill m-1">Speichern</button>
@@ -208,7 +208,7 @@
 
                     <div class="d-flex">
 
-                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-secondary btn-block flex-fill m-1" data-bs-dismiss="modal">
                             Schließen
                         </button>
 

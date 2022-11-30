@@ -5,9 +5,6 @@ import de.messdiener.cms.app.services.mail.utils.MailOverlay;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.sql.SQLException;
-import java.util.UUID;
-
 @SpringBootApplication
 public class ContentManagementSystem {
 

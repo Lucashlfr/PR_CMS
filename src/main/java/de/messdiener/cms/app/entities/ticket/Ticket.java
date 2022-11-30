@@ -8,36 +8,27 @@ import de.messdiener.cms.app.entities.user.User;
 import de.messdiener.cms.cache.Cache;
 import de.messdiener.cms.cache.enums.TicketState;
 import de.messdiener.cms.web.security.SecurityHelper;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.UUID;
 
+@AllArgsConstructor
+@Data
 public class Ticket {
 
-    private UUID uuid;
+    private UUID id;
     private long created;
     private long lastUpdate;
     private long deadline;
-    private UUID user_uuid;
+    private UUID userUUID;
     private TicketState ticketState;
-    private ArrayList<TicketLog> ticketNotes;
+    private ArrayList<TicketLog> ticketLogs;
     private ArrayList<TicketLink> ticketLinks;
     private TicketPerson ticketPerson;
     private String html;
-
-    public Ticket(UUID uuid, long created, long lastUpdate, long deadline, UUID user_uuid, TicketState ticketState, ArrayList<TicketLog> ticketNotes, ArrayList<TicketLink> ticketLinks, TicketPerson ticketPerson, String html) {
-        this.uuid = uuid;
-        this.created = created;
-        this.lastUpdate = lastUpdate;
-        this.deadline = deadline;
-        this.user_uuid = user_uuid;
-        this.ticketState = ticketState;
-        this.ticketNotes = ticketNotes;
-        this.ticketLinks = ticketLinks;
-        this.ticketPerson = ticketPerson;
-        this.html = html;
-    }
 
     public static Ticket empty(){
         return new Ticket(UUID.randomUUID(), -1, -1, -1, UUID.randomUUID(),
@@ -49,83 +40,11 @@ public class Ticket {
     }
 
     public User getEditor() throws SQLException {
-        return Cache.USER_SERVICE.getUsers().stream().filter(u -> u.getUser_UUID().equals(user_uuid)).findFirst().orElseThrow();
-    }
-
-    public UUID getUUID() {
-        return uuid;
-    }
-
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
-    }
-
-    public long getCreated() {
-        return created;
-    }
-
-    public void setCreated(long created) {
-        this.created = created;
-    }
-
-    public long getLastUpdate() {
-        return lastUpdate;
-    }
-
-    public void setLastUpdate(long lastUpdate) {
-        this.lastUpdate = lastUpdate;
-    }
-
-    public long getDeadline() {
-        return deadline;
-    }
-
-    public void setDeadline(long deadline) {
-        this.deadline = deadline;
-    }
-
-    public UUID getUser_UUID() {
-        return user_uuid;
-    }
-
-    public void setUser_UUID(UUID user_uuid) {
-        this.user_uuid = user_uuid;
-    }
-
-    public TicketState getTicketState() {
-        return ticketState;
-    }
-
-    public void setTicketState(TicketState ticketState) {
-        this.ticketState = ticketState;
-    }
-
-    public ArrayList<TicketLog> getTicketLogs() {
-        return ticketNotes;
-    }
-
-    public void setTicketNotes(ArrayList<TicketLog> ticketNotes) {
-        this.ticketNotes = ticketNotes;
-    }
-
-    public ArrayList<TicketLink> getTicketLinks() {
-        return ticketLinks;
-    }
-
-    public void setTicketLinks(ArrayList<TicketLink> ticketLinks) {
-        this.ticketLinks = ticketLinks;
-    }
-
-    public TicketPerson getTicketPerson() {
-        return ticketPerson;
-    }
-
-    public void setTicketPerson(TicketPerson ticketPerson) {
-        this.ticketPerson = ticketPerson;
+        return Cache.USER_SERVICE.getUsers().stream().filter(u -> u.getUserID().equals(userUUID)).findFirst().orElseThrow();
     }
 
     public boolean userCanLector() throws SQLException {
-        return checkRightsForLector() && (getUser_UUID().equals(SecurityHelper.getUser().getUser_UUID()) || SecurityHelper.getUser().userHasPermission("LEKTOR_1"));
+        return checkRightsForLector() && (userUUID.equals(SecurityHelper.getUser().getUserID()) || SecurityHelper.getUser().userHasPermission("LEKTOR_1"));
     }
 
     private boolean checkRightsForLector() throws SQLException{
@@ -138,7 +57,7 @@ public class Ticket {
 
     public String getReason(){
         if(ticketState == TicketState.REJECTED){
-            return getTicketLogs().get(getTicketLogs().size()-1).getText().replace("Ticket wurde von oneUser abgelehnt: ","");
+            return ticketLogs.get(getTicketLogs().size()-1).getText().replace("Ticket wurde von oneUser abgelehnt: ","");
         }
         return "";
     }
@@ -153,7 +72,6 @@ public class Ticket {
 
 
     public String getHTML() {
-        System.out.println(html);
         return html.replace("dc/cloud/file?uuid=", "/public/dc/cloud/file?uuid=");
     }
 
@@ -167,8 +85,9 @@ public class Ticket {
             case PUBLISHED:
             case AWAITING_PUBLICATION:
                 return true;
+            default:
+                return false;
         }
-        return false;
     }
 
     public boolean isCorrection(){
@@ -176,14 +95,15 @@ public class Ticket {
             case CORRECTOR_1:
             case CORRECTOR_2:
                 return true;
+            default:
+                return false;
         }
-        return false;
     }
 
     public boolean userCanAddData() throws SQLException {
         User user = SecurityHelper.getUser();
         if(isClosed()) return false;
-        return getUser_UUID().equals(user.getUser_UUID()) || user.isAdmin();
+        return userUUID.equals(user.getUserID()) || user.isAdmin();
     }
 
     public String getDescription(){

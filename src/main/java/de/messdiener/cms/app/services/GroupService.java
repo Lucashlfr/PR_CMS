@@ -61,15 +61,15 @@ public class GroupService {
     }
 
     public void saveGroup(MessdienerGroup group) throws SQLException {
-        databaseService.delete("module_messdiener_group", "uuid", group.getUUID().toString());
+        databaseService.delete("module_messdiener_group", "uuid", group.getId().toString());
 
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
                 "INSERT INTO module_messdiener_group (uuid, name, logo_svg) " +
                         "VALUES (?,?,?)"
         );
-        preparedStatement.setString(1, group.getUUID().toString());
+        preparedStatement.setString(1, group.getId().toString());
         preparedStatement.setString(2, group.getName());
-        preparedStatement.setString(3, group.getLogo_svg());
+        preparedStatement.setString(3, group.getLogoSvg());
 
         preparedStatement.executeUpdate();
     }
@@ -85,22 +85,24 @@ public class GroupService {
         while (resultSet.next()) {
             UUID uuid = UUID.fromString(resultSet.getString("uuid"));
             String name = resultSet.getString("name");
-            String logo_svg = resultSet.getString("logo_svg");
+            String logoSvg = resultSet.getString("logo_svg");
 
-            groups.add(MessdienerGroup.of(uuid, name, logo_svg, getByGroup(uuid)));
+            groups.add(MessdienerGroup.of(uuid, name, logoSvg, getByGroup(uuid)));
         }
         return groups;
     }
     public List<MessdienerGroup> getByUser(User user) throws SQLException {
         if(user.userHasPermission("*"))
             return getGroups();
-        if(user.getPerson().isEmpty())
-            return new ArrayList<>();
-        return List.of(user.getPerson().get().getGroup());
+        if(user.getPerson().isPresent()) {
+            Messdiener messdiener = user.getPerson().get();
+            return List.of(messdiener.getGroup());
+        }
+        return new ArrayList<>();
     }
 
     public Optional<MessdienerGroup> getGroup(UUID uuid) throws SQLException {
-        return getGroups().stream().filter(group -> group.getUUID().equals(uuid)).findFirst();
+        return getGroups().stream().filter(group -> group.getId().equals(uuid)).findFirst();
     }
 
     public void map(MessdienerGroup group, Messdiener messdiener) throws SQLException {
@@ -109,9 +111,9 @@ public class GroupService {
                 "INSERT INTO module_messdiener_group_map (messdiener_uuid, group_uuid, rank_uuid) " +
                         "VALUES (?,?,?)"
         );
-        preparedStatement.setString(1, messdiener.getUUID().toString());
-        preparedStatement.setString(2, group.getUUID().toString());
-        preparedStatement.setString(3, DEFAULT.getUUID().toString());
+        preparedStatement.setString(1, messdiener.getId().toString());
+        preparedStatement.setString(2, group.getId().toString());
+        preparedStatement.setString(3, DEFAULT.getId().toString());
 
         preparedStatement.executeUpdate();
     }
@@ -187,40 +189,39 @@ public class GroupService {
     public void unmap(MessdienerGroup group, Messdiener messdiener) throws SQLException {
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
                 "DELETE FROM module_messdiener_group_map WHERE group_uuid = ? AND messdiener_uuid = ?");
-        preparedStatement.setString(1, group.getUUID().toString());
-        preparedStatement.setString(2, messdiener.getUUID().toString());
+        preparedStatement.setString(1, group.getId().toString());
+        preparedStatement.setString(2, messdiener.getId().toString());
 
         preparedStatement.executeUpdate();
     }
 
     public void saveRank(MessdienerRank rank) throws SQLException {
-        databaseService.delete("module_messdiener_rank", "uuid", rank.getUUID().toString());
+        databaseService.delete("module_messdiener_rank", "uuid", rank.getId().toString());
 
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
                 "INSERT INTO module_messdiener_rank (uuid, name, power) VALUES (?,?,?)"
         );
-        preparedStatement.setString(1, rank.getUUID().toString());
+        preparedStatement.setString(1, rank.getId().toString());
         preparedStatement.setString(2, rank.getName());
         preparedStatement.setInt(3, rank.getPower());
 
         preparedStatement.executeUpdate();
     }
 
-    public void promote(MessdienerGroup group, Messdiener messdiener) throws SQLException {
+    public void promote(Messdiener messdiener) throws SQLException {
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
                 "UPDATE module_messdiener_group_map SET rank_uuid = ? WHERE messdiener_uuid = ?"
         );
 
-        System.out.println(messdiener.getRank().getPower());
         if (messdiener.getRank().getPower() == 0) {
-            preparedStatement.setString(1, LEITUNGSTEAM.getUUID().toString());
+            preparedStatement.setString(1, LEITUNGSTEAM.getId().toString());
         } else if (messdiener.getRank().getPower() == 5) {
-            preparedStatement.setString(1, OBERMESSDIENER.getUUID().toString());
+            preparedStatement.setString(1, OBERMESSDIENER.getId().toString());
         } else {
             return;
         }
 
-        preparedStatement.setString(2, messdiener.getUUID().toString());
+        preparedStatement.setString(2, messdiener.getId().toString());
 
         preparedStatement.executeUpdate();
     }
@@ -241,13 +242,13 @@ public class GroupService {
 
     public void saveGroupSession(GroupSession groupSession) throws SQLException {
 
-        databaseService.delete("module_group_sessions", "uuid", groupSession.getUUID().toString());
+        databaseService.delete("module_group_sessions", "uuid", groupSession.getId().toString());
 
 
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
                 "INSERT INTO module_group_sessions (uuid, dateTime, group_uuid) VALUES (?,?,?)"
         );
-        preparedStatement.setString(1, groupSession.getUUID().toString());
+        preparedStatement.setString(1, groupSession.getId().toString());
         preparedStatement.setLong(2, groupSession.getDateTime());
         preparedStatement.setString(3, groupSession.getGroup().toString());
 
@@ -256,13 +257,13 @@ public class GroupService {
         preparedStatement.executeUpdate();
     }
 
-    public List<GroupSession> getSessions(UUID group_uuid) throws SQLException {
+    public List<GroupSession> getSessions(UUID groupUUID) throws SQLException {
         List<GroupSession> sessions = new ArrayList<>();
 
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
                 "SELECT * FROM module_group_sessions WHERE group_uuid = ?"
         );
-        preparedStatement.setString(1, group_uuid.toString());
+        preparedStatement.setString(1, groupUUID.toString());
 
         ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -270,7 +271,7 @@ public class GroupService {
             UUID uuid = UUID.fromString(resultSet.getString("uuid"));
             long dateTime = resultSet.getLong("dateTime");
 
-            GroupSession groupSession = GroupSession.of(uuid, dateTime, group_uuid);
+            GroupSession groupSession = GroupSession.of(uuid, dateTime, groupUUID);
             groupSession.setMessdieners(getAttendances(uuid));
 
             sessions.add(groupSession);
@@ -289,9 +290,9 @@ public class GroupService {
 
         ResultSet resultSet = preparedStatement.executeQuery();
         while (resultSet.next()) {
-            UUID messdiener_uuid = UUID.fromString(resultSet.getString("person_uuid"));
+            UUID messdienerUuid = UUID.fromString(resultSet.getString("person_uuid"));
 
-            Messdiener messdiener = Cache.MESSDIENER_SERVICE.find(messdiener_uuid).orElseThrow();
+            Messdiener messdiener = Cache.MESSDIENER_SERVICE.find(messdienerUuid).orElseThrow();
             messdieners.add(messdiener);
         }
         return messdieners;
@@ -299,16 +300,16 @@ public class GroupService {
 
     public void mapSession(GroupSession groupSession) throws SQLException {
 
-        databaseService.delete("module_group_sessions_map", "uuid_event", groupSession.getUUID().toString());
+        databaseService.delete("module_group_sessions_map", "uuid_event", groupSession.getId().toString());
 
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
                 "INSERT INTO module_group_sessions_map (uuid_event, person_uuid) VALUES (?,?)"
         );
-        preparedStatement.setString(1, groupSession.getUUID().toString());
+        preparedStatement.setString(1, groupSession.getId().toString());
 
         for (Messdiener messdiener : groupSession.getMessdieners()) {
 
-            preparedStatement.setString(2, messdiener.getUUID().toString());
+            preparedStatement.setString(2, messdiener.getId().toString());
             preparedStatement.executeUpdate();
         }
     }
@@ -316,8 +317,8 @@ public class GroupService {
     public void remove(GroupSession groupSession, Messdiener messdiener) throws SQLException {
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
                 "DELETE FROM module_group_sessions_map WHERE uuid_event = ? AND person_uuid = ?");
-        preparedStatement.setString(1, groupSession.getUUID().toString());
-        preparedStatement.setString(2, messdiener.getUUID().toString());
+        preparedStatement.setString(1, groupSession.getId().toString());
+        preparedStatement.setString(2, messdiener.getId().toString());
 
         preparedStatement.executeUpdate();
     }
@@ -331,11 +332,11 @@ public class GroupService {
 
         ResultSet resultSet = preparedStatement.executeQuery();
 
-        while (resultSet.next()) {
-            UUID group_uuid = UUID.fromString(resultSet.getString("group_uuid"));
+        if (resultSet.next()) {
+            UUID groupUUID = UUID.fromString(resultSet.getString("group_uuid"));
             long dateTime = resultSet.getLong("dateTime");
 
-            GroupSession groupSession = GroupSession.of(uuid, dateTime, group_uuid);
+            GroupSession groupSession = GroupSession.of(uuid, dateTime, groupUUID);
             groupSession.setMessdieners(getAttendances(uuid));
 
             return Optional.of(groupSession);

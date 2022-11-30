@@ -21,7 +21,7 @@
                                 </h1>
                             </div>
                             <div class="col-12 col-xl-auto mb-3">
-                                <a class="btn btn-sm btn-light text-primary" th:href="'/ticket/edit?uuid=' + ${ticket.getUUID()}">
+                                <a class="btn btn-sm btn-light text-primary" th:href="'/ticket/edit?uuid=' + ${ticket.getId()}">
                                     <i class="me-1" data-feather="arrow-left"></i>
                                     Zurück zum Ticket
                                 </a>
@@ -50,7 +50,7 @@
                         </div>
                         <div class="d-grid">
 
-                            <a th:href="'/ticket/edit?uuid=' + ${ticket.getUUID()}"
+                            <a th:href="'/ticket/edit?uuid=' + ${ticket.getId()}"
                                class="btn btn-danger btn-block" style="margin-bottom: 10px">
                                 <span class="mdi mdi-backburger" style="margin-right: 5px"></span>
                                 Zurück zur Antrags-Seite</a>
@@ -159,14 +159,14 @@
                         </select>
                         <textarea class="form-control m-1" rows="8" id="comment" required name="text"
                                   placeholder="Bitte Text eingeben"></textarea>
-                        <input type="text" th:value="${ticket.getUUID()}" readonly
+                        <input type="text" th:value="${ticket.getId()}" readonly
                                style="max-width: 0; max-height: 0; display: none" name="uuid">
                     </div>
 
                     <div class="d-flex">
 
 
-                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-secondary btn-block flex-fill m-1" data-bs-dismiss="modal">
                             Abbrechen
                         </button>
                         <button type="submit" class="btn btn-primary btn-block flex-fill m-1">Abschicken</button>
@@ -199,11 +199,11 @@
                     <h6>Bist du sicher, dass du das Lektoriat für dieses Ticket freigeben möchtest?</h6>
                     <div class="d-flex">
 
-                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-secondary btn-block flex-fill m-1" data-bs-dismiss="modal">
                             Abbrechen
                         </button>
                         <a type="button" class="btn btn-success btn-block flex-fill m-1"
-                           th:href="'/ticket/lektoriat/accept?uuid=' + ${ticket.getUUID()}">Freigeben</a>
+                           th:href="'/ticket/lektoriat/accept?uuid=' + ${ticket.getId()}">Freigeben</a>
 
                     </div>
                 </div>
@@ -249,7 +249,7 @@
                     </script>
                     <div class="d-flex">
 
-                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-secondary btn-block flex-fill m-1" data-bs-dismiss="modal">
                             Abbrechen
                         </button>
                         <button type="button" class="btn btn-success btn-block flex-fill m-1">Korrektur speichern

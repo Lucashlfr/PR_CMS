@@ -29,7 +29,7 @@ public class DatabaseService {
 
             LOGGER.finest("SQL-Verbindung aufgebaut!");
 
-            Cache.updateReflesh();
+            Cache.updateRefresh();
 
         } catch (SQLException | ClassNotFoundException e) {
             LOGGER.severe("Fehler beim Aufbauen der SQL Verbindung");
@@ -43,7 +43,7 @@ public class DatabaseService {
 
     public void reconnect() {
 
-        Cache.updateReflesh();
+        Cache.updateRefresh();
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");

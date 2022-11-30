@@ -3,7 +3,6 @@ package de.messdiener.cms.web.controller;
 import de.messdiener.cms.app.entities.user.Permission;
 import de.messdiener.cms.app.entities.user.User;
 import de.messdiener.cms.cache.Cache;
-import de.messdiener.cms.app.entities.email.EmailEntity;
 import de.messdiener.cms.cache.enums.UserGroup;
 import de.messdiener.cms.web.security.SecurityHelper;
 import org.springframework.stereotype.Controller;
@@ -15,7 +14,6 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpSession;
 import java.sql.SQLException;
-import java.util.Optional;
 import java.util.UUID;
 
 @Controller
@@ -90,7 +88,7 @@ public class AdminController {
         Cache.USER_SERVICE.saveUser(user);
         Cache.USER_SERVICE.createUserInSecurity(user);
 
-        return new RedirectView("/admin/user?user=" + user.getUser_UUID());
+        return new RedirectView("/admin/user?user=" + user.getUserID());
     }
 
     public void addAlertToModel(Model model, String alertClass, String alertText) {
@@ -109,7 +107,7 @@ public class AdminController {
 
 
     @GetMapping("/admin/deletePerm")
-    public RedirectView delete(@RequestParam("permName") String permName, @RequestParam("permDesc") String permDesc) throws SQLException {
+    public RedirectView delete(@RequestParam("permName") String permName, @RequestParam("permDesc") String permDesc) {
 
         Cache.USER_SERVICE.deletePermission(new Permission(permName, permDesc));
 

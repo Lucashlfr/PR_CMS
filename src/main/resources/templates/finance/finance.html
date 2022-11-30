@@ -161,7 +161,7 @@
                                 </td>
                                 <td th:if="${session.sessionUser.userHasPermission('MMS_FINANCE_DELETE')}">
                                     <a type="button"
-                                       th:href="'/finance/delete?uuid=' + ${entry.getUUID()} + '&tenant=' + ${group.getUUID()}"
+                                       th:href="'/finance/delete?uuid=' + ${entry.getId()} + '&tenant=' + ${group.getId()}"
                                        class="btn btn-danger mdi mdi-delete"></a>
                                 </td>
                             </tr>
@@ -247,7 +247,7 @@
                                 </select>
                                 <label for="costCenter">Kostenstelle</label>
                             </div>
-                            <input type="text" th:value="${group.getUUID()}" name="group" class="d-none" id="group">
+                            <input type="text" th:value="${group.getId()}" name="group" class="d-none" id="group">
                             <div class="form-floating mb-3 mt-3">
                                 <input type="text" class="form-control" placeholder="Notiz" name="note" id="note">
                                 <label for="note">Notiz</label>
@@ -256,7 +256,7 @@
 
                         <div class="d-flex">
 
-                            <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                            <button type="button" class="btn btn-secondary btn-block flex-fill m-1" data-bs-dismiss="modal">
                                 Schließen
                             </button>
 

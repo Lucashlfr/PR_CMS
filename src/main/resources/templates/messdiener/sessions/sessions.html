@@ -50,7 +50,7 @@
 
                             <div class="card-body d-flex align-content-center">
 
-                                <img th:unless="${group.getLogo_svg().equals('KEINE')}" th:src="${group.getImgAdress()}" class="card-img">
+                                <img th:unless="${group.getLogoSvg().equals('KEINE')}" th:src="${group.getImgAdress()}" class="card-img">
 
                             </div>
 
@@ -61,7 +61,7 @@
                             <div class="card-header">
                                 <span th:text="${group.getName()}"></span>
                                 <div class="dropdown no-caret">
-                                    <a class="btn btn-transparent-dark btn-icon " th:href="'/group/session?group=' + ${group.getUUID()}"
+                                    <a class="btn btn-transparent-dark btn-icon " th:href="'/group/session?group=' + ${group.getId()}"
                                        type="button">
                                         <span class="mdi mdi-account-group"></span>
                                     </a>

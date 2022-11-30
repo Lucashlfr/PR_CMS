@@ -4,13 +4,12 @@ package de.messdiener.cms.app.services;
 import de.messdiener.cms.app.entities.finance.FinanceEntry;
 import de.messdiener.cms.app.services.sql.DatabaseService;
 import de.messdiener.cms.cache.Cache;
-import de.messdiener.cms.cache.enums.OGroup;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -36,14 +35,14 @@ public class FinanceService {
     }
 
     public void saveEntity(FinanceEntry financeEntry) throws SQLException {
-        databaseService.delete("module_finance", "uuid", financeEntry.getUUID().toString());
+        databaseService.delete("module_finance", "uuid", financeEntry.getId().toString());
 
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
                 "INSERT INTO module_finance (uuid, oGroup, date, revenue, expenditures, type, editor, costCenter, note) VALUES (?,?,?,?,?,?,?,?,?)"
         );
 
-        preparedStatement.setString(1, financeEntry.getUUID().toString());
-        preparedStatement.setString(2, financeEntry.getoGroup().toString());
+        preparedStatement.setString(1, financeEntry.getId().toString());
+        preparedStatement.setString(2, financeEntry.getOGroup().toString());
         preparedStatement.setLong(3, financeEntry.getDate());
         preparedStatement.setDouble(4, financeEntry.getRevenue());
         preparedStatement.setDouble(5, financeEntry.getExpenditures());
@@ -55,8 +54,8 @@ public class FinanceService {
         preparedStatement.executeUpdate();
     }
 
-    public ArrayList<FinanceEntry> getAllEntities() throws SQLException {
-        ArrayList<FinanceEntry> entryArrayList = new ArrayList<>();
+    public List<FinanceEntry> getAllEntities() throws SQLException {
+        List<FinanceEntry> entryArrayList = new ArrayList<>();
 
         ResultSet resultSet = databaseService.getConnection().prepareStatement("SELECT * FROM module_finance ORDER BY date").executeQuery();
 
@@ -64,7 +63,7 @@ public class FinanceService {
         return entryArrayList;
     }
 
-    private static void extracted(ArrayList<FinanceEntry> entryArrayList, ResultSet resultSet) throws SQLException {
+    private static void extracted(List<FinanceEntry> entryArrayList, ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
             UUID uuid = UUID.fromString(resultSet.getString("uuid"));
             UUID oGroup = UUID.fromString(resultSet.getString("oGroup"));
@@ -81,8 +80,8 @@ public class FinanceService {
         }
     }
 
-    public ArrayList<FinanceEntry> getEntities(UUID oGroup) throws SQLException {
-        ArrayList<FinanceEntry> entryArrayList = new ArrayList<>();
+    public List<FinanceEntry> getEntities(UUID oGroup) throws SQLException {
+        List<FinanceEntry> entryArrayList = new ArrayList<>();
 
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement("SELECT * FROM module_finance WHERE oGroup = ? ORDER BY date");
         preparedStatement.setString(1, oGroup.toString());
@@ -94,7 +93,7 @@ public class FinanceService {
 
 
     public Optional<FinanceEntry> find(UUID uuid) throws SQLException {
-        return getAllEntities().stream().filter(entry -> entry.getUUID().equals(uuid)).findFirst();
+        return getAllEntities().stream().filter(entry -> entry.getId().equals(uuid)).findFirst();
     }
 
     public void delete(UUID uuid) {

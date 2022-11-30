@@ -46,7 +46,7 @@
 
                             <div class="card-body d-flex align-content-center">
 
-                                <img th:unless="${tenant.getLogo_svg().equals('KEINE')}" th:src="${tenant.getImgAdress()}" class="card-img">
+                                <img th:unless="${tenant.getLogoSvg().equals('KEINE')}" th:src="${tenant.getImgAdress()}" class="card-img">
 
                             </div>
 
@@ -57,7 +57,7 @@
                             <div class="card-header">
                                 <span th:text="${tenant.getName()}"></span>
                                 <div class="dropdown no-caret">
-                                    <a class="btn btn-transparent-dark btn-icon " th:href="'/finance?tenant=' + ${tenant.getUUID()}"
+                                    <a class="btn btn-transparent-dark btn-icon " th:href="'/finance?tenant=' + ${tenant.getId()}"
                                             type="button">
                                         <span class="mdi mdi-account-group"></span>
                                     </a>

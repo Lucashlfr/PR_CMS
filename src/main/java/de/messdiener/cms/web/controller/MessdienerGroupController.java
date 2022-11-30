@@ -1,11 +1,8 @@
 package de.messdiener.cms.web.controller;
 
-import de.messdiener.cms.app.entities.event.WorshipEvent;
-import de.messdiener.cms.app.entities.file.FileEntity;
 import de.messdiener.cms.app.entities.messdiener.GroupSession;
 import de.messdiener.cms.app.entities.messdiener.Messdiener;
 import de.messdiener.cms.app.entities.messdiener.MessdienerGroup;
-import de.messdiener.cms.app.entities.messdiener.MessdienerRank;
 import de.messdiener.cms.cache.Cache;
 import de.messdiener.cms.web.security.SecurityHelper;
 import de.messdiener.cms.web.utils.DateUtils;
@@ -19,9 +16,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpSession;
-import java.io.*;
+import java.io.IOException;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 public class MessdienerGroupController {
@@ -75,9 +75,8 @@ public class MessdienerGroupController {
     @GetMapping("/messdiener/group/promote")
     public RedirectView promote(@RequestParam("group_uuid") UUID group_uuid, @RequestParam("person_uuid") UUID person_uuid) throws SQLException {
 
-        MessdienerGroup group = Cache.GROUP_SERVICE.getGroup(group_uuid).orElseThrow();
         Messdiener messdiener = Cache.MESSDIENER_SERVICE.find(person_uuid).orElseThrow();
-        Cache.GROUP_SERVICE.promote(group, messdiener);
+        Cache.GROUP_SERVICE.promote(messdiener);
 
         return new RedirectView("/messdiener/group?uuid=" + group_uuid);
     }
@@ -87,7 +86,7 @@ public class MessdienerGroupController {
 
         MessdienerGroup group = Cache.GROUP_SERVICE.getGroup(group_uuid).orElseThrow();
 
-        group.setLogo_svg(file_uuid.toString());
+        group.setLogoSvg(file_uuid.toString());
         group.save();
 
         return new RedirectView("/messdiener/group");
@@ -110,7 +109,7 @@ public class MessdienerGroupController {
 
         model.addAttribute("id", id);
         if (id.isPresent()) {
-            model.addAttribute("event", Cache.GROUP_SERVICE.getSessions(groupUUID).stream().filter(s -> s.getUUID().toString().equals(id.get())).findFirst().orElseThrow());
+            model.addAttribute("event", Cache.GROUP_SERVICE.getSessions(groupUUID).stream().filter(s -> s.getId().toString().equals(id.get())).findFirst().orElseThrow());
         }
 
         return "messdiener/sessions/sessionsInterface";
@@ -118,8 +117,6 @@ public class MessdienerGroupController {
 
     @PostMapping("/messdiener/group/session/create")
     public RedirectView createSession(@RequestParam("uuid") UUID uuid, @RequestParam("date") String date) throws SQLException {
-
-        long l = DateUtils.convertDateToLong(date, DateUtils.DateType.ENGLISH_DATETIME);
 
         UUID id = UUID.randomUUID();
         GroupSession.of(id,

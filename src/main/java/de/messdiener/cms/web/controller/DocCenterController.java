@@ -39,7 +39,7 @@ public class DocCenterController {
     public RedirectView uploadFile(@RequestParam("file") MultipartFile file) {
         try {
             if (file.getSize() < 1048576) {
-                Cache.CLOUD_SERVICE.save(FileEntity.convert(file, SecurityHelper.getUser().getUser_UUID().toString()));
+                Cache.CLOUD_SERVICE.save(FileEntity.convert(file, SecurityHelper.getUser().getUserID().toString()));
             }
             return new RedirectView("/dc/cloud", true);
         } catch (Exception e) {
@@ -75,7 +75,7 @@ public class DocCenterController {
     public RedirectView delete(@RequestParam("uuid") String uuid) throws SQLException {
         FileEntity file = Cache.CLOUD_SERVICE.get(uuid);
 
-        Cache.CLOUD_SERVICE.delete(file.getUUID());
+        Cache.CLOUD_SERVICE.delete(file.getId());
 
         return new RedirectView("/dc/cloud");
     }
@@ -88,7 +88,7 @@ public class DocCenterController {
         if (inputUUID.isPresent()) {
             Protocol protocol = Cache.CLOUD_SERVICE.getProtocols()
                     .stream()
-                    .filter(p -> p.getUUID().equals(UUID.fromString(inputUUID.get())))
+                    .filter(p -> p.getId().equals(UUID.fromString(inputUUID.get())))
                     .findFirst().orElseThrow();
 
             model.addAttribute("protocol", protocol);
@@ -104,7 +104,7 @@ public class DocCenterController {
     public RedirectView createProtocol(@RequestParam("name") String name) throws SQLException {
 
         Protocol protocol = Protocol.empty();
-        protocol.setRequest_name(name);
+        protocol.setRequestName(name);
 
         Cache.CLOUD_SERVICE.saveProtocol(protocol);
 
@@ -115,7 +115,7 @@ public class DocCenterController {
     @PostMapping("/dc/protocol/comment/create")
     public RedirectView createProtocol(@RequestParam("text") String text, @RequestParam("uuid")UUID uuid) throws SQLException {
 
-        ProtocolComment protocolComment = new ProtocolComment(UUID.randomUUID(), uuid, SecurityHelper.getUser().getUser_UUID(), System.currentTimeMillis(),text);
+        ProtocolComment protocolComment = new ProtocolComment(UUID.randomUUID(), uuid, SecurityHelper.getUser().getUserID(), System.currentTimeMillis(),text);
         protocolComment.save();
 
         return new RedirectView("/dc/protocol?uuid=" + uuid);
@@ -135,9 +135,9 @@ public class DocCenterController {
 
     @PostMapping("/dc/protocol/description/save")
     public RedirectView saveDescription(@RequestParam("uuid")String uuid, @RequestParam("title")String title, @RequestParam("description")String text) throws SQLException {
-        Protocol protocol = Cache.CLOUD_SERVICE.getProtocols().stream().filter(pr -> pr.getUUID().toString().equals(uuid)).findFirst().orElseThrow();
+        Protocol protocol = Cache.CLOUD_SERVICE.getProtocols().stream().filter(pr -> pr.getId().toString().equals(uuid)).findFirst().orElseThrow();
 
-        protocol.setRequest_name(title);
+        protocol.setRequestName(title);
         protocol.setDescription(text);
         protocol.save();
 
@@ -146,7 +146,7 @@ public class DocCenterController {
 
     @GetMapping("/dc/protocol/delete")
     public RedirectView delete(@RequestParam("uuid")UUID uuid) throws SQLException {
-        Protocol protocol = Cache.CLOUD_SERVICE.getProtocols().stream().filter(pr -> pr.getUUID().equals(uuid)).findFirst().orElseThrow();
+        Protocol protocol = Cache.CLOUD_SERVICE.getProtocols().stream().filter(pr -> pr.getId().equals(uuid)).findFirst().orElseThrow();
         Cache.CLOUD_SERVICE.deleteProtocol(protocol);
 
         return new RedirectView("/dc/protocol");

@@ -47,7 +47,7 @@
                                 <div class="card-header">
                                     Messdiener-Person zuweisen
                                     <div>
-                                        <a th:href="'/admin/removeUser/person?uuid=' +${user.getUser_UUID()}"
+                                        <a th:href="'/admin/removeUser/person?uuid=' +${user.getUserID()}"
                                            class="btn btn-danger btn-icon mdi mdi-delete" th:if="${user.getPerson().isPresent()}"></a>
                                         <button class="btn btn-primary btn-icon mdi mdi-content-save" type="submit" th:unless="${user.getPerson().isPresent()}"></button>
                                     </div>
@@ -58,19 +58,19 @@
                                         <table class="table table-bordered mb-4" th:if="${user.getPerson().isPresent()}">
                                             <tbody>
                                             <tr>
-                                                <td><span class="mdi mdi-link"></span> Verlinkt mit <a th:href="'/messdiener?uuid=' + ${user.getPerson().get().getUUID()}" th:text="${user.getPerson().get().getName()}"></a></td>
+                                                <td><span class="mdi mdi-link"></span> Verlinkt mit <a th:href="'/messdiener?uuid=' + ${user.getPerson().get().getId()}" th:text="${user.getPerson().get().getName()}"></a></td>
                                             </tr>
                                             </tbody>
                                         </table>
 
-                                        <input class="d-none" th:value="${user.getUser_UUID()}" name="uuid">
+                                        <input class="d-none" th:value="${user.getUserID()}" name="uuid">
                                         <label for="t_group" class="small mb-1" th:unless="${user.getPerson().isPresent()}">Personen-UUID</label>
                                         <input class="form-control" list="t_Mgroup_l" id="t_Mgroup" required
                                                th:value="${user.personUUID()}" name="person" th:unless="${user.getPerson().isPresent()}">
                                         <datalist id="t_Mgroup_l">
                                             <option th:each="person:${messdieners}"
                                                     th:text="${person.getName()} + ' / ' + ${person.getGroup().getName()}"
-                                                    th:value="${person.getUUID()}" th:unless="${user.getPerson().isPresent()}"></option>
+                                                    th:value="${person.getId()}" th:unless="${user.getPerson().isPresent()}"></option>
                                         </datalist>
                                     </div>
                                     <!-- Submit button-->
@@ -89,7 +89,7 @@
                                 <form th:action="@{/admin/saveUser}" th:method="post" class="was-validated">
                                     <input type="text" class="form-control bg-white d-none" placeholder="UUID"
                                            readonly
-                                           id="t_uuid" th:value="${user.getUser_UUID()}"
+                                           id="t_uuid" th:value="${user.getUserID()}"
                                            name="t_uuid">
                                     <!-- Form Row-->
                                     <div class="row gx-3 mb-3">
@@ -147,7 +147,7 @@
                                 Rechteverwaltung
                                 <div>
                                     <a class="btn btn-blue btn-icon"
-                                       th:href="'/admin/permUser?uuid=' + ${user.getUser_UUID()}">
+                                       th:href="'/admin/permUser?uuid=' + ${user.getUserID()}">
                                         <span class="mdi mdi-security"></span>
                                     </a>
                                 </div>

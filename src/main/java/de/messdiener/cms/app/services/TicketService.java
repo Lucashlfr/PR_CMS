@@ -23,8 +23,6 @@ public class TicketService {
     private static final Logger LOGGER = Logger.getLogger("Manager.TicketService");
     private final DatabaseService databaseService = Cache.getDatabaseService();
 
-    //UUID link_uuid, long date, UUID creator_uuid, String name, String link
-
     public TicketService() {
         LOGGER.setLevel(Level.ALL);
         try {
@@ -62,13 +60,13 @@ public class TicketService {
                 "INSERT INTO module_tickets (ticket_uuid, creationDate, lastUpdateDate, deadline, user_uuid, ticketState, ticketPerson_uuid, html) VALUES (?,?,?,?,?,?,?,?)"
         );
 
-        preparedStatement.setString(1, ticket.getUUID().toString());
+        preparedStatement.setString(1, ticket.getId().toString());
         preparedStatement.setLong(2, ticket.getCreated());
         preparedStatement.setLong(3, ticket.getLastUpdate());
         preparedStatement.setLong(4, ticket.getDeadline());
-        preparedStatement.setString(5, ticket.getUser_UUID().toString());
+        preparedStatement.setString(5, ticket.getUserUUID().toString());
         preparedStatement.setString(6, ticket.getTicketState().toString());
-        preparedStatement.setString(7, ticket.getTicketPerson().getTicketPerson_UUID().toString());
+        preparedStatement.setString(7, ticket.getTicketPerson().getId().toString());
         preparedStatement.setString(8, ticket.getHTML());
 
         preparedStatement.executeUpdate();
@@ -85,9 +83,9 @@ public class TicketService {
     }
 
     public void delete(Ticket ticket) {
-        databaseService.delete("module_tickets", "ticket_uuid", ticket.getUUID().toString());
-        databaseService.delete("module_tickets_log", "ticket_uuid", ticket.getUUID().toString());
-        databaseService.delete("module_tickets_links", "ticket_uuid", ticket.getUUID().toString());
+        databaseService.delete("module_tickets", "ticket_uuid", ticket.getId().toString());
+        databaseService.delete("module_tickets_log", "ticket_uuid", ticket.getId().toString());
+        databaseService.delete("module_tickets_links", "ticket_uuid", ticket.getId().toString());
     }
 
     public void addLog(Ticket ticket, TicketLog ticketLog) throws SQLException {
@@ -95,10 +93,10 @@ public class TicketService {
                 "INSERT INTO module_tickets_log (ticketLog_uuid, ticket_uuid, date, user_uuid, text) VALUES (?,?,?,?,?)"
         );
 
-        preparedStatement.setString(1, ticketLog.getTicketLog_UUID().toString());
-        preparedStatement.setString(2, ticket.getUUID().toString());
+        preparedStatement.setString(1, ticketLog.getId().toString());
+        preparedStatement.setString(2, ticket.getId().toString());
         preparedStatement.setLong(3, ticketLog.getDate());
-        preparedStatement.setString(4, ticketLog.getCreator_UUID().toString());
+        preparedStatement.setString(4, ticketLog.getCreatorUUID().toString());
         preparedStatement.setString(5, ticketLog.getText());
 
         preparedStatement.executeUpdate();
@@ -109,31 +107,31 @@ public class TicketService {
                 "INSERT INTO module_tickets_links (ticketLink_uuid, ticket_uuid, date, user_uuid, name, link) VALUES (?,?,?,?,?,?)"
         );
 
-        preparedStatement.setString(1, ticketLink.getLink_UUID().toString());
-        preparedStatement.setString(2, ticket.getUUID().toString());
+        preparedStatement.setString(1, ticketLink.getId().toString());
+        preparedStatement.setString(2, ticket.getId().toString());
         preparedStatement.setLong(3, ticketLink.getDate());
-        preparedStatement.setString(4, ticketLink.getCreator_UUID().toString());
+        preparedStatement.setString(4, ticketLink.getCreatorUUID().toString());
         preparedStatement.setString(5, ticketLink.getName());
         preparedStatement.setString(6, ticketLink.getLink());
 
         preparedStatement.executeUpdate();
 
-        User user = Cache.USER_SERVICE.getUsers().stream().filter(users -> users.getUser_UUID().equals(ticketLink.getCreator_UUID())).findFirst().orElseThrow();
+        User user = Cache.USER_SERVICE.getUsers().stream().filter(users -> users.getUserID().equals(ticketLink.getCreatorUUID())).findFirst().orElseThrow();
 
         if (log)
-            addLog(ticket, new TicketLog(UUID.randomUUID(), System.currentTimeMillis(), ticketLink.getCreator_UUID(),
+            addLog(ticket, new TicketLog(UUID.randomUUID(), System.currentTimeMillis(), ticketLink.getCreatorUUID(),
                     "Neuer Link von " + user.getNameString() + " angelegt. " + ticketLink.getLink()));
     }
 
     public void addPerson(TicketPerson ticketPerson) throws SQLException {
 
-        databaseService.delete("module_tickets_persons", "ticketPerson_UUID", ticketPerson.getTicketPerson_UUID().toString());
+        databaseService.delete("module_tickets_persons", "ticketPerson_UUID", ticketPerson.getId().toString());
 
         PreparedStatement preparedStatement = databaseService.getConnection().prepareStatement(
                 "INSERT INTO module_tickets_persons (ticketPerson_UUID, lastname, firstname, association, phone, email) VALUES (?,?,?,?,?,?)"
         );
 
-        preparedStatement.setString(1, ticketPerson.getTicketPerson_UUID().toString());
+        preparedStatement.setString(1, ticketPerson.getId().toString());
         preparedStatement.setString(2, ticketPerson.getLastname());
         preparedStatement.setString(3, ticketPerson.getFirstname());
         preparedStatement.setString(4, ticketPerson.getAssociation());
@@ -145,14 +143,14 @@ public class TicketService {
     }
 
     public void deleteLink(Ticket ticket, TicketLink ticketLink) throws SQLException {
-        databaseService.delete("module_tickets_links", "ticketLink_uuid", ticketLink.getLink_UUID().toString());
+        databaseService.delete("module_tickets_links", "ticketLink_uuid", ticketLink.getId().toString());
 
-        addLog(ticket, new TicketLog(UUID.randomUUID(), System.currentTimeMillis(), ticketLink.getCreator_UUID(),
+        addLog(ticket, new TicketLog(UUID.randomUUID(), System.currentTimeMillis(), ticketLink.getCreatorUUID(),
                 "Link " + ticketLink.getLink() + " von " + SecurityHelper.getNameString() + " gelöscht."));
     }
 
     public Optional<Ticket> getTicket(UUID uuid) throws SQLException {
-        return getTickets().stream().filter(ticket -> ticket.getUUID().equals(uuid)).findFirst();
+        return getTickets().stream().filter(ticket -> ticket.getId().equals(uuid)).findFirst();
     }
 
     public Set<Ticket> getTickets() throws SQLException {
@@ -285,7 +283,7 @@ public class TicketService {
 
     public Set<Ticket> getTicketsByUser(UUID user_uuid) throws SQLException {
 
-        return getTickets().stream().filter(ticket -> ticket.getUser_UUID().equals(user_uuid))
+        return getTickets().stream().filter(ticket -> ticket.getUserUUID().equals(user_uuid))
                 .filter(ticket -> (!ticket.getTicketState().equals(TicketState.PUBLISHED)))
                 .filter(ticket -> (!ticket.getTicketState().equals(TicketState.REJECTED)))
                 .collect(Collectors.toSet());

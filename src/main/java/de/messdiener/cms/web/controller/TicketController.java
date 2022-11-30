@@ -5,17 +5,14 @@ import de.messdiener.cms.app.entities.file.FileEntity;
 import de.messdiener.cms.app.entities.ticket.Ticket;
 import de.messdiener.cms.app.entities.ticket.cache.TicketLink;
 import de.messdiener.cms.app.entities.ticket.cache.TicketLog;
-import de.messdiener.cms.app.entities.ticket.cache.TicketMonths;
 import de.messdiener.cms.app.entities.ticket.cache.TicketPerson;
 import de.messdiener.cms.app.entities.user.User;
 import de.messdiener.cms.app.services.mail.utils.MailOverlay;
-import de.messdiener.cms.app.services.mail.utils.MailTemplates;
 import de.messdiener.cms.cache.Cache;
 import de.messdiener.cms.cache.ContextPaths;
 import de.messdiener.cms.cache.enums.TicketState;
 import de.messdiener.cms.web.security.SecurityHelper;
 import de.messdiener.cms.web.utils.DateUtils;
-import de.messdiener.cms.web.utils.Utils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,7 +57,7 @@ public class TicketController {
     public RedirectView saveLink(@RequestParam("uuid") UUID uuid, @RequestParam("name") String name, @RequestParam("link") String link) throws SQLException {
 
         Ticket ticket = Cache.TICKET_SERVICE.getTicket(uuid).orElseThrow();
-        TicketLink ticketLink = new TicketLink(UUID.randomUUID(), System.currentTimeMillis(), SecurityHelper.getUser().getUser_UUID(), name, link);
+        TicketLink ticketLink = new TicketLink(UUID.randomUUID(), System.currentTimeMillis(), SecurityHelper.getUser().getUserID(), name, link);
 
         Cache.TICKET_SERVICE.addLink(ticket, ticketLink, true);
 
@@ -70,7 +67,7 @@ public class TicketController {
     @GetMapping("/ticket/delete/link")
     public RedirectView deleteLink(@RequestParam("uuid") UUID uuid, @RequestParam("link") UUID link) throws SQLException {
         Ticket ticket = Cache.TICKET_SERVICE.getTicket(uuid).orElseThrow();
-        TicketLink ticketLink = ticket.getTicketLinks().stream().filter(tl -> tl.getLink_UUID().equals(link)).findFirst().orElseThrow();
+        TicketLink ticketLink = ticket.getTicketLinks().stream().filter(tl -> tl.getId().equals(link)).findFirst().orElseThrow();
 
         Cache.TICKET_SERVICE.deleteLink(ticket, ticketLink);
 
@@ -85,9 +82,9 @@ public class TicketController {
 
         System.out.println(useruuid);
 
-        User user = Cache.USER_SERVICE.getUsers().stream().filter(u -> u.getUser_UUID().equals(useruuid)).findAny().orElseThrow();
+        User user = Cache.USER_SERVICE.getUsers().stream().filter(u -> u.getUserID().equals(useruuid)).findAny().orElseThrow();
 
-        ticket.setUser_UUID(user.getUser_UUID());
+        ticket.setUserUUID(user.getUserID());
         Cache.TICKET_SERVICE.save(ticket);
 
         extracted(ticket, user);
@@ -96,17 +93,17 @@ public class TicketController {
     }
 
     private void extracted(Ticket ticket, User user) throws Exception {
-        Cache.TICKET_SERVICE.addLog(ticket, TicketLog.create(UUID.randomUUID(), System.currentTimeMillis(), SecurityHelper.getUser().getUser_UUID(),
+        Cache.TICKET_SERVICE.addLog(ticket, TicketLog.create(UUID.randomUUID(), System.currentTimeMillis(), SecurityHelper.getUser().getUserID(),
                 "Ticket wurde " + user.getNameString() + " von " + SecurityHelper.getNameString() + " zugewiesen."
         ));
 
         EmailEntity email = EmailEntity.generateNew(user.getEmail(), "Neue Zuständigkeit", MailOverlay.generate()
                 .addGreeting("Hallo " + user.getFirstname() + ",")
-                .addText("Dir wurde das " + "Ticket Nr. " + ticket.getUUID().toString()
+                .addText("Dir wurde das " + "Ticket Nr. " + ticket.getId().toString()
                         + " [" + ticket.getTicketPerson().getName()
-                        + " (" + ticket.getTicketPerson().getAssociation() + "), " + ticket.getDates().getGermanDate_CREATED() + "] zugewiesen. " +
-                        "<br>Bitte bearbeite es bis zum " + ticket.getDates().getGermanDate_DEADLINE())
-                        .addLink("Zum Ticket", "https://localhost:8081/ticket/edit?uuid=" + ticket.getUUID().toString())
+                        + " (" + ticket.getTicketPerson().getAssociation() + "), " + ticket.getDates().getGermanDateCreated() + "] zugewiesen. " +
+                        "<br>Bitte bearbeite es bis zum " + ticket.getDates().getGermanDateDeadline())
+                        .addLink("Zum Ticket", "https://localhost:8081/ticket/edit?uuid=" + ticket.getId().toString())
                 .addAdoption_Lucas());
 
         Cache.EMAIL_SERVICE.sendMail(email);
@@ -132,8 +129,8 @@ public class TicketController {
         model.addAttribute("ticket", ticket);
 
 
-        if (!ticket.getUser_UUID().equals(SecurityHelper.getUser().getUser_UUID())) {
-            ticket.setUser_UUID(SecurityHelper.getUser().getUser_UUID());
+        if (!ticket.getUserUUID().equals(SecurityHelper.getUser().getUserID())) {
+            ticket.setUserUUID(SecurityHelper.getUser().getUserID());
         }
 
         if (ticket.getTicketState() == TicketState.OPEN) {
@@ -156,13 +153,13 @@ public class TicketController {
 
         if (ticket.getTicketState() == TicketState.CORRECTOR_1) {
             ticket.setTicketState(TicketState.CORRECTOR_2);
-            ticket.setUser_UUID(Cache.ALFRED_USER.getUser_UUID());
+            ticket.setUserUUID(Cache.ALFRED_USER.getUserID());
 
             extracted(ticket, Cache.ALFRED_USER);
 
         } else if (ticket.getTicketState() == TicketState.CORRECTOR_2) {
             ticket.setTicketState(TicketState.AWAITING_PUBLICATION);
-            ticket.setUser_UUID(Cache.SYSTEM_USER.getUser_UUID());
+            ticket.setUserUUID(Cache.SYSTEM_USER.getUserID());
         }
         Cache.TICKET_SERVICE.save(ticket);
         Cache.TICKET_SERVICE.addLog(ticket, ticketLog);
@@ -205,7 +202,7 @@ public class TicketController {
         Ticket ticket = Cache.TICKET_SERVICE.getTicket(uuid).orElseThrow();
 
         ticket.setTicketState(TicketState.PUBLISHED);
-        ticket.setUser_UUID(Cache.SYSTEM_USER.getUser_UUID());
+        ticket.setUserUUID(Cache.SYSTEM_USER.getUserID());
         Cache.TICKET_SERVICE.save(ticket);
         Cache.TICKET_SERVICE.addLog(ticket, TicketLog.create("Ticket wurde von " + SecurityHelper.getNameString() + " geschlossen (Veröffentlicht)."));
 
@@ -240,7 +237,7 @@ public class TicketController {
         fileEntity.setName("GastUpload_" + file.getName());
         fileEntity.save();
 
-        return new RedirectView("/public/createTicket/uploadData?uuid=" + fileEntity.getUUID());
+        return new RedirectView("/public/createTicket/uploadData?uuid=" + fileEntity.getId());
     }
 
     @PostMapping("/public/createTicket/save")
@@ -255,7 +252,7 @@ public class TicketController {
         TicketPerson ticketPerson = new TicketPerson(UUID.randomUUID(), lastname, firstname, association, phone, email);
 
         long dl = DateUtils.convertDateToLong(deadline, DateUtils.DateType.ENGLISH);
-        Ticket ticket = new Ticket(ticketUUID, System.currentTimeMillis(), System.currentTimeMillis(), dl, Cache.SYSTEM_USER.getUser_UUID(), TicketState.OPEN, new ArrayList<>(),
+        Ticket ticket = new Ticket(ticketUUID, System.currentTimeMillis(), System.currentTimeMillis(), dl, Cache.SYSTEM_USER.getUserID(), TicketState.OPEN, new ArrayList<>(),
                 new ArrayList<>(), ticketPerson, text);
 
 
@@ -263,12 +260,12 @@ public class TicketController {
 
 
         if (path.isPresent() && path.get().equals("ADMIN")) {
-            Cache.TICKET_SERVICE.addLog(ticket, new TicketLog(UUID.randomUUID(), System.currentTimeMillis(), SecurityHelper.getUser().getUser_UUID(),
+            Cache.TICKET_SERVICE.addLog(ticket, new TicketLog(UUID.randomUUID(), System.currentTimeMillis(), SecurityHelper.getUser().getUserID(),
                     "Ticket wurde von " + firstname + " " + lastname + " angelegt!"));
             return new RedirectView("/ticket/edit?uuid=" + ticketUUID);
         }
 
-        Cache.TICKET_SERVICE.addLog(ticket, new TicketLog(UUID.randomUUID(), System.currentTimeMillis(), Cache.SYSTEM_USER.getUser_UUID(),
+        Cache.TICKET_SERVICE.addLog(ticket, new TicketLog(UUID.randomUUID(), System.currentTimeMillis(), Cache.SYSTEM_USER.getUserID(),
                 "Ticket wurde von " + firstname + " " + lastname + " (via wizard) angelegt!"));
 
         return new RedirectView("/");
@@ -282,10 +279,10 @@ public class TicketController {
         Cache.TICKET_SERVICE.delete(ticket);
 
         User user = SecurityHelper.getUser();
-        ticket.setUser_UUID(user.getUser_UUID());
+        ticket.setUserUUID(user.getUserID());
         Cache.TICKET_SERVICE.save(ticket);
 
-        Cache.TICKET_SERVICE.addLog(ticket, TicketLog.create(UUID.randomUUID(), System.currentTimeMillis(), SecurityHelper.getUser().getUser_UUID(),
+        Cache.TICKET_SERVICE.addLog(ticket, TicketLog.create(UUID.randomUUID(), System.currentTimeMillis(), SecurityHelper.getUser().getUserID(),
                 user.getNameString() + " hat sich das Ticket zugewiesen."
         ));
         return new RedirectView("/ticket/edit?uuid=" + uuid);

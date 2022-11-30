@@ -1,9 +1,10 @@
 package de.messdiener.cms.app.entities.messdiener;
 
-import com.sun.source.tree.LambdaExpressionTree;
 import de.messdiener.cms.cache.Cache;
 import de.messdiener.cms.web.utils.DateUtils;
 import de.messdiener.cms.web.utils.Pair;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -12,14 +13,20 @@ import java.util.UUID;
 
 public class GroupSession {
 
-    private final UUID uuid;
+    @Getter
+    private final UUID id;
+
+    @Getter
     private final long dateTime;
+
+    @Getter
     private final UUID group;
 
+    @Getter @Setter
     private List<Messdiener> messdieners;
 
-    public GroupSession(UUID uuid, long dateTime, UUID group) {
-        this.uuid = uuid;
+    public GroupSession(UUID id, long dateTime, UUID group) {
+        this.id = id;
         this.dateTime = dateTime;
         this.group = group;
         this.messdieners = new ArrayList<>();
@@ -64,7 +71,7 @@ public class GroupSession {
         StringBuilder stringBuilder = new StringBuilder();
 
         for(Messdiener messdiener : Cache.MESSDIENER_SERVICE.getPersons()){
-            if(messdieners.stream().anyMatch(m -> m.getUUID().equals(messdiener.getUUID())))continue;
+            if(messdieners.stream().anyMatch(m -> m.getId().equals(messdiener.getId())))continue;
 
             stringBuilder.append(messdiener.getName()).append(", ");
         }
@@ -72,23 +79,4 @@ public class GroupSession {
         return stringBuilder.toString();
     }
 
-    public UUID getUUID() {
-        return uuid;
-    }
-
-    public long getDateTime() {
-        return dateTime;
-    }
-
-    public UUID getGroup() {
-        return group;
-    }
-
-    public void setMessdieners(List<Messdiener> messdieners) {
-        this.messdieners = messdieners;
-    }
-
-    public List<Messdiener> getMessdieners() {
-        return messdieners;
-    }
 }

@@ -51,10 +51,10 @@
                                 <td th:text="${file.getGermanDate()}"></td>
                                 <td>
                                     <a class="btn btn-datatable btn-icon btn-transparent-dark me-2"
-                                       th:href="'/public/dc/cloud/file?uuid=' + ${file.getUUID()}" target="_blank"><i
+                                       th:href="'/public/dc/cloud/file?uuid=' + ${file.getId()}" target="_blank"><i
                                             data-feather="download"></i></a>
                                     <a class="btn btn-datatable btn-icon btn-transparent-dark me-2"
-                                       th:href="'/dc/cloud/file/delete?uuid=' + ${file.getUUID()}"><i data-feather="trash"></i></a>
+                                       th:href="'/dc/cloud/file/delete?uuid=' + ${file.getId()}"><i data-feather="trash"></i></a>
                                 </td>
                             </tr>
 
@@ -90,14 +90,14 @@
                                 <tbody>
                                 <tr th:each="file:${files}">
                                     <td th:text="${file.getName()}+' '"></td>
-                                    <td th:text="${file.getOwner_read()}"></td>
+                                    <td th:text="${file.getOwnerRead()}"></td>
                                     <td th:text="${file.getGermanDate()}"></td>
                                     <td>
                                         <a class="btn btn-datatable btn-icon btn-transparent-dark me-2"
-                                           th:href="'/public/dc/cloud/file?uuid=' + ${file.getUUID()}" target="_blank"><i
+                                           th:href="'/public/dc/cloud/file?uuid=' + ${file.getId()}" target="_blank"><i
                                                 data-feather="download"></i></a>
                                         <a class="btn btn-datatable btn-icon btn-transparent-dark me-2"
-                                           th:href="'/dc/cloud/file/delete?uuid=' + ${file.getUUID()}"><i
+                                           th:href="'/dc/cloud/file/delete?uuid=' + ${file.getId()}"><i
                                                 data-feather="trash"></i></a>
                                     </td>
                                 </tr>
@@ -146,7 +146,7 @@
 
                     <div class="d-flex">
 
-                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-secondary btn-block flex-fill m-1" data-bs-dismiss="modal">
                             Schließen
                         </button>
 

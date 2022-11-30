@@ -38,7 +38,7 @@ public class FlowController {
 
         if ((type.isEmpty() || user.getPerson().isEmpty()) && flow_uuid.isEmpty()) {
             if(user.getPerson().isPresent())
-                model.addAttribute("flows", Cache.FLOW_SERVICE.getFlowsByOwner(user.getPerson().get().getUUID()));
+                model.addAttribute("flows", Cache.FLOW_SERVICE.getFlowsByOwner(user.getPerson().get().getId()));
             return "flows/flowsOverview";
         }
         model.addAttribute("person", user.getPerson().get());
@@ -63,7 +63,7 @@ public class FlowController {
         UUID uuid = UUID.randomUUID();
         Messdiener messdiener = Cache.MESSDIENER_SERVICE.find(personUUID).orElseThrow();
 
-        CashFlow cashFlow = new CashFlow(uuid, personUUID, owner, mail, iban, bic, data, zweck, UUID.randomUUID());
+        CashFlow cashFlow = new CashFlow(uuid, personUUID, UUID.randomUUID(), owner, mail, iban, bic, data, zweck);
         cashFlow.create(file);
 
         Flow flow = new Flow(uuid, System.currentTimeMillis(), FlowEnums.Type.CASH_FLOW, FlowEnums.State.OPEN, personUUID);
@@ -81,7 +81,7 @@ public class FlowController {
                         .addAdoption_Lucas())
                 .send();
 
-        FinanceEntry financeEntry = new FinanceEntry(UUID.randomUUID(), messdiener.getGroup().getUUID(), System.currentTimeMillis(),
+        FinanceEntry financeEntry = new FinanceEntry(UUID.randomUUID(), messdiener.getGroup().getId(), System.currentTimeMillis(),
                 cashFlow.getRevenue(), cashFlow.getExpenditures(), zweck, messdiener.getName(), "", "Erstellt über CashFlow");
         Cache.FINANCE_SERVICE.saveEntity(financeEntry);
 
@@ -93,7 +93,7 @@ public class FlowController {
 
         Flow flow = Cache.FLOW_SERVICE.getFlow(uuid).orElseThrow();
 
-        model.addAttribute("person", flow.getOwner_Person());
+        model.addAttribute("person", flow.getOwnerPerson());
         model.addAttribute("flow", flow);
         model.addAttribute("cashflow", Cache.FLOW_SERVICE.getCashFlowByUUID(uuid).orElseThrow());
         return "public/flowPublicView";
@@ -103,7 +103,7 @@ public class FlowController {
     public RedirectView resend(@RequestParam("uuid")UUID uuid) throws Exception {
 
         Flow flow = Cache.FLOW_SERVICE.getFlow(uuid).orElseThrow();
-        Messdiener messdiener = flow.getOwner_Person();
+        Messdiener messdiener = flow.getOwnerPerson();
         CashFlow cashFlow = Cache.FLOW_SERVICE.getCashFlowByUUID(uuid).orElseThrow();
 
         EmailEntity.generateNew(Cache.PFARRBUERO, "[MS] Erinnerung zum Antrag", MailOverlay.generate().addGreeting("Hallo zusammen,")

@@ -52,13 +52,13 @@
 
                             <tr th:each="protocol:${protocols}">
                                 <td th:text="${protocol.getLastUpdate()}"></td>
-                                <td th:text="${protocol.getRequest_name()}"></td>
+                                <td th:text="${protocol.getRequestName()}"></td>
                                 <td th:text="${protocol.getOwner().getName()}"></td>
                                 <td th:text="${protocol.getDate()}"></td>
                                 <td th:text="${protocol.getElements().size()}"></td>
                                 <td>
                                     <a class="btn btn-datatable btn-icon btn-transparent-dark me-2"
-                                       th:href="'/dc/protocol?uuid=' + ${protocol.getUUID()}"><span
+                                       th:href="'/dc/protocol?uuid=' + ${protocol.getId()}"><span
                                             class="mdi mdi-book-arrow-right"></span></a>
                                 </td>
                             </tr>
@@ -103,7 +103,7 @@
 
                     <div class="d-flex">
 
-                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-secondary btn-block flex-fill m-1" data-bs-dismiss="modal">
                             Schließen
                         </button>
 

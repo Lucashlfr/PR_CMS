@@ -47,7 +47,7 @@
                                        class="list-group-item d-flex justify-content-between align-items-center"
                                        th:each="person:${availAblePersons}">
                                         <span th:text="${person.getReadName()}"></span>
-                                        <a th:href="'/messdiener/group/map?group_uuid='  + ${group.getUUID()} + '&person_uuid=' + ${person.getUUID()}"
+                                        <a th:href="'/messdiener/group/map?group_uuid='  + ${group.getId()} + '&person_uuid=' + ${person.getId()}"
                                            class="btn btn-sm btn-primary mdi mdi-arrow-right" ></a>
                                     </div>
                                 </div>
@@ -75,9 +75,9 @@
                                         <span th:text="${p2.getFirst().getReadName()}" th:if="${p2.getSecond().getPower()} == 0"></span>
 
                                         <div>
-                                            <a th:href="'/messdiener/group/promote?group_uuid=' + ${group.getUUID()} + '&person_uuid=' + ${p2.getFirst().getUUID()}"
+                                            <a th:href="'/messdiener/group/promote?group_uuid=' + ${group.getId()} + '&person_uuid=' + ${p2.getFirst().getId()}"
                                                class="btn btn-sm btn-success mdi mdi-arrow-up"></a>
-                                            <a th:href="'/messdiener/group/unmap?group_uuid=' + ${group.getUUID()} + '&person_uuid=' + ${p2.getFirst().getUUID()}"
+                                            <a th:href="'/messdiener/group/unmap?group_uuid=' + ${group.getId()} + '&person_uuid=' + ${p2.getFirst().getId()}"
                                                class="btn btn-sm btn-danger mdi mdi-delete"></a>
                                         </div>
                                     </div>
@@ -126,7 +126,7 @@
                     </div>
                     <div class="d-flex">
 
-                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-secondary btn-block flex-fill m-1" data-bs-dismiss="modal">
                             Abbrechen
                         </button>
                         <button type="submit" class="btn btn-success btn-block flex-fill m-1">Speichern</button>
@@ -165,7 +165,7 @@
 
                     <div class="d-flex">
 
-                        <button type="button" class="btn btn-black btn-block flex-fill m-1" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-secondary btn-block flex-fill m-1" data-bs-dismiss="modal">
                             Schließen
                         </button>
 
